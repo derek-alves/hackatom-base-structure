@@ -17,6 +17,7 @@ paths: ["backend/**"]
   - Nunca subclassificar `BaseAgent`/`LlmAgent` nem sobrescrever `_run_async_impl`.
   - Comportamento transversal entra só via `before_/after_*_callback`.
 - O primeiro nó após `START` recebe `types.Content`.
+- O `ui_agent` é `single_turn` (as imagens dependem disso) e só vê o turno atual. A memória entre turnos é a chave `history` do state (últimos 6 turnos: texto do usuário ou linha `[ui_action] …`, `message` do agente e resumo dos widgets). `prepare_input` a prefixa como "Histórico recente" antes do "Contexto do banco"; `render_a2ui` acrescenta o turno.
 - UI só via `UiResponse` → `build_surface_messages` → `validate_payload`. O LLM nunca escreve A2UI, e `a2ui-adk` não é usado.
 - Componente novo exige: modelo Pydantic (`ComponentProps` com `COMPONENT_NAME`), fixture em `contracts/examples/`, `uv run python -m app.export_catalog` e testes. Passo a passo em `/add-genui-widget`.
 - Testes usam `FakeLlm` (`tests/fakes.py`) com `capabilities.output_schema_and_tools=True`. Nunca chamam Gemini real, exceto `-m e2e`.
