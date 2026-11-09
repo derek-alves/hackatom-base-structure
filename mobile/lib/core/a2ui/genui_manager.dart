@@ -74,6 +74,7 @@ class GenUiManager {
   }
 
   void _onSurfaceCreated(SurfaceModel<ComponentImplementation> s) {
+    _surfaceErrors.remove(s.id)?.unsubscribe();
     _surfaceErrors[s.id] = s.onError.subscribe((e) {
       // Logged only: never sent back to the agent, to avoid loops.
       _log.warning('Renderer error on ${s.id}: ${e.code} ${e.message}');
@@ -115,7 +116,8 @@ class GenUiManager {
           case A2uiEvent(:final message):
             try {
               processor.processMessages(message);
-            } on A2uiValidationError catch (e) {
+            } on Object catch (e) {
+              if (e is! A2uiError && e is! ArgumentError) rethrow;
               _log.warning('Invalid A2UI message: $e');
               _emit(
                 const SurfaceProblem(
@@ -135,6 +137,11 @@ class GenUiManager {
       }
     } on ApiException catch (e) {
       _emit(AgentFailed(e.message));
+    } catch (e, st) {
+      _log.severe('Unexpected error while handling agent stream', e, st);
+      _emit(
+        const AgentFailed('Erro inesperado ao processar a resposta do agente.'),
+      );
     } finally {
       _busy = false;
       _emit(const AgentIdle());

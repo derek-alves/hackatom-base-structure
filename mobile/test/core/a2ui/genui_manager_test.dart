@@ -179,4 +179,45 @@ void main() {
     expect((msg['action'] as Map)['name'], 'approval_decided');
     expect((msg['action'] as Map)['surfaceId'], 's_abc_0');
   });
+
+  test('unknown catalogId -> SurfaceProblem then idle, no throw', () async {
+    final bad = _surface(
+      'SummaryKpiCard',
+      _example('SummaryKpiCard'),
+    ).replaceAll(appCatalogId, 'https://example.com/unknown.json');
+    final m = _manager(_client(_sse([bad, _done])));
+    addTearDown(m.dispose);
+    final acts = <AgentActivity>[];
+    m.activity.listen(acts.add);
+    await m.sendText('x');
+    await pumpEventQueue();
+    expect(acts.whereType<SurfaceProblem>().single.surfaceId, isNull);
+    expect(acts.last, isA<AgentIdle>());
+  });
+
+  test('stream throwing TimeoutException -> AgentFailed then idle', () async {
+    final m = _manager(
+      ApiClient(
+        config: _config,
+        httpClient: MockClient.streaming(
+          (_, _) async => http.StreamedResponse(
+            Stream<List<int>>.multi((c) {
+              c.add(utf8.encode(_status));
+              c.addError(TimeoutException('slow'));
+              c.close();
+            }),
+            200,
+          ),
+        ),
+      ),
+    );
+    addTearDown(m.dispose);
+    final acts = <AgentActivity>[];
+    m.activity.listen(acts.add);
+    await m.sendText('x');
+    await pumpEventQueue();
+    expect(acts.whereType<AgentFailed>(), hasLength(1));
+    expect(acts.last, isA<AgentIdle>());
+    expect(m.isBusy, isFalse);
+  });
 }
