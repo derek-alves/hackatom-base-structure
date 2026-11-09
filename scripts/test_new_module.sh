@@ -7,6 +7,9 @@ cd "$tmp"
 scripts/new_module.sh zz_demo
 if scripts/new_module.sh zz_demo 2>/dev/null; then echo "duplicate should fail" >&2; exit 1; fi
 if scripts/new_module.sh Bad-Name 2>/dev/null; then echo "invalid name should fail" >&2; exit 1; fi
+for kw in class import await null def; do
+  if scripts/new_module.sh "$kw" 2>/dev/null; then echo "reserved word '$kw' should fail" >&2; exit 1; fi
+done
 (cd backend && uv sync -q && uv run pytest -q -m "not e2e" && uv run ruff check .)
 (cd mobile && fvm flutter pub get && fvm flutter analyze && fvm flutter test)
 grep -q "zz_demo" backend/app/registry.py || { echo "backend registry entry missing" >&2; exit 1; }

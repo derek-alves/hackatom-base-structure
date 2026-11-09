@@ -18,6 +18,14 @@ done
 if ! [[ "$name" =~ ^[a-z][a-z0-9_]*$ ]]; then
   echo "Nome inválido '$name': use snake_case (^[a-z][a-z0-9_]*$)." >&2; exit 1
 fi
+# Palavras reservadas do Python e do Dart quebram imports e identificadores gerados.
+reserved=" and as assert async await break case catch class const continue def default del do
+  elif else enum except extends false final finally for from global if import in is lambda new
+  nonlocal not null or pass raise rethrow return super switch this throw true try var void while
+  with yield None True False "
+if [[ " ${reserved//$'\n'/ } " == *" $name "* ]]; then
+  echo "Nome inválido '$name': é palavra reservada em Python ou Dart." >&2; exit 1
+fi
 
 root=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
 tpl="$root/templates"
