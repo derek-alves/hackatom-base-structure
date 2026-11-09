@@ -40,6 +40,19 @@ if [ "$do_mobile" = 1 ] && { [ -e "$mo_mod" ] || [ -e "$mo_test" ]; }; then
   echo "Módulo '$name' já existe no mobile." >&2; exit 1
 fi
 
+# Verifica todos os marcadores necessários antes de qualquer escrita.
+need_marker() {
+  grep -qF "$1" "$2" || { echo "Marcador '$1' ausente em $2." >&2; exit 1; }
+}
+if [ "$do_backend" = 1 ]; then
+  need_marker "# new_module:import" "$root/backend/app/registry.py"
+  need_marker "# new_module:register" "$root/backend/app/registry.py"
+fi
+if [ "$do_mobile" = 1 ]; then
+  need_marker "// new_module:import" "$root/mobile/lib/app/registry.dart"
+  need_marker "// new_module:register" "$root/mobile/lib/app/registry.dart"
+fi
+
 generated=()
 # render <template> <destino>: copia substituindo placeholders.
 render() {
@@ -78,15 +91,13 @@ if [ "$do_mobile" = 1 ]; then
 fi
 
 # Formatação apenas dos arquivos gerados (e do registry tocado).
-py=(); dt=()
-for f in "${generated[@]}" ${do_backend:+"$root/backend/app/registry.py"}; do
-  case "$f" in *.py) py+=("${f#"$root/backend/"}") ;; esac
-done
-for f in "${generated[@]}"; do
-  case "$f" in *.dart) dt+=("${f#"$root/mobile/"}") ;; esac
-done
-if [ "${#py[@]}" -gt 0 ]; then (cd "$root/backend" && uv run ruff check --select I --fix -q "${py[@]}" || true; uv run ruff format "${py[@]}"); fi
-if [ "${#dt[@]}" -gt 0 ]; then (cd "$root/mobile" && fvm dart format "${dt[@]}" lib/app/registry.dart); fi
+if [ "$do_backend" = 1 ]; then
+  py=("app/modules/$name" "tests/modules/$name" app/registry.py)
+  (cd "$root/backend" && uv run ruff check --select I --fix -q app/registry.py || true; uv run ruff format "${py[@]}")
+fi
+if [ "$do_mobile" = 1 ]; then
+  (cd "$root/mobile" && fvm dart format "lib/modules/$name" "test/modules/$name" lib/app/registry.dart)
+fi
 
 cat <<EOF
 
