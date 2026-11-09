@@ -1,0 +1,118 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:http/http.dart' as http;
+
+import '../config/app_config.dart';
+import 'api_models.dart';
+import 'sse_parser.dart';
+
+class ApiClient {
+  // ignore: prefer_initializing_formals
+  ApiClient({required AppConfig config, http.Client? httpClient})
+    : _config = config,
+      _client = httpClient ?? http.Client();
+
+  final AppConfig _config;
+  final http.Client _client;
+
+  Uri _uri(String path) => _config.apiBaseUrl.replace(
+    path: '${_config.apiBaseUrl.path.replaceAll(RegExp(r'/+$'), '')}$path',
+  );
+
+  ApiException get _unreachable => ApiException(
+    'Não foi possível conectar ao servidor em ${_config.apiBaseUrl}.',
+  );
+
+  Future<bool> health() async {
+    try {
+      final res = await _client
+          .get(_uri('/health'))
+          .timeout(const Duration(seconds: 5));
+      return res.statusCode == 200;
+    } on Object {
+      return false;
+    }
+  }
+
+  Stream<BackendEvent> streamGenUi(GenUiRequest request) async* {
+    final req = http.Request('POST', _uri('/api/genui/stream'))
+      ..headers['content-type'] = 'application/json'
+      ..headers['accept'] = 'text/event-stream'
+      ..body = jsonEncode(request.toJson());
+
+    final http.StreamedResponse res;
+    try {
+      res = await _client.send(req);
+    } on http.ClientException {
+      throw _unreachable;
+    } on SocketException {
+      throw _unreachable;
+    }
+
+    if (res.statusCode != 200) {
+      final body = await res.stream.bytesToString();
+      throw ApiException(
+        _detail(body) ?? 'Erro do servidor (${res.statusCode}).',
+        statusCode: res.statusCode,
+      );
+    }
+
+    try {
+      await for (final frame in parseSse(res.stream)) {
+        final event = _toEvent(frame);
+        if (event != null) yield event;
+      }
+    } on http.ClientException {
+      throw _unreachable;
+    } on SocketException {
+      throw _unreachable;
+    }
+  }
+
+  BackendEvent? _toEvent(SseFrame frame) {
+    if (frame.event == 'done') return const DoneEvent();
+    final Object? json;
+    try {
+      json = jsonDecode(frame.data);
+    } on FormatException {
+      return null;
+    }
+    if (json is! Map<String, dynamic>) return null;
+    switch (frame.event) {
+      case 'status':
+        return StatusEvent('${json['label'] ?? ''}');
+      case 'text':
+        return TextEvent('${json['markdown'] ?? ''}');
+      case 'a2ui':
+        return A2uiEvent(Map<String, Object?>.from(json));
+      case 'error':
+        return ErrorEvent('${json['message'] ?? 'Erro desconhecido.'}');
+      default:
+        return null;
+    }
+  }
+
+  String? _detail(String body) {
+    try {
+      final json = jsonDecode(body);
+      if (json is! Map) return null;
+      final detail = json['detail'];
+      if (detail is String && detail.isNotEmpty) return detail;
+      if (detail is List) {
+        final msgs = detail
+            .map((e) => e is Map ? e['msg'] : e)
+            .whereType<String>()
+            .where((s) => s.isNotEmpty)
+            .toList();
+        if (msgs.isNotEmpty) return msgs.join('; ');
+      }
+    } on FormatException {
+      return null;
+    }
+    return null;
+  }
+
+  void close() => _client.close();
+}
