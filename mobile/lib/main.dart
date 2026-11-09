@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'core/theme/app_theme.dart';
+import 'app/app.dart';
+import 'core/config/app_config.dart';
 
 void main() {
-  runApp(MaterialApp(theme: AppTheme.build(), home: const SizedBox()));
+  runApp(HackathonApp(config: AppConfig.fromEnvironment()));
 }
