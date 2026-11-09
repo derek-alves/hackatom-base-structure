@@ -48,6 +48,7 @@ void main() {
     expect((events[2] as TextEvent).markdown, 'ola');
     expect(events[3], isA<DoneEvent>());
     expect(events, hasLength(4));
+    expect(seen!.url.path, '/api/genui/stream');
     expect(seen!.url.toString(), 'http://test:8000/api/genui/stream');
     expect(seen!.method, 'POST');
   });

@@ -40,4 +40,14 @@ void main() {
     ).toList();
     expect(frames.single.data, 'ç');
   });
+
+  test(
+    'yields one frame at end of stream without trailing blank line',
+    () async {
+      final frames = await parseSse(_s(['event: text\ndata: x'])).toList();
+      expect(frames, hasLength(1));
+      expect(frames.single.event, 'text');
+      expect(frames.single.data, 'x');
+    },
+  );
 }

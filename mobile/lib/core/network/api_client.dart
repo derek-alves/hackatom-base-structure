@@ -26,7 +26,7 @@ class ApiClient {
   Future<bool> health() async {
     try {
       final res = await _client
-          .get(_uri('/health'))
+          .get(_uri('/api/health'))
           .timeout(const Duration(seconds: 5));
       return res.statusCode == 200;
     } on Object {
