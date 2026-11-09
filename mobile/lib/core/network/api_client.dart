@@ -9,11 +9,21 @@ import 'api_models.dart';
 import 'sse_parser.dart';
 
 class ApiClient {
-  ApiClient({required this.config, http.Client? httpClient})
-    : _client = httpClient ?? http.Client();
+  ApiClient({
+    required this.config,
+    http.Client? httpClient,
+    this.connectTimeout = const Duration(seconds: 15),
+    this.idleTimeout = const Duration(seconds: 90),
+  }) : _client = httpClient ?? http.Client();
 
   final AppConfig config;
   final http.Client _client;
+
+  /// Limit to connect and receive the response headers.
+  final Duration connectTimeout;
+
+  /// Longest silence allowed between two chunks of the response body.
+  final Duration idleTimeout;
 
   Uri _uri(String path) => config.apiBaseUrl.replace(
     path: '${config.apiBaseUrl.path.replaceAll(RegExp(r'/+$'), '')}$path',
@@ -21,6 +31,10 @@ class ApiClient {
 
   ApiException get _unreachable => ApiException(
     'Não foi possível conectar ao servidor em ${config.apiBaseUrl}.',
+  );
+
+  static const _tooSlow = ApiException(
+    'O servidor demorou demais para responder.',
   );
 
   Future<bool> health() async {
@@ -42,26 +56,31 @@ class ApiClient {
 
     final http.StreamedResponse res;
     try {
-      res = await _client.send(req);
+      res = await _client.send(req).timeout(connectTimeout);
+    } on TimeoutException {
+      throw _unreachable;
     } on http.ClientException {
       throw _unreachable;
     } on SocketException {
       throw _unreachable;
     }
 
-    if (res.statusCode != 200) {
-      final body = await res.stream.bytesToString();
-      throw ApiException(
-        _detail(body) ?? 'Erro do servidor (${res.statusCode}).',
-        statusCode: res.statusCode,
-      );
-    }
-
+    // Times out when no chunk arrives within idleTimeout (cancels the body).
+    final body = res.stream.timeout(idleTimeout);
     try {
-      await for (final frame in parseSse(res.stream)) {
+      if (res.statusCode != 200) {
+        final text = await http.ByteStream(body).bytesToString();
+        throw ApiException(
+          _detail(text) ?? 'Erro do servidor (${res.statusCode}).',
+          statusCode: res.statusCode,
+        );
+      }
+      await for (final frame in parseSse(body)) {
         final event = _toEvent(frame);
         if (event != null) yield event;
       }
+    } on TimeoutException {
+      throw _tooSlow;
     } on http.ClientException {
       throw _unreachable;
     } on SocketException {

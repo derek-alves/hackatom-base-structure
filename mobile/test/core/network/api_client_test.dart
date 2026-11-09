@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -178,5 +179,60 @@ void main() {
 
   test('AppConfig explicit url', () {
     expect(_config.apiBaseUrl.host, 'test');
+  });
+
+  test('no response headers within connectTimeout -> ApiException', () async {
+    final api = ApiClient(
+      config: _config,
+      httpClient: MockClient.streaming(
+        (_, _) => Completer<http.StreamedResponse>().future,
+      ),
+      connectTimeout: const Duration(milliseconds: 20),
+    );
+    await expectLater(
+      api.streamGenUi(_req).toList(),
+      throwsA(
+        isA<ApiException>().having(
+          (e) => e.message,
+          'message',
+          contains('Não foi possível conectar'),
+        ),
+      ),
+    );
+  });
+
+  test('stream idle longer than idleTimeout -> ApiException', () async {
+    final events = <BackendEvent>[];
+    final api = ApiClient(
+      config: _config,
+      httpClient: MockClient.streaming(
+        (_, _) async => http.StreamedResponse(
+          Stream<List<int>>.multi((c) {
+            c.add(utf8.encode('event: status\ndata: {"label":"x"}\n\n'));
+            // Never closes and never sends another chunk.
+          }),
+          200,
+        ),
+      ),
+      idleTimeout: const Duration(milliseconds: 20),
+    );
+    await expectLater(
+      api.streamGenUi(_req).forEach(events.add),
+      throwsA(
+        isA<ApiException>().having(
+          (e) => e.message,
+          'message',
+          'O servidor demorou demais para responder.',
+        ),
+      ),
+    );
+    expect(events.single, isA<StatusEvent>());
+  });
+
+  test('default timeouts are 15 s to connect and 90 s idle', () {
+    final api = ApiClient(config: _config);
+    addTearDown(api.close);
+    expect(api.connectTimeout, const Duration(seconds: 15));
+    expect(api.idleTimeout, const Duration(seconds: 90));
   });
 }
