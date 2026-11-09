@@ -1,0 +1,1 @@
+{"title": "Novo cadastro", "description": "Preencha os dados abaixo", "fields": [{"name": "nome", "label": "Nome", "type": "text", "required": true, "placeholder": "Seu nome"}, {"name": "tipo", "label": "Tipo", "type": "select", "options": ["Pessoa física", "Pessoa jurídica"]}], "submitLabel": "Enviar"}

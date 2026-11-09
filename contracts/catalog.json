@@ -1,0 +1,313 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hackathon-starter.dev/catalogs/app/v1/catalog.json",
+  "catalogId": "https://hackathon-starter.dev/catalogs/app/v1/catalog.json",
+  "protocolVersion": "1.0",
+  "title": "App Catalog",
+  "components": {
+    "SummaryKpiCard": {
+      "type": "object",
+      "description": "KPI card with a headline value, optional delta and status tone.",
+      "properties": {
+        "component": {
+          "const": "SummaryKpiCard"
+        },
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "deltaPercent": {
+          "type": "number"
+        },
+        "status": {
+          "enum": [
+            "positive",
+            "negative",
+            "neutral"
+          ],
+          "type": "string"
+        },
+        "caption": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "component",
+        "id",
+        "title",
+        "value",
+        "status"
+      ],
+      "additionalProperties": false
+    },
+    "ActionChecklistCard": {
+      "type": "object",
+      "description": "Checklist the user can tick and submit (action: checklist_submitted).",
+      "properties": {
+        "component": {
+          "const": "ActionChecklistCard"
+        },
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "items": {
+          "items": {
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "done": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "id",
+              "label",
+              "done"
+            ],
+            "type": "object"
+          },
+          "maxItems": 20,
+          "minItems": 1,
+          "type": "array"
+        },
+        "submitLabel": {
+          "default": "Confirmar",
+          "type": "string"
+        }
+      },
+      "required": [
+        "component",
+        "id",
+        "title",
+        "items"
+      ],
+      "additionalProperties": false
+    },
+    "ApprovalConfirmationCard": {
+      "type": "object",
+      "description": "Approve/reject card (action: approval_decided).",
+      "properties": {
+        "component": {
+          "const": "ApprovalConfirmationCard"
+        },
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "referenceId": {
+          "type": "string"
+        },
+        "fields": {
+          "items": {
+            "properties": {
+              "label": {
+                "type": "string"
+              },
+              "value": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "label",
+              "value"
+            ],
+            "type": "object"
+          },
+          "maxItems": 8,
+          "type": "array"
+        },
+        "approveLabel": {
+          "default": "Aprovar",
+          "type": "string"
+        },
+        "rejectLabel": {
+          "default": "Recusar",
+          "type": "string"
+        }
+      },
+      "required": [
+        "component",
+        "id",
+        "title",
+        "summary",
+        "referenceId"
+      ],
+      "additionalProperties": false
+    },
+    "InfoListCard": {
+      "type": "object",
+      "description": "Read-only list of items with icon, subtitle and badge.",
+      "properties": {
+        "component": {
+          "const": "InfoListCard"
+        },
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "items": {
+          "items": {
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "icon": {
+                "enum": [
+                  "task",
+                  "info",
+                  "warning",
+                  "check",
+                  "person",
+                  "money"
+                ],
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "subtitle": {
+                "type": "string"
+              },
+              "badge": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "icon",
+              "title"
+            ],
+            "type": "object"
+          },
+          "maxItems": 20,
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": [
+        "component",
+        "id",
+        "title",
+        "items"
+      ],
+      "additionalProperties": false
+    },
+    "DynamicFormCard": {
+      "type": "object",
+      "description": "Form built from field descriptors (action: form_submitted).",
+      "properties": {
+        "component": {
+          "const": "DynamicFormCard"
+        },
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "fields": {
+          "items": {
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "label": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "text",
+                  "number",
+                  "date",
+                  "select"
+                ],
+                "type": "string"
+              },
+              "required": {
+                "default": false,
+                "type": "boolean"
+              },
+              "options": {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              "placeholder": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "label",
+              "type"
+            ],
+            "type": "object"
+          },
+          "maxItems": 8,
+          "type": "array"
+        },
+        "submitLabel": {
+          "default": "Enviar",
+          "type": "string"
+        }
+      },
+      "required": [
+        "component",
+        "id",
+        "title",
+        "fields"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$defs": {
+    "anyComponent": {
+      "oneOf": [
+        {
+          "$ref": "#/components/SummaryKpiCard"
+        },
+        {
+          "$ref": "#/components/ActionChecklistCard"
+        },
+        {
+          "$ref": "#/components/ApprovalConfirmationCard"
+        },
+        {
+          "$ref": "#/components/InfoListCard"
+        },
+        {
+          "$ref": "#/components/DynamicFormCard"
+        }
+      ],
+      "discriminator": {
+        "propertyName": "component"
+      }
+    },
+    "anyFunction": {
+      "not": {}
+    }
+  }
+}

@@ -1,0 +1,1 @@
+{"title": "Aprovar solicitação", "summary": "Compra de material de escritório", "referenceId": "REQ-42", "fields": [{"label": "Valor", "value": "R$ 350,00"}, {"label": "Solicitante", "value": "Maria Silva"}], "approveLabel": "Aprovar", "rejectLabel": "Recusar"}
