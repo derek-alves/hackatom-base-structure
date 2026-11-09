@@ -4,5 +4,7 @@ backend/data/
 .env
 mobile/build/
 .dart_tool/
-.fvm/flutter_sdk
 *.iml
+
+# FVM Version Cache
+.fvm/

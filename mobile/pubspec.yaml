@@ -1,0 +1,32 @@
+name: hackathon_starter
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0+1
+
+environment:
+  sdk: ^3.13.7
+
+dependencies:
+  a2ui_core: ^0.5.0
+  a2ui_flutter: ^0.1.0
+  equatable: ^3.0.0
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.1.1
+  flutter_markdown_plus: ^1.0.12
+  http: ^1.6.0
+  image_picker: ^1.2.4
+  json_schema_builder: ^0.1.7
+  uuid: ^4.6.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  integration_test:
+    sdk: flutter
+  bloc_test: ^10.0.0
+  mocktail: ^1.0.5
+
+flutter:
+  uses-material-design: true
