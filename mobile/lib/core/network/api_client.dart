@@ -4,7 +4,7 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
-import '../config/appconfig.dart';
+import '../config/app_config.dart';
 import 'api_models.dart';
 import 'sse_parser.dart';
 
