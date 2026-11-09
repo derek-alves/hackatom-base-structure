@@ -44,40 +44,84 @@ class AssistantPage extends StatelessWidget {
   }
 }
 
-class _AssistantView extends StatelessWidget {
+class _AssistantView extends StatefulWidget {
   const _AssistantView();
+
+  @override
+  State<_AssistantView> createState() => _AssistantViewState();
+}
+
+class _AssistantViewState extends State<_AssistantView> {
+  final _scroll = ScrollController();
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  void _scrollToEnd() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted || !_scroll.hasClients) return;
+      _scroll.animateTo(
+        _scroll.position.maxScrollExtent,
+        duration: kThemeAnimationDuration,
+        curve: Curves.easeOut,
+      );
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<AssistantCubit>();
     return Scaffold(
       appBar: AppBar(title: const Text('Assistente')),
-      body: Column(
-        children: [
-          Expanded(
-            child: BlocBuilder<AssistantCubit, AssistantState>(
-              builder: (context, state) => ListView(
-                children: [
-                  for (final e in state.entries) _entry(context, cubit, e),
-                  if (state.status == AssistantStatus.working)
-                    ProgressBanner(label: state.progressLabel),
-                  if (state.status == AssistantStatus.failure)
-                    ErrorBanner(
-                      message: state.errorMessage ?? 'Algo deu errado.',
-                      onRetry: cubit.retry,
-                    ),
-                ],
+      body: BlocListener<AssistantCubit, AssistantState>(
+        listenWhen: (a, b) =>
+            a.entries.length != b.entries.length || a.status != b.status,
+        listener: (context, state) => _scrollToEnd(),
+        child: Column(
+          children: [
+            Expanded(
+              child: BlocBuilder<AssistantCubit, AssistantState>(
+                builder: (context, state) => ListView(
+                  controller: _scroll,
+                  children: [
+                    for (final e in state.entries)
+                      KeyedSubtree(
+                        key: ObjectKey(e),
+                        // Surfaces take no taps while a request is in flight.
+                        child: IgnorePointer(
+                          ignoring: state.status == AssistantStatus.working,
+                          child: _entry(context, cubit, e),
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
-          ),
-          BlocBuilder<AssistantCubit, AssistantState>(
-            buildWhen: (a, b) => a.status != b.status,
-            builder: (context, state) => ComposerBar(
-              enabled: state.status != AssistantStatus.working,
-              onSubmit: (s) => cubit.send(s.text, attachments: s.attachments),
+            // Banners stay outside the list so they are always visible.
+            BlocBuilder<AssistantCubit, AssistantState>(
+              builder: (context, state) => switch (state.status) {
+                AssistantStatus.working => ProgressBanner(
+                  label: state.progressLabel,
+                ),
+                AssistantStatus.failure => ErrorBanner(
+                  message: state.errorMessage ?? 'Algo deu errado.',
+                  onRetry: cubit.retry,
+                ),
+                AssistantStatus.idle => const SizedBox.shrink(),
+              },
             ),
-          ),
-        ],
+            BlocBuilder<AssistantCubit, AssistantState>(
+              buildWhen: (a, b) => a.status != b.status,
+              builder: (context, state) => ComposerBar(
+                enabled: state.status != AssistantStatus.working,
+                onSubmit: (s) => cubit.send(s.text, attachments: s.attachments),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
