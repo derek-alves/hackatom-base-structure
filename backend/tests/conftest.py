@@ -1,4 +1,5 @@
 import json
+import os
 from collections.abc import AsyncIterator, Callable, Iterator
 from pathlib import Path
 from typing import Any
@@ -18,6 +19,16 @@ from app.modules.assistant.router import get_runner
 from app.modules.assistant.workflow import build_app
 from app.modules.records.seed import seed_demo_data
 from app.modules.records.tools import RECORD_TOOLS, get_kpis
+
+BACKEND_ENV_FILE = Path(__file__).resolve().parent.parent / ".env"
+
+
+def resolve_gemini_key(env_file: Path | None = BACKEND_ENV_FILE) -> str | None:
+    """GEMINI_API_KEY from the environment or `backend/.env`, as the app resolves it."""
+    if key := os.environ.get("GEMINI_API_KEY"):
+        return key
+    secret = Settings(_env_file=env_file).gemini_api_key
+    return (secret.get_secret_value() or None) if secret else None
 
 
 @pytest.fixture
