@@ -22,4 +22,10 @@ def all_tools() -> list[Callable[..., Any]]:
 
 
 def all_ui_components() -> list[type[ComponentProps]]:
-    return [*CORE_COMPONENTS] + [c for m in MODULES for c in m.ui_components]
+    components = [*CORE_COMPONENTS] + [c for m in MODULES for c in m.ui_components]
+    seen: set[str] = set()
+    for c in components:
+        if c.COMPONENT_NAME in seen:
+            raise ValueError(f"Duplicate A2UI component name: {c.COMPONENT_NAME}")
+        seen.add(c.COMPONENT_NAME)
+    return components
