@@ -15,12 +15,22 @@ from app.modules.assistant import module
 from app.modules.assistant.agent import build_instruction, build_ui_agent
 from app.modules.assistant.workflow import (
     A2UI_MESSAGES_KEY,
+    CURRENT_TURN_KEY,
+    HISTORY_KEY,
+    MAX_HISTORY,
     UI_RESPONSE_KEY,
     UI_TEXT_KEY,
     make_prepare_input,
     make_render_a2ui,
 )
-from tests.fakes import FakeLlm, example_props, kpi_response, run_and_collect_state, ui_json
+from tests.fakes import (
+    FakeLlm,
+    example_props,
+    kpi_response,
+    run_and_collect_state,
+    run_turns,
+    ui_json,
+)
 
 COMPONENT_MODELS = component_models(CORE_COMPONENTS)
 CHECKLIST_EXAMPLE = example_props("ActionChecklistCard")
@@ -125,9 +135,74 @@ def test_render_a2ui_accepts_dict_or_model():
 async def test_prepare_input_clears_previous_ui_response():
     content = types.Content(role="user", parts=[types.Part.from_text(text="oi")])
     event = await make_prepare_input(None)(node_input=content)
-    assert event.actions.state_delta == {UI_RESPONSE_KEY: None}
+    assert event.actions.state_delta == {UI_RESPONSE_KEY: None, CURRENT_TURN_KEY: "oi"}
 
 
 def test_render_a2ui_rejects_missing_ui_response():
     with pytest.raises(ValueError, match="UiResponse"):
         make_render_a2ui(CoreUiResponse)(ui_response=None)
+
+
+APPROVAL_ACTION = (
+    "[ui_action] name=approval_decided component=root "
+    'context={"referenceId": "REQ-42", "decision": "approved"}'
+)
+
+
+def _texts(request) -> list[str]:
+    return [p.text for c in request.contents for p in (c.parts or []) if p.text]
+
+
+async def test_second_turn_sees_previous_turn_widget_and_message(db):
+    fake = FakeLlm(
+        responses=[
+            ui_json(
+                message="Confirme a compra abaixo.",
+                approvalConfirmationCard=example_props("ApprovalConfirmationCard"),
+            ),
+            ui_json(message="Solicitação REQ-42 aprovada."),
+        ]
+    )
+    _, second = await run_turns(fake, "Tenho aprovações pendentes?", APPROVAL_ACTION)
+
+    assert not any(t.startswith("Histórico recente") for t in _texts(fake.requests[0]))
+    texts = _texts(fake.requests[1])
+    [history] = [t for t in texts if t.startswith("Histórico recente")]
+    assert "Usuário: Tenho aprovações pendentes?" in history
+    assert "Assistente: Confirme a compra abaixo." in history
+    assert 'ApprovalConfirmationCard title="Aprovar solicitação"' in history
+    assert 'referenceId="REQ-42"' in history
+    context = next(i for i, t in enumerate(texts) if t.startswith("Contexto do banco"))
+    assert texts.index(history) < context < texts.index(APPROVAL_ACTION)
+    assert second[HISTORY_KEY][-1] == {
+        "user": APPROVAL_ACTION,
+        "agent": "Solicitação REQ-42 aprovada.",
+        "widgets": "",
+    }
+
+
+def test_render_a2ui_keeps_only_last_history_entries():
+    old = [{"user": f"u{i}", "agent": f"a{i}", "widgets": ""} for i in range(MAX_HISTORY)]
+    as_dict = {"message": "Oi", "summary_kpi_card": example_props("SummaryKpiCard")}
+    state = make_render_a2ui(CoreUiResponse)(
+        ui_response=as_dict, history=old, current_turn="Resumo"
+    ).actions.state_delta
+    history = state[HISTORY_KEY]
+    assert len(history) == MAX_HISTORY
+    assert history[0]["user"] == "u1"
+    assert history[-1]["user"] == "Resumo"
+    assert history[-1]["widgets"].startswith('SummaryKpiCard title="Tarefas concluídas"')
+
+
+async def test_prepare_input_prepends_history_before_context():
+    async def provider() -> dict:
+        return {"total": 6}
+
+    content = types.Content(role="user", parts=[types.Part.from_text(text="e agora?")])
+    history = [{"user": "Resumo", "agent": "Veja.", "widgets": 'SummaryKpiCard value="2/6"'}]
+    event = await make_prepare_input(provider)(node_input=content, history=history)
+    first, second, third = (p.text for p in event.output.parts)
+    assert first.startswith("Histórico recente")
+    assert "Widgets exibidos: SummaryKpiCard" in first
+    assert second.startswith("Contexto do banco")
+    assert third == "e agora?"

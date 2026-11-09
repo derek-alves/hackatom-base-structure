@@ -71,19 +71,15 @@ def kpi_response() -> str:
     )
 
 
-async def run_and_collect_state(
-    llm: BaseLlm, text: str, image: tuple[bytes, str] | None = None
-) -> dict[str, Any]:
-    """Runs the full workflow once and returns the merged session state delta."""
-    runner = Runner(
+def _runner(llm: BaseLlm) -> Runner:
+    return Runner(
         app=build_app(llm, RECORD_TOOLS, CORE_COMPONENTS, get_kpis),
         session_service=InMemorySessionService(),
         auto_create_session=True,
     )
-    parts = [types.Part.from_text(text=text)]
-    if image is not None:
-        data, mime_type = image
-        parts.append(types.Part.from_bytes(data=data, mime_type=mime_type))
+
+
+async def _run_turn(runner: Runner, parts: list[types.Part]) -> dict[str, Any]:
     state: dict[str, Any] = {}
     async for event in runner.run_async(
         user_id="test-user",
@@ -92,3 +88,20 @@ async def run_and_collect_state(
     ):
         state.update(event.actions.state_delta)
     return state
+
+
+async def run_and_collect_state(
+    llm: BaseLlm, text: str, image: tuple[bytes, str] | None = None
+) -> dict[str, Any]:
+    """Runs the full workflow once and returns the merged session state delta."""
+    parts = [types.Part.from_text(text=text)]
+    if image is not None:
+        data, mime_type = image
+        parts.append(types.Part.from_bytes(data=data, mime_type=mime_type))
+    return await _run_turn(_runner(llm), parts)
+
+
+async def run_turns(llm: BaseLlm, *texts: str) -> list[dict[str, Any]]:
+    """Runs one user turn per text on the same session; returns each turn's state delta."""
+    runner = _runner(llm)
+    return [await _run_turn(runner, [types.Part.from_text(text=t)]) for t in texts]
