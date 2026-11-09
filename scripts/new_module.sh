@@ -85,7 +85,7 @@ done
 for f in "${generated[@]}"; do
   case "$f" in *.dart) dt+=("${f#"$root/mobile/"}") ;; esac
 done
-if [ "${#py[@]}" -gt 0 ]; then (cd "$root/backend" && uv run ruff format "${py[@]}"); fi
+if [ "${#py[@]}" -gt 0 ]; then (cd "$root/backend" && uv run ruff check --select I --fix -q "${py[@]}" || true; uv run ruff format "${py[@]}"); fi
 if [ "${#dt[@]}" -gt 0 ]; then (cd "$root/mobile" && fvm dart format "${dt[@]}" lib/app/registry.dart); fi
 
 cat <<EOF
