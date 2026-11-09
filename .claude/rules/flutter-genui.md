@@ -19,6 +19,7 @@ paths: ["mobile/**"]
   - Tem teste de contrato (já coberto para todo componente do catálogo) e teste de widget.
   - Despacha ações com `node.context?.dispatchAction({'event': {'name': ..., 'context': {...}}})`, com nomes snake_case documentados em `contracts/README.md`.
 - Toda tela com rede tem loading com label, erro com retry e fallback: `UnsupportedComponentNotice` + markdown, porque o `a2ui_flutter` 0.1 não tem fallback próprio.
+- No assistente, "Tentar novamente" reenvia a última requisição de fato enviada (texto ou ação A2UI) via `GenUiManager.retryLast()`. Enquanto há requisição em andamento, o `GenUiManager` emite `AgentWorking` antes da rede, as surfaces ficam sob `IgnorePointer` e o composer fica desabilitado. O `ApiClient` tem timeout de 15 s para conectar e de 90 s entre chunks do stream.
 - `A2uiMarkdown` vem de `package:a2ui_flutter/basic_catalog.dart`.
 - Import do Material conforme `docs/decisions/0001-mobile-a2ui-stack.md` (hoje `package:flutter/material.dart`).
 - Dependências SDK (ex.: `integration_test`) entram editando `pubspec.yaml`; `pub add` não cobre.
