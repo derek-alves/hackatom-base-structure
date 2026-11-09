@@ -4,25 +4,23 @@ import 'dart:io';
 
 import 'package:http/http.dart' as http;
 
-import '../config/app_config.dart';
+import '../config/appconfig.dart';
 import 'api_models.dart';
 import 'sse_parser.dart';
 
 class ApiClient {
-  // ignore: prefer_initializing_formals
-  ApiClient({required AppConfig config, http.Client? httpClient})
-    : _config = config,
-      _client = httpClient ?? http.Client();
+  ApiClient({required this.config, http.Client? httpClient})
+    : _client = httpClient ?? http.Client();
 
-  final AppConfig _config;
+  final AppConfig config;
   final http.Client _client;
 
-  Uri _uri(String path) => _config.apiBaseUrl.replace(
-    path: '${_config.apiBaseUrl.path.replaceAll(RegExp(r'/+$'), '')}$path',
+  Uri _uri(String path) => config.apiBaseUrl.replace(
+    path: '${config.apiBaseUrl.path.replaceAll(RegExp(r'/+$'), '')}$path',
   );
 
   ApiException get _unreachable => ApiException(
-    'Não foi possível conectar ao servidor em ${_config.apiBaseUrl}.',
+    'Não foi possível conectar ao servidor em ${config.apiBaseUrl}.',
   );
 
   Future<bool> health() async {
