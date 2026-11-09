@@ -69,6 +69,9 @@ class _ApprovalConfirmationCard extends StatefulWidget {
 }
 
 class _ApprovalConfirmationCardState extends State<_ApprovalConfirmationCard> {
+  // Locks after one decision. If that action fails, "Tentar novamente"
+  // re-sends the same decision (GenUiManager.retryLast), and the assistant
+  // page ignores taps on surfaces while a request is in flight.
   bool _decided = false;
 
   void _decide(String decision) {

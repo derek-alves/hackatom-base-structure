@@ -40,6 +40,7 @@ class GenUiManager {
   final _surfaceErrors = <String, Subscription>{};
   bool _busy = false;
   bool _disposed = false;
+  GenUiRequest? _lastRequest;
 
   SurfaceModel<ComponentImplementation>? surface(String id) =>
       processor.model.getSurface(id);
@@ -54,6 +55,12 @@ class GenUiManager {
   }) => _post(
     GenUiRequest(sessionId: sessionId, text: text, attachments: attachments),
   );
+
+  /// Re-POSTs the last request that was actually sent (text or UI action).
+  Future<void> retryLast() async {
+    final request = _lastRequest;
+    if (request != null) await _post(request);
+  }
 
   void dispose() {
     if (_disposed) return;
@@ -107,6 +114,9 @@ class GenUiManager {
   Future<void> _post(GenUiRequest request) async {
     if (_busy || _disposed) return;
     _busy = true;
+    _lastRequest = request;
+    // Lock the UI at once, before the network call, so no second action slips in.
+    _emit(const AgentWorking('Processando...'));
     var finished = false;
     try {
       await for (final event in apiClient.streamGenUi(request)) {

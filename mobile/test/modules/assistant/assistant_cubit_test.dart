@@ -11,28 +11,34 @@ import 'package:mocktail/mocktail.dart';
 
 class _MockManager extends Mock implements GenUiManager {}
 
-/// Mock manager whose `activity` is a controller; every `sendText` replays
-/// the next script in [scripts] (the last one repeats).
+/// Mock manager whose `activity` is a controller; every `sendText` or
+/// `retryLast` replays the next script in [scripts] (the last one repeats).
+/// [sent] records the text of each `sendText` and `<retry>` per `retryLast`.
 GenUiManager fakeManager({
   List<AgentActivity> script = const [],
   List<List<AgentActivity>>? scripts,
   Completer<void>? hold,
   List<String>? sent,
+  bool busy = false,
 }) {
   final m = _MockManager();
   final c = StreamController<AgentActivity>.broadcast();
   final all = scripts ?? [script];
   var i = 0;
+  Future<void> play(String label) async {
+    sent?.add(label);
+    final s = all[i < all.length ? i : all.length - 1];
+    i++;
+    s.forEach(c.add);
+    if (hold != null) await hold.future;
+  }
+
   when(() => m.activity).thenAnswer((_) => c.stream);
+  when(() => m.isBusy).thenReturn(busy);
   when(() => m.dispose()).thenAnswer((_) => c.close());
   when(() => m.sendText(any(), attachments: any(named: 'attachments')))
-      .thenAnswer((inv) async {
-        sent?.add(inv.positionalArguments.first as String);
-        final s = all[i < all.length ? i : all.length - 1];
-        i++;
-        s.forEach(c.add);
-        if (hold != null) await hold.future;
-      });
+      .thenAnswer((inv) => play(inv.positionalArguments.first as String));
+  when(() => m.retryLast()).thenAnswer((_) => play('<retry>'));
   return m;
 }
 
@@ -82,7 +88,7 @@ void main() {
   );
 
   blocTest<AssistantCubit, AssistantState>(
-    'failure keeps message and retry resends last prompt',
+    'failure keeps message and retry re-sends the last request',
     build: () {
       sent = [];
       return AssistantCubit(
@@ -103,7 +109,8 @@ void main() {
       await c.retry();
     },
     verify: (c) {
-      expect(sent, ['Resumo', 'Resumo']);
+      expect(sent, ['Resumo', '<retry>']);
+      verify(() => c.manager.retryLast()).called(1);
       expect(c.state.status, AssistantStatus.idle);
       expect(c.state.errorMessage, isNull);
       expect(c.state.entries.whereType<UserEntry>(), hasLength(1));
@@ -127,10 +134,25 @@ void main() {
       unawaited(c.send('a'));
       await pumpEventQueue();
       await c.send('b');
+      await c.retry();
     },
     verify: (c) {
       expect(sent, ['a']);
       expect(c.state.entries.whereType<UserEntry>(), hasLength(1));
+    },
+  );
+
+  blocTest<AssistantCubit, AssistantState>(
+    'send while the manager is busy (UI action in flight) adds no entry',
+    build: () {
+      sent = [];
+      return AssistantCubit(fakeManager(sent: sent, busy: true));
+    },
+    act: (c) => c.send('perdido'),
+    expect: () => <AssistantState>[],
+    verify: (c) {
+      expect(sent, isEmpty);
+      expect(c.state.entries, isEmpty);
     },
   );
 

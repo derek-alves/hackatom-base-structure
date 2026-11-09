@@ -14,16 +14,15 @@ class AssistantCubit extends Cubit<AssistantState> {
 
   final GenUiManager manager;
   late final StreamSubscription<AgentActivity> _sub;
-  String? _lastText;
-  List<Attachment> _lastAttachments = const [];
 
+  bool get _busy => state.status == AssistantStatus.working || manager.isBusy;
+
+  /// Sends a user turn. Dropped (no entry added) while a request is in flight.
   Future<void> send(
     String text, {
     List<Attachment> attachments = const [],
   }) async {
-    if (state.status == AssistantStatus.working) return;
-    _lastText = text;
-    _lastAttachments = attachments;
+    if (_busy) return;
     emit(
       state.copyWith(
         status: AssistantStatus.working,
@@ -38,9 +37,9 @@ class AssistantCubit extends Cubit<AssistantState> {
     await manager.sendText(text, attachments: attachments);
   }
 
+  /// Re-sends the last request (prompt or UI action) after a failure.
   Future<void> retry() async {
-    final text = _lastText;
-    if (text == null || state.status == AssistantStatus.working) return;
+    if (_busy) return;
     emit(
       state.copyWith(
         status: AssistantStatus.working,
@@ -48,7 +47,7 @@ class AssistantCubit extends Cubit<AssistantState> {
         clearError: true,
       ),
     );
-    await manager.sendText(text, attachments: _lastAttachments);
+    await manager.retryLast();
   }
 
   void _onActivity(AgentActivity a) {

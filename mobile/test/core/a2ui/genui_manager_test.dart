@@ -11,6 +11,8 @@ import 'package:hackathon_starter/core/network/api_client.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 
+import '../../helpers/sse.dart' show scriptedClient;
+
 final _config = AppConfig(apiBaseUrl: Uri.parse('http://test:8000'));
 
 Map<String, Object?> _example(String name) =>
@@ -219,5 +221,68 @@ void main() {
     expect(acts.whereType<AgentFailed>(), hasLength(1));
     expect(acts.last, isA<AgentIdle>());
     expect(m.isBusy, isFalse);
+  });
+
+  test('AgentWorking is emitted before the response arrives', () async {
+    final gate = Completer<void>();
+    final m = _manager(_client(_done, hold: gate.future));
+    addTearDown(m.dispose);
+    final acts = <AgentActivity>[];
+    m.activity.listen(acts.add);
+    final sending = m.sendText('x');
+    await pumpEventQueue();
+    expect(acts, hasLength(1));
+    expect((acts.single as AgentWorking).label, 'Processando...');
+    expect(m.isBusy, isTrue);
+    gate.complete();
+    await sending;
+    await pumpEventQueue();
+    expect(acts.last, isA<AgentIdle>());
+  });
+
+  test('retryLast after a failed action re-POSTs the same action', () async {
+    final bodies = <Map<String, dynamic>>[];
+    final m = _manager(
+      scriptedClient([
+        _sse([
+          _surface(
+            'ApprovalConfirmationCard',
+            _example('ApprovalConfirmationCard'),
+          ),
+          _done,
+        ]),
+        const SocketException('refused'),
+        _sse([_text, _done]),
+      ], bodies: bodies),
+    );
+    addTearDown(m.dispose);
+    final acts = <AgentActivity>[];
+    m.activity.listen(acts.add);
+    await m.sendText('aprovar');
+    await pumpEventQueue();
+    await m.surface('s_abc_0')!.dispatchAction({
+      'event': {
+        'name': 'approval_decided',
+        'context': {'decision': 'approved', 'referenceId': 'REQ-42'},
+      },
+    }, 'root');
+    await pumpEventQueue();
+    expect(acts.whereType<AgentFailed>(), hasLength(1));
+    expect(m.isBusy, isFalse);
+
+    await m.retryLast();
+    await pumpEventQueue();
+    expect(bodies, hasLength(3));
+    expect(bodies[2]['a2ui'], bodies[1]['a2ui']);
+    expect(bodies[2]['text'], '');
+    expect(acts.whereType<AgentReplied>().single.markdown, 'Pronto');
+  });
+
+  test('retryLast without any request is a no-op', () async {
+    final bodies = <Map<String, dynamic>>[];
+    final m = _manager(_client(_done, bodies: bodies));
+    addTearDown(m.dispose);
+    await m.retryLast();
+    expect(bodies, isEmpty);
   });
 }
