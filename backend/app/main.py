@@ -1,13 +1,18 @@
+import os
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from google.adk.runners import Runner
+from google.adk.sessions import DatabaseSessionService
 
 from app.core import health
 from app.core.config import Settings, get_settings
 from app.core.db import dispose_engine, init_db, init_engine
-from app.registry import MODULES
+from app.modules.assistant.workflow import build_app
+from app.modules.records.tools import get_kpis
+from app.registry import MODULES, all_tools, all_ui_components
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -15,11 +20,23 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+        if settings.gemini_api_key:
+            os.environ["GEMINI_API_KEY"] = settings.gemini_api_key.get_secret_value()
         init_engine(settings.database_url)
         await init_db()
         for module in MODULES:
             if module.on_startup:
                 await module.on_startup()
+        app.state.runner = Runner(
+            app=build_app(
+                settings.gemini_model,
+                all_tools(),
+                all_ui_components(),
+                context_provider=get_kpis,
+            ),
+            session_service=DatabaseSessionService(db_url=settings.database_url),
+            auto_create_session=True,
+        )
         try:
             yield
         finally:

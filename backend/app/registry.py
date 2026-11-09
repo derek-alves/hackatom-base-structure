@@ -5,12 +5,14 @@ from typing import Any
 
 from app.core.a2ui.components import CORE_COMPONENTS, ComponentProps
 from app.core.modules import AppModule
+from app.modules.assistant import module as assistant_module
 from app.modules.records import module as records_module
 
 # new_module:import
 
 MODULES: list[AppModule] = [
     records_module,
+    assistant_module,
     # new_module:register
 ]
 
