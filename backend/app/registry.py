@@ -4,10 +4,12 @@ from collections.abc import Callable
 from typing import Any
 
 from app.core.modules import AppModule
+from app.modules.records import module as records_module
 
 # new_module:import
 
 MODULES: list[AppModule] = [
+    records_module,
     # new_module:register
 ]
 

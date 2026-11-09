@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.core import health
 from app.core.config import Settings, get_settings
+from app.core.db import dispose_engine, init_db, init_engine
 from app.registry import MODULES
 
 
@@ -14,10 +15,15 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+        init_engine(settings.database_url)
+        await init_db()
         for module in MODULES:
             if module.on_startup:
                 await module.on_startup()
-        yield
+        try:
+            yield
+        finally:
+            await dispose_engine()
 
     app = FastAPI(title=settings.app_name, lifespan=lifespan)
     app.state.settings = settings
