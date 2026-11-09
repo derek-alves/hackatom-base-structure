@@ -1,0 +1,15 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '__name___state.dart';
+
+class __Name__Cubit extends Cubit<__Name__State> {
+  __Name__Cubit() : super(const __Name__State());
+
+  void start() => emit(const __Name__State(status: __Name__Status.loading));
+
+  void fail(String message) => emit(
+    __Name__State(status: __Name__Status.failure, error: message),
+  );
+
+  void reset() => emit(const __Name__State());
+}

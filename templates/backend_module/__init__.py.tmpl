@@ -1,0 +1,5 @@
+from app.core.modules import AppModule
+from app.modules.__name__.router import router
+from app.modules.__name__.tools import TOOLS
+
+module = AppModule(name="__name__", router=router, tools=TOOLS)

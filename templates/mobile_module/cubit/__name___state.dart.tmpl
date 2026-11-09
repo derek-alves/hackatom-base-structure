@@ -1,0 +1,13 @@
+import 'package:equatable/equatable.dart';
+
+enum __Name__Status { idle, loading, failure }
+
+class __Name__State extends Equatable {
+  const __Name__State({this.status = __Name__Status.idle, this.error});
+
+  final __Name__Status status;
+  final String? error;
+
+  @override
+  List<Object?> get props => [status, error];
+}

@@ -1,0 +1,11 @@
+"""Tools do agente para o módulo __name__.
+
+Cada tool é uma função async com type hints e docstring em pt-BR (o ADK usa a
+docstring como descrição para o modelo). Delegue a lógica para `service.py` e
+adicione a função em `TOOLS`; o registry agrega todas as tools dos módulos.
+"""
+
+from collections.abc import Callable
+from typing import Any
+
+TOOLS: list[Callable[..., Any]] = []

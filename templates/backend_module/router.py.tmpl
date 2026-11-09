@@ -1,0 +1,11 @@
+from fastapi import APIRouter
+
+from app.modules.__name__.schemas import PingRead
+from app.modules.__name__.service import MODULE_NAME
+
+router = APIRouter(prefix="/__name__", tags=["__name__"])
+
+
+@router.get("/ping", response_model=PingRead)
+async def ping() -> PingRead:
+    return PingRead(module=MODULE_NAME)

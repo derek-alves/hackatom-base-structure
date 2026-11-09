@@ -1,0 +1,28 @@
+import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:hackathon_starter/modules/__name__/cubit/__name___cubit.dart';
+import 'package:hackathon_starter/modules/__name__/cubit/__name___state.dart';
+
+void main() {
+  blocTest<__Name__Cubit, __Name__State>(
+    'starts idle',
+    build: __Name__Cubit.new,
+    verify: (c) => expect(c.state.status, __Name__Status.idle),
+  );
+
+  blocTest<__Name__Cubit, __Name__State>(
+    'start emits loading',
+    build: __Name__Cubit.new,
+    act: (c) => c.start(),
+    expect: () => [const __Name__State(status: __Name__Status.loading)],
+  );
+
+  blocTest<__Name__Cubit, __Name__State>(
+    'fail emits failure with message',
+    build: __Name__Cubit.new,
+    act: (c) => c.fail('boom'),
+    expect: () => [
+      const __Name__State(status: __Name__Status.failure, error: 'boom'),
+    ],
+  );
+}
