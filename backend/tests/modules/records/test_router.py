@@ -39,3 +39,24 @@ def test_seed_has_one_overdue_todo(client):
         todos = client.get("/api/records?status=todo").json()
         overdue = [r for r in todos if r["due_date"] and r["due_date"] < date.today().isoformat()]
         assert len(overdue) == 1
+
+
+def test_patch_null_title_is_422(client):
+    with client:
+        rid = client.post("/api/records", json={"title": "x"}).json()["id"]
+        assert client.patch(f"/api/records/{rid}", json={"title": None}).status_code == 422
+        assert client.patch(f"/api/records/{rid}", json={"status": None}).status_code == 422
+
+
+def test_patch_null_description_clears_it(client):
+    with client:
+        rid = client.post("/api/records", json={"title": "x", "description": "d"}).json()["id"]
+        r = client.patch(f"/api/records/{rid}", json={"description": None})
+        assert r.status_code == 200
+        assert r.json()["description"] is None
+
+
+def test_created_at_has_utc_offset(client):
+    with client:
+        created = client.get("/api/records").json()[0]["created_at"]
+        assert created.endswith(("Z", "+00:00"))

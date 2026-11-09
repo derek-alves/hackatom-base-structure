@@ -20,6 +20,13 @@ class TaskRecordUpdate(BaseModel):
     amount: float | None = None
     due_date: date | None = None
 
+    @field_validator("title", "status")
+    @classmethod
+    def _reject_null(cls, value: object) -> object:
+        if value is None:
+            raise ValueError("must not be null")
+        return value
+
 
 class TaskRecordRead(BaseModel):
     model_config = ConfigDict(from_attributes=True)
