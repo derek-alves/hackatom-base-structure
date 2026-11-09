@@ -33,6 +33,13 @@ void main() {
     expect(appCatalog.id, appCatalogId);
   });
 
+  test('app catalog and contracts/catalog.json list the same components', () {
+    expect(
+      appCatalog.components.keys.toSet(),
+      (catalogJson['components'] as Map).keys.toSet(),
+    );
+  });
+
   for (final name in appCatalog.components.keys) {
     test('$name fixture validates against ComponentImplementation schema', () {
       final c = appCatalog.components[name]!;
