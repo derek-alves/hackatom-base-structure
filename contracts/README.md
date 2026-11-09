@@ -54,6 +54,14 @@ event: done    data: {}
 
 `done` é sempre o último frame, inclusive após `error`.
 
+Corpo inválido (sem texto, imagem ou ação; anexo que não é imagem, base64 inválido ou acima de 5 MB; ação A2UI malformada) responde 422 antes do stream, com mensagens em pt-BR e sem ecoar a entrada:
+
+```json
+{"detail": [{"loc": ["body", "attachments", 0, "dataBase64"], "msg": "O anexo excede 5 MB."}]}
+```
+
+O app mostra `detail[].msg` ao usuário. O servidor guarda os últimos 6 turnos da sessão (`history` no state do ADK) e os envia ao modelo, então uma ação como `approval_decided` chega com o contexto do widget que a gerou.
+
 ## Adicionar um componente
 
 1. Crie o modelo de props (subclasse de `ComponentProps`, com `COMPONENT_NAME`) no módulo e liste em `AppModule.ui_components` (ou em `CORE_COMPONENTS`, se genérico).
