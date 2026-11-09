@@ -10,6 +10,7 @@ from google.adk.sessions import DatabaseSessionService
 from app.core import health
 from app.core.config import Settings, get_settings
 from app.core.db import dispose_engine, init_db, init_engine
+from app.core.validation import install_validation_handler
 from app.modules.assistant.workflow import build_app
 from app.modules.records.tools import get_kpis
 from app.registry import MODULES, all_tools, all_ui_components
@@ -44,6 +45,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app = FastAPI(title=settings.app_name, lifespan=lifespan)
     app.state.settings = settings
+    install_validation_handler(app)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,

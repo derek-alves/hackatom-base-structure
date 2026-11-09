@@ -101,18 +101,66 @@ def test_renderer_error_message_is_only_logged(make_client):
     assert [e for e, _ in post(make_client(fake), body)][-1] == "done"
 
 
+JUST_OVER_5MB_B64 = base64.b64encode(b"\0" * 5_000_001).decode()  # under the length cap
+
+
 @pytest.mark.parametrize(
-    "body",
+    ("body", "msg"),
     [
-        {"sessionId": "s1"},
-        {"sessionId": "s1", "attachments": [{"mimeType": "application/pdf", "dataBase64": "AA=="}]},
-        {"sessionId": "s1", "attachments": [{"mimeType": "image/jpeg", "dataBase64": BIG_6MB_B64}]},
-        {"sessionId": "s1", "a2ui": {"messages": [{"version": "1.0", "action": {"name": "x"}}]}},
+        ({"sessionId": "s1"}, "Envie um texto, uma imagem ou uma ação."),
+        ({"text": "oi"}, "Campo obrigatório."),
+        (
+            {
+                "sessionId": "s1",
+                "attachments": [{"mimeType": "application/pdf", "dataBase64": "AA=="}],
+            },
+            "Apenas imagens são aceitas.",
+        ),
+        (
+            {"sessionId": "s1", "attachments": [{"mimeType": "image/png", "dataBase64": "@@"}]},
+            "Anexo em base64 inválido.",
+        ),
+        (
+            {
+                "sessionId": "s1",
+                "attachments": [{"mimeType": "image/jpeg", "dataBase64": BIG_6MB_B64}],
+            },
+            "O anexo excede 5 MB.",
+        ),
+        (
+            {
+                "sessionId": "s1",
+                "attachments": [{"mimeType": "image/jpeg", "dataBase64": JUST_OVER_5MB_B64}],
+            },
+            "O anexo excede 5 MB.",
+        ),
+        (
+            {
+                "sessionId": "s1",
+                "a2ui": {"messages": [{"version": "1.0", "action": {"name": "x"}}]},
+            },
+            "Mensagem A2UI inválida.",
+        ),
     ],
+    ids=["empty", "no_session", "pdf", "bad_base64", "over_cap", "over_5mb", "bad_action"],
 )
-def test_invalid_requests_are_422(client, body):
+def test_invalid_requests_are_422_in_pt_br_without_input(client, body, msg):
     with client:
-        assert client.post("/api/genui/stream", json=body).status_code == 422
+        response = client.post("/api/genui/stream", json=body)
+    assert response.status_code == 422
+    detail = response.json()["detail"]
+    assert [d["msg"] for d in detail] == [msg]
+    assert all(set(d) == {"loc", "msg"} for d in detail)
+    assert "AAAAAAAA" not in response.text  # never echoes the payload back
+
+
+def test_malformed_json_is_422_in_pt_br(client):
+    with client:
+        response = client.post(
+            "/api/genui/stream", content="{", headers={"content-type": "application/json"}
+        )
+    assert response.status_code == 422
+    assert [d["msg"] for d in response.json()["detail"]] == ["JSON inválido."]
 
 
 def test_session_logs_empty_list(client):

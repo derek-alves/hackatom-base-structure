@@ -2,20 +2,31 @@ import base64
 import binascii
 import json
 import logging
-from typing import Any, Self
+from typing import Any, Final, Self
 
 from a2ui.core.schema.v1_0 import A2uiRendererActionMessage
 from fastapi.sse import ServerSentEvent
 from google.adk import Event
 from google.genai import types
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import (
+    BaseModel,
+    ConfigDict,
+    Field,
+    ValidationError,
+    ValidatorFunctionWrapHandler,
+    field_validator,
+    model_validator,
+)
 from pydantic.alias_generators import to_camel
 
 from app.modules.assistant.workflow import A2UI_MESSAGES_KEY, UI_TEXT_KEY
 
 logger = logging.getLogger(__name__)
 
-MAX_ATTACHMENT_BYTES = 5_000_000
+MAX_ATTACHMENT_BYTES: Final[int] = 5_000_000
+# base64 of 5 MB is 6_666_668 chars: longer strings are rejected before decoding.
+MAX_ATTACHMENT_BASE64_CHARS: Final[int] = 6_700_000
+ATTACHMENT_TOO_LARGE: Final[str] = "O anexo excede 5 MB."
 
 
 class _CamelModel(BaseModel):
@@ -24,18 +35,28 @@ class _CamelModel(BaseModel):
 
 class Attachment(_CamelModel):
     mime_type: str
-    data_base64: str
+    data_base64: str = Field(max_length=MAX_ATTACHMENT_BASE64_CHARS)
+
+    @field_validator("data_base64", mode="wrap")
+    @classmethod
+    def _cap_length(cls, value: Any, handler: ValidatorFunctionWrapHandler) -> str:
+        try:
+            return handler(value)
+        except ValidationError as exc:
+            if any(e["type"] == "string_too_long" for e in exc.errors()):
+                raise ValueError(ATTACHMENT_TOO_LARGE) from None
+            raise
 
     @model_validator(mode="after")
     def _check(self) -> Self:
         if not self.mime_type.startswith("image/"):
-            raise ValueError("attachments must be image/*")
+            raise ValueError("Apenas imagens são aceitas.")
         try:
             size = len(base64.b64decode(self.data_base64, validate=True))
         except (binascii.Error, ValueError) as exc:
-            raise ValueError("attachment is not valid base64") from exc
+            raise ValueError("Anexo em base64 inválido.") from exc
         if size > MAX_ATTACHMENT_BYTES:
-            raise ValueError(f"attachment exceeds {MAX_ATTACHMENT_BYTES} bytes")
+            raise ValueError(ATTACHMENT_TOO_LARGE)
         return self
 
     def data(self) -> bytes:
@@ -61,10 +82,13 @@ class GenUiStreamRequest(_CamelModel):
             if "error" in message:
                 logger.warning("renderer reported error: %s", message["error"])
                 continue
-            actions.append(A2uiRendererActionMessage.model_validate(message))
+            try:
+                actions.append(A2uiRendererActionMessage.model_validate(message))
+            except ValidationError:
+                raise ValueError("Mensagem A2UI inválida.") from None
         self.actions = actions
         if not (self.text or "").strip() and not self.attachments and not actions:
-            raise ValueError("request needs text, an attachment or an action")
+            raise ValueError("Envie um texto, uma imagem ou uma ação.")
         return self
 
 
