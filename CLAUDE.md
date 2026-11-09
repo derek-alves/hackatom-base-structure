@@ -75,6 +75,8 @@ ComposerBar → AssistantCubit → GenUiManager → ApiClient (POST SSE)
 
 Caminho de volta: `dispatchAction → onAction → a2ui.messages no POST`.
 
+Com chave do AI Studio, o `ui_agent` entrega o `UiResponse` pela tool `set_model_response` do ADK; os testes cobrem esse caminho (`StudioLlm`) e o nativo (`FakeLlm`). Detalhes em `.claude/rules/backend-adk2.md`.
+
 Rota do stream: `backend/app/modules/assistant/router.py`. Grafo: `backend/app/modules/assistant/workflow.py`. Instrução e few-shots: `backend/app/modules/assistant/agent.py`.
 
 ## Contrato

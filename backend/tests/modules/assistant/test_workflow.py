@@ -25,6 +25,7 @@ from app.modules.assistant.workflow import (
 )
 from tests.fakes import (
     FakeLlm,
+    StudioLlm,
     example_props,
     kpi_response,
     run_and_collect_state,
@@ -79,7 +80,8 @@ async def test_image_part_reaches_llm(db):
 def test_instruction_lists_every_component_with_example():
     text = build_instruction(CORE_COMPONENTS)
     assert all(name in text for name in COMPONENT_MODELS)
-    assert '"summaryKpiCard"' in text
+    assert "campo `summary_kpi_card`" in text
+    assert '{"message": "Veja o resumo abaixo.", "summary_kpi_card": {' in text
     assert "Tarefas concluídas" in text  # few-shot read from contracts/examples
 
 
@@ -92,7 +94,7 @@ def test_instruction_skips_component_without_example_file():
 
     text = build_instruction([*CORE_COMPONENTS, ShippingTrackerCard])
     assert "ShippingTrackerCard" in text
-    assert '"shippingTrackerCard"' not in text
+    assert '"shipping_tracker_card"' not in text
 
 
 def test_ui_agent_config():
@@ -206,3 +208,38 @@ async def test_prepare_input_prepends_history_before_context():
     assert "Widgets exibidos: SummaryKpiCard" in first
     assert second.startswith("Contexto do banco")
     assert third == "e agora?"
+
+
+async def test_studio_path_renders_widget_from_set_model_response(db):
+    approval = example_props("ApprovalConfirmationCard")
+    fake = StudioLlm(
+        responses=[
+            types.Part.from_function_call(name="list_records", args={"status": "todo"}),
+            types.Part.from_function_call(
+                name="set_model_response",
+                args={"message": "Confirme abaixo.", "approval_confirmation_card": approval},
+            ),
+        ]
+    )
+    state = await run_and_collect_state(fake, text="Tenho aprovações?")
+    assert "set_model_response" in fake.requests[0].tools_dict
+    assert fake.requests[0].config.response_schema is None
+    assert state[UI_TEXT_KEY] == "Confirme abaixo."
+    [msg] = state[A2UI_MESSAGES_KEY]
+    root = msg["createSurface"]["components"][0]
+    assert root["component"] == "ApprovalConfirmationCard"
+    assert root["referenceId"] == "REQ-42"
+
+
+@pytest.mark.parametrize("llm_type", [FakeLlm, StudioLlm])
+async def test_prose_reply_becomes_message(db, llm_type):
+    state = await run_and_collect_state(llm_type(responses=["Olá! Como posso ajudar?"]), text="oi")
+    assert state[UI_TEXT_KEY] == "Olá! Como posso ajudar?"
+    assert state[A2UI_MESSAGES_KEY] == []
+
+
+async def test_fenced_json_reply_is_unwrapped(db):
+    fenced = f"```json\n{kpi_response()}\n```"
+    state = await run_and_collect_state(FakeLlm(responses=[fenced]), text="Resumo")
+    surface = state[A2UI_MESSAGES_KEY][0]["createSurface"]
+    assert surface["components"][0]["component"] == "SummaryKpiCard"

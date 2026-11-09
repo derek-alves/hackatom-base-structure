@@ -2,12 +2,14 @@
 
 import json
 import logging
+import re
 from collections.abc import Callable
 from typing import Any, Final
 
 from google.adk import Agent, Context
-from google.adk.models import BaseLlm, LlmRequest
-from pydantic.alias_generators import to_camel, to_snake
+from google.adk.models import BaseLlm, LlmRequest, LlmResponse
+from google.genai import types
+from pydantic.alias_generators import to_snake
 
 from app.core.a2ui.catalog import CONTRACTS_DIR
 from app.core.a2ui.components import ComponentProps, build_ui_response_model
@@ -86,8 +88,12 @@ def _prop_labels(node: dict[str, Any], defs: dict[str, Any]) -> list[str]:
 
 
 def ui_field_name(component: type[ComponentProps]) -> str:
-    """camelCase `UiResponse` field that carries this component."""
-    return to_camel(to_snake(component.COMPONENT_NAME))
+    """snake_case `UiResponse` field that carries this component.
+
+    It is the name `set_model_response` declares (the AI Studio path); validation also
+    accepts the camelCase alias the native response schema uses.
+    """
+    return to_snake(component.COMPONENT_NAME)
 
 
 def _example(component: type[ComponentProps]) -> str | None:
@@ -136,6 +142,43 @@ def log_model_call(callback_context: Context, llm_request: LlmRequest) -> None:
     )
 
 
+_FENCED = re.compile(r"^```[\w-]*\s*(.*?)\s*```$", re.DOTALL)
+
+
+def coerce_prose_reply(callback_context: Context, llm_response: LlmResponse) -> LlmResponse | None:
+    """Turns a final reply that is not a JSON object into `{"message": <text>}`.
+
+    Models sometimes answer in prose (or fence the JSON) instead of filling `UiResponse`;
+    without this the output-schema validation fails and the user only sees a generic error.
+    """
+    content = llm_response.content
+    if llm_response.partial or content is None or not content.parts:
+        return None
+    if any(p.function_call for p in content.parts):
+        return None
+    text = "".join(p.text for p in content.parts if p.text and not p.thought).strip()
+    if not text:
+        return None
+    match = _FENCED.match(text)
+    body = match.group(1) if match else text
+    try:
+        parsed = json.loads(body)
+    except ValueError:
+        parsed = None
+    if isinstance(parsed, dict):
+        if body == text:
+            return None
+        fixed = body
+    else:
+        logger.info("ui_agent replied without JSON; wrapping the text as `message`")
+        fixed = json.dumps({"message": text}, ensure_ascii=False)
+    thoughts = [p for p in content.parts if p.thought]
+    parts = [*thoughts, types.Part.from_text(text=fixed)]
+    return llm_response.model_copy(
+        update={"content": types.Content(role=content.role, parts=parts)}
+    )
+
+
 def build_ui_agent(
     model: str | BaseLlm,
     tools: list[Callable[..., Any]],
@@ -150,4 +193,5 @@ def build_ui_agent(
         output_schema=build_ui_response_model(components),
         output_key=UI_RESPONSE_KEY,
         before_model_callback=log_model_call,
+        after_model_callback=coerce_prose_reply,
     )

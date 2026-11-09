@@ -45,10 +45,19 @@ def test_llm_exception_emits_error_then_done(make_client):
     assert "boom" not in json.dumps(frames)
 
 
-def test_llm_invalid_json_emits_error_then_done(make_client):
-    frames = post(make_client(FakeLlm(responses=["não é json"])), {"sessionId": "s1", "text": "x"})
+def test_llm_out_of_schema_json_emits_error_then_done(make_client):
+    reply = json.dumps({"summaryKpiCard": {"title": "sem message"}})
+    frames = post(make_client(FakeLlm(responses=[reply])), {"sessionId": "s1", "text": "x"})
     assert [e for e, _ in frames][-2:] == ["error", "done"]
-    assert "não é json" not in json.dumps(frames)
+    assert "sem message" not in json.dumps(frames)
+
+
+def test_prose_reply_streams_as_text_without_error(make_client):
+    prose = "Olá! Posso listar, criar ou atualizar seus registros."
+    frames = post(make_client(FakeLlm(responses=[prose])), {"sessionId": "s1", "text": "oi"})
+    events = [e for e, _ in frames]
+    assert "error" not in events
+    assert frames[-2:] == [("text", {"markdown": prose}), ("done", {})]
 
 
 def test_missing_api_key_emits_config_error(client):

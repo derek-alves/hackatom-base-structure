@@ -20,7 +20,11 @@ paths: ["backend/**"]
 - O `ui_agent` é `single_turn` (as imagens dependem disso) e só vê o turno atual. A memória entre turnos é a chave `history` do state (últimos 6 turnos: texto do usuário ou linha `[ui_action] …`, `message` do agente e resumo dos widgets). `prepare_input` a prefixa como "Histórico recente" antes do "Contexto do banco"; `render_a2ui` acrescenta o turno.
 - UI só via `UiResponse` → `build_surface_messages` → `validate_payload`. O LLM nunca escreve A2UI, e `a2ui-adk` não é usado.
 - Componente novo exige: modelo Pydantic (`ComponentProps` com `COMPONENT_NAME`), fixture em `contracts/examples/`, `uv run python -m app.export_catalog` e testes. Passo a passo em `/add-genui-widget`.
-- Testes usam `FakeLlm` (`tests/fakes.py`) com `capabilities.output_schema_and_tools=True`. Nunca chamam Gemini real, exceto `-m e2e`.
+- Saída estruturada com chave do AI Studio: o ADK reporta `output_schema_and_tools=False` e troca o `output_schema` pela tool `set_model_response`. Ela declara os campos do topo do `UiResponse` em snake_case (`summary_kpi_card`) e as props dos widgets em camelCase. O prompt e os few-shots de `agent.py` usam esses nomes; a validação aceita snake_case e camelCase.
+- Resposta final em prosa (ou JSON entre cercas ```` ``` ````) é normalizada por `coerce_prose_reply` (`after_model_callback`) para `{"message": ...}`, e o usuário recebe o texto em vez de erro.
+- Testes usam os fakes de `tests/fakes.py` e nunca chamam Gemini real, exceto `-m e2e`:
+  - `FakeLlm`: caminho nativo (`output_schema_and_tools=True`), resposta JSON em texto.
+  - `StudioLlm`: caminho do AI Studio (`False`), resposta via `Part.from_function_call(name="set_model_response", args={...})`.
 - SSE com `fastapi.sse` (`EventSourceResponse`). Sempre termina em `done`, e o stack nunca vaza para o cliente.
 - Versões: `google-adk>=2.14,<3`, `google-genai<3` (limite do ADK), A2UI `"1.0"`.
 - Lint antes de concluir: `uv run ruff check . && uv run ruff format --check .`.

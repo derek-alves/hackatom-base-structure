@@ -55,12 +55,22 @@ class FakeLlm(BaseLlm):
         )
 
 
+class StudioLlm(FakeLlm):
+    """FakeLlm on the AI Studio path: no output_schema with tools, so ADK adds `set_model_response`."""
+
+    model: str = "fake-studio-llm"
+
+    @property
+    def capabilities(self) -> LlmCapabilities:
+        return LlmCapabilities(output_schema_and_tools=False)
+
+
 def example_props(component: str) -> dict[str, Any]:
     return json.loads((CONTRACTS_DIR / "examples" / f"{component}.json").read_text())
 
 
 def ui_json(**fields: Any) -> str:
-    """UiResponse JSON as the LLM would emit it (camelCase widget fields)."""
+    """UiResponse JSON as the native path emits it (camelCase widget fields, as its schema)."""
     return json.dumps(fields)
 
 
