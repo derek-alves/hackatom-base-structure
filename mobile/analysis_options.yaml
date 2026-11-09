@@ -5,3 +5,10 @@ analyzer:
     - build/**
     - android/**
     - ios/**
+
+linter:
+  rules:
+    prefer_const_constructors: true
+    always_declare_return_types: true
+    avoid_print: true
+    require_trailing_commas: true
