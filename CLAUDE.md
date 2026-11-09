@@ -104,5 +104,6 @@ Detalhes em `contracts/README.md` (componentes, ações, SSE). As 3 fontes mudam
 - Emulador Android acessa o host em `10.0.2.2`: `--dart-define=API_BASE_URL=http://10.0.2.2:8000`.
 - Device físico: backend com `--host 0.0.0.0` e `--dart-define=API_BASE_URL=http://<ip-da-máquina>:8000`.
 - Sem `GEMINI_API_KEY` (em `backend/.env`, modelo em `backend/.env.example`), o stream emite `error` e depois `done`.
+- Front web local bloqueado por CORS: o padrão é `CORS_ORIGINS=[]` (o app nativo não precisa). Libere a origem em `backend/.env` com `CORS_ORIGINS='["http://localhost:5173"]'`.
 - Componente não aparece: ver o log de `surface.onError` (`UNKNOWN_COMPONENT_TYPE`). O `a2ui_flutter` 0.1 não tem fallback próprio.
 - `test_catalog_json_is_up_to_date` falha: rodar `uv run python -m app.export_catalog`.
