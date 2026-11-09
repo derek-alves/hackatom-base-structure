@@ -1,7 +1,9 @@
 from pathlib import Path
 
 import pytest
+from pydantic import SecretStr
 
+from app.core.config import Settings
 from tests.conftest import resolve_gemini_key
 
 
@@ -26,3 +28,8 @@ def test_gemini_key_environment_wins(env_file: Path, monkeypatch: pytest.MonkeyP
 def test_gemini_key_missing_or_blank_is_none(env_file: Path, content: str):
     env_file.write_text(content)
     assert resolve_gemini_key(env_file) is None
+
+
+@pytest.mark.parametrize("key", ["", "   ", SecretStr("")])
+def test_blank_gemini_key_counts_as_missing(key):
+    assert Settings(_env_file=None, gemini_api_key=key).gemini_api_key is None

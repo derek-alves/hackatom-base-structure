@@ -4,6 +4,7 @@ import json
 import pytest
 
 from app.core.a2ui.catalog import APP_CATALOG_ID
+from app.core.config import Settings
 from tests.conftest import parse_sse
 from tests.fakes import FakeLlm, kpi_response
 
@@ -62,6 +63,18 @@ def test_prose_reply_streams_as_text_without_error(make_client):
 
 def test_missing_api_key_emits_config_error(client):
     with client:
+        frames = post(client, {"sessionId": "s1", "text": "x"})
+    assert [e for e, _ in frames] == ["status", "error", "done"]
+    assert "GEMINI_API_KEY" in frames[1][1]["message"]
+
+
+def test_blank_api_key_emits_config_error(settings):
+    from fastapi.testclient import TestClient
+
+    from app.main import create_app
+
+    blank = Settings(_env_file=None, gemini_api_key="", database_url=settings.database_url)
+    with TestClient(create_app(blank)) as client:
         frames = post(client, {"sessionId": "s1", "text": "x"})
     assert [e for e, _ in frames] == ["status", "error", "done"]
     assert "GEMINI_API_KEY" in frames[1][1]["message"]

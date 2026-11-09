@@ -46,7 +46,7 @@ async def genui_stream(
     yield _frame("status", {"label": "Processando..."})
     try:
         settings = request.app.state.settings
-        if isinstance(settings.gemini_model, str) and settings.gemini_api_key is None:
+        if settings.gemini_api_key is None:
             yield _frame("error", {"message": NO_KEY_MESSAGE})
         else:
             if body.text and body.text.strip():
