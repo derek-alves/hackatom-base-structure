@@ -101,6 +101,16 @@ void main() {
     expect(result.errors.single, contains('color/primry'));
   });
 
+  test('map key absent from the export fails naming the key', () {
+    final result = _build(_kit, mapping: 'map:\n  space/03: spacing/md\n');
+
+    expect(result.ok, isFalse);
+    expect(
+      result.errors.single,
+      'Chave do map ausente no export: space/03 → spacing/md',
+    );
+  });
+
   test('defaults name outside the contract fails naming it', () {
     final result = _build(_kit, mapping: 'defaults: [color/tertiry]');
 

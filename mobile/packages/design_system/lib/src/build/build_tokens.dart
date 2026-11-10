@@ -55,6 +55,11 @@ TokenBuildResult buildTokens({
       light.addAll(tokens);
     }
   }
+  for (final MapEntry(key: figma, value: kit) in mapping.map.entries) {
+    if (!light.containsKey(figma) && !darkOnly.containsKey(figma)) {
+      errors.add('Chave do map ausente no export: $figma → $kit');
+    }
+  }
   final modes = {
     'light': light,
     if (hasDark) 'dark': {...light, ...darkOnly},
