@@ -34,3 +34,4 @@ migrate_working_dir/
 **/goldens/macos/
 **/goldens/linux/
 **/goldens/windows/
+**/failures/
