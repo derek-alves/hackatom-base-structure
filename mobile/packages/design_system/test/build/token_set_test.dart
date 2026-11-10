@@ -3,15 +3,18 @@ import 'package:design_system/src/build/build_tokens.dart';
 import 'package:design_system/src/build/token_files.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-void main() {
-  final kit = readTokenInputs('.');
-  final result = buildTokens(
-    figmaFiles: kit.figmaFiles,
-    mappingYaml: kit.mappingYaml,
-    contractFiles: kit.contractFiles,
-  );
+import '../helpers/kit_contract.dart';
 
-  test('TokenSet.fromResolvedJson round-trips the kit contract', () {
+void main() {
+  final result = buildKitContract();
+
+  test('TokenSet.fromResolvedJson round-trips the generated tokens', () {
+    final kit = readTokenInputs('.');
+    final result = buildTokens(
+      figmaFiles: kit.figmaFiles,
+      mappingYaml: kit.mappingYaml,
+      contractFiles: kit.contractFiles,
+    );
     expect(
       TokenSet.fromResolvedJson(result.resolved['light']!),
       kitLightTokens,

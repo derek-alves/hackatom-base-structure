@@ -2,7 +2,10 @@ import 'package:design_system/src/build/build_tokens.dart';
 import 'package:design_system/src/build/token_files.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../helpers/kit_contract.dart';
+
 void main() {
+  final kit = kitContractInputs();
   final inputs = readTokenInputs('.');
   final result = buildTokens(
     figmaFiles: inputs.figmaFiles,
@@ -27,11 +30,9 @@ void main() {
 
   test('a leftover dark resolved file is stale when there is no dark mode', () {
     final lightOnly = buildTokens(
-      figmaFiles: {
-        'light.tokens.json': inputs.figmaFiles['light.tokens.json']!,
-      },
-      mappingYaml: inputs.mappingYaml,
-      contractFiles: inputs.contractFiles,
+      figmaFiles: {'light.tokens.json': kit.figmaFiles['light.tokens.json']!},
+      mappingYaml: '',
+      contractFiles: kit.contractFiles,
     );
     final files = generatedFiles(lightOnly);
     final onDisk = {...files, resolvedPath('dark'): '{}\n'};

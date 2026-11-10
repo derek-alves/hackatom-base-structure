@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:material_ui/material_ui.dart';
 
 import '../helpers/ds_harness.dart';
+import '../helpers/kit_contract.dart';
 
 void main() {
   test('light maps core colors from kitLightTokens', () {
@@ -21,18 +22,30 @@ void main() {
   test('derived roles come from fromSeed when token is null', () {
     final c = kitLightTokens.colors;
     expect(c.primaryContainer, isNull);
+    final contract = kitContractTokens();
+    expect(contract.colors.primaryContainer, isNull);
     expect(
-      AppTheme.light().colorScheme.primaryContainer,
-      ColorScheme.fromSeed(seedColor: c.primary).primaryContainer,
+      AppTheme.fromTokens(
+        contract,
+        Brightness.light,
+      ).colorScheme.primaryContainer,
+      ColorScheme.fromSeed(seedColor: contract.colors.primary).primaryContainer,
     );
   });
 
   test('text theme uses the token scale', () {
     final title = AppTheme.light().textTheme.titleLarge!;
     final token = kitLightTokens.type.titleLg;
+    expect(title.fontSize, token.size);
+    expect(title.fontWeight, FontWeight.values[token.weight ~/ 100 - 1]);
+    expect(title.height, token.lineHeight / token.size);
+  });
+
+  test('kit contract scale: titleLarge is 22 / w600', () {
+    final theme = AppTheme.fromTokens(kitContractTokens(), Brightness.light);
+    final title = theme.textTheme.titleLarge!;
     expect(title.fontSize, 22);
     expect(title.fontWeight, FontWeight.w600);
-    expect(title.height, token.lineHeight / token.size);
   });
 
   test('AppTokens extension is registered with spacing/radius/size', () {
@@ -74,7 +87,12 @@ void main() {
     );
     expect(
       alt.colorScheme.primary,
-      isNot(AppTheme.light().colorScheme.primary),
+      isNot(
+        AppTheme.fromTokens(
+          kitContractTokens(),
+          Brightness.light,
+        ).colorScheme.primary,
+      ),
     );
   });
 

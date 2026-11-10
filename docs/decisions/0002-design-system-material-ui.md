@@ -120,4 +120,6 @@ Caminhos alterados (`git status --porcelain` durante a demo):
 
 Conclusão: nenhum `.dart` além de `tokens.g.dart` mudou, e os goldens de componente mudaram. O rebrand é só dados.
 
-Observação: durante a demo, 13 testes do pacote falharam. São testes que fixam valores da marca atual (por exemplo `#1F4E79`) ou leem `tokens/figma` real, e o teste que compara com a alt-brand (a marca ativa já era a alt-brand). Isso é esperado e não é código de produto. Tudo restaurado com `git checkout -- tokens lib/src/tokens test` e `git clean -f -- tokens/figma`.
+Resultado dos testes: com a alt-brand ativa, `fvm flutter test` do pacote passa inteiro (114 testes), sem `--update-goldens` na segunda rodada. Os testes do contrato do kit leem `tokens/contract/` com mapping vazio (`test/helpers/kit_contract.dart`), o teste de drift compara a saída do gerador para as entradas atuais com os arquivos em disco, e os demais comparam com `kitLightTokens` em vez de literais. Só os goldens mudam num rebrand.
+
+Restauração: `git checkout -- tokens lib/src/tokens test/components/goldens test/loading/goldens` e `git clean -f -- tokens/figma`, seguido de `--update-goldens` para os goldens de plataforma (ignorados pelo git).

@@ -6,7 +6,9 @@ import 'package:design_system/src/build/dart_emitter.dart';
 import 'package:design_system/src/build/token_files.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-final _kit = readTokenInputs('.');
+import '../helpers/kit_contract.dart';
+
+final _kit = kitContractInputs();
 final _altBrand = readTokenInputs('.', source: 'tokens/examples/alt-brand');
 
 TokenInputs _fixture(String name) =>
