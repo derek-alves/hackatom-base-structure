@@ -17,7 +17,8 @@ Pasta do pacote: `mobile/packages/design_system/` (abreviada `PKG`).
    - Peça o export (um JSON por coleção e modo; ver "Como exportar do Figma" no `token-contract.md`) e salve em `PKG/tokens/figma/`.
    - Modo pelo nome do arquivo: `dark` ou `escuro` no nome (qualquer caixa) é o modo escuro; todo o resto é light. Renomeie o arquivo do modo escuro se o nome não tiver nenhum dos dois (ex.: `Colors.Noite.tokens.json` → `Colors.Dark.tokens.json`).
    - Sem export e projeto só light, puxe via MCP `get_variable_defs` do `<url-do-figma>`. AVISO: essa chamada só traz o modo padrão e a seleção atual, nunca light e dark juntos. Diga isso à pessoa e marque o projeto como sem dark.
-   - Projeto sem dark: apague `PKG/tokens/contract/dark.tokens.json` só se a pessoa confirmar, e avise que as grades dark dos goldens e do Widgetbook são puladas.
+   - Projeto sem dark: em `PKG/tokens/figma/` fica só o export light (nenhum arquivo com `dark` ou `escuro` no nome). O build gera `kitDarkTokens = null`, apaga `PKG/tokens/resolved/dark.tokens.json` e o app fica só no tema claro. Confirme com a pessoa e avise que as grades dark dos goldens e do Widgetbook são puladas.
+   - Nunca apague `PKG/tokens/contract/` (nem o `dark.tokens.json` de lá): é o padrão do kit e os testes do pacote o usam.
 2. Mapeamento: compare os nomes do Figma com o contrato e preencha `PKG/tokens/mapping.yaml`:
    - `map:` `nome/no/figma: grupo/token-do-kit` (alvo fora do contrato faz o build falhar citando a chave).
    - `defaults:` os tokens obrigatórios sem equivalente no Figma (recebem o valor padrão do kit).

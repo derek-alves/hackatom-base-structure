@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:design_system/design_system.dart';
 import 'package:design_system/src/build/build_tokens.dart';
 import 'package:design_system/src/build/token_files.dart';
@@ -62,6 +64,47 @@ void main() {
     final tokens = theme.extension<AppTokens>()!;
     expect(tokens.skeleton.base, theme.colorScheme.surfaceContainerHighest);
     expect(tokens.skeleton.highlight, theme.colorScheme.surfaceContainerLow);
+  });
+
+  test('light-only project: one light export and the full contract build '
+      'with no dark mode', () {
+    final root = Directory.systemTemp.createTempSync('light_only_');
+    addTearDown(() => root.deleteSync(recursive: true));
+    // The contract keeps both modes (kit defaults); only figma/ decides dark.
+    for (final mode in ['light', 'dark']) {
+      File('tokens/contract/$mode.tokens.json').copySync(
+        (File(
+          '${root.path}/tokens/contract/$mode.tokens.json',
+        )..createSync(recursive: true)).path,
+      );
+    }
+    File('${root.path}/tokens/figma/Colors.Light.tokens.json')
+      ..createSync(recursive: true)
+      ..writeAsStringSync(kitContractInputs().figmaFiles['light.tokens.json']!);
+
+    final inputs = readTokenInputs(root.path);
+    final result = buildTokens(
+      figmaFiles: inputs.figmaFiles,
+      mappingYaml: inputs.mappingYaml,
+      contractFiles: inputs.contractFiles,
+    );
+    writeGeneratedFiles(root.path, generatedFiles(result));
+
+    expect(inputs.contractFiles.keys, containsAll(['light', 'dark']));
+    expect(result.errors, isEmpty);
+    expect(result.resolved.keys, ['light']);
+    expect(File('${root.path}/${resolvedPath('light')}').existsSync(), isTrue);
+    expect(File('${root.path}/${resolvedPath('dark')}').existsSync(), isFalse);
+    expect(
+      File('${root.path}/$generatedDartPath').readAsStringSync(),
+      contains('const TokenSet? kitDarkTokens = null;'),
+    );
+    expect(AppTheme.themeModeFor(null), ThemeMode.light);
+    final light = AppTheme.fromTokens(
+      TokenSet.fromResolvedJson(result.resolved['light']!),
+      Brightness.light,
+    );
+    expect(light.colorScheme.primary, kitContractTokens().colors.primary);
   });
 
   test('dark() is null and themeMode is light when kitDarkTokens is null', () {

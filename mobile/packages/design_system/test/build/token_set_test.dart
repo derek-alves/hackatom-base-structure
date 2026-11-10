@@ -19,7 +19,12 @@ void main() {
       TokenSet.fromResolvedJson(result.resolved['light']!),
       kitLightTokens,
     );
-    expect(TokenSet.fromResolvedJson(result.resolved['dark']!), kitDarkTokens);
+    // A light-only project has no dark export, and then kitDarkTokens is null.
+    final dark = result.resolved['dark'];
+    expect(
+      dark == null ? null : TokenSet.fromResolvedJson(dark),
+      kitDarkTokens,
+    );
   });
 
   test('fromResolvedJson reads every group', () {
