@@ -1,3 +1,4 @@
+import 'package:alchemist/alchemist.dart' show pumpNTimes;
 import 'package:design_system/design_system.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -20,6 +21,19 @@ void main() {
             children: [AppSkeleton.line(), AppSkeleton.box(height: 32)],
           ),
         ),
+      ),
+    },
+  );
+  // Shimmer on, frozen mid-sweep: the card frame must stay transparent so
+  // the bones still show (Shimmer paints over every opaque pixel).
+  dsGoldenTest(
+    'loading_shimmer',
+    columns: 1,
+    pumpBeforeTest: pumpNTimes(1, const Duration(milliseconds: 750)),
+    scenarios: {
+      'card skeleton': const SizedBox(
+        width: 280,
+        child: AppShimmer(child: AppCard.skeleton(hasActions: true)),
       ),
     },
   );

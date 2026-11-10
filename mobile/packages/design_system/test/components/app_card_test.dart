@@ -80,6 +80,32 @@ void main() {
     expect(filledMaterial.color, scheme.surfaceContainerHighest);
   });
 
+  testWidgets('card skeleton is a transparent outlined frame, so a shimmer '
+      'over it only paints the bones and the outline', (t) async {
+    await pumpDs(t, const AppCard.skeleton());
+    final context = t.element(find.byType(Card));
+    final scheme = Theme.of(context).colorScheme;
+    final shape = t.widget<Card>(find.byType(Card)).shape!;
+    final surface = t
+        .widgetList<Material>(
+          find.descendant(
+            of: find.byType(Card),
+            matching: find.byType(Material),
+          ),
+        )
+        .first;
+
+    expect(
+      shape,
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(context.tokens.radius.md),
+        side: BorderSide(color: scheme.outlineVariant),
+      ),
+    );
+    expect(surface.color?.a, 0);
+    expect(surface.elevation, 0);
+  });
+
   testWidgets('card skeleton renders 1 title line + `lines` body lines', (
     t,
   ) async {

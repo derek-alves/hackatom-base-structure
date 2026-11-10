@@ -76,7 +76,15 @@ class AppCard extends StatelessWidget {
     final pad = padding ?? EdgeInsets.all(tokens.spacing.md);
 
     if (_variant == _Variant.skeleton) {
-      return Card(
+      // Transparent frame: AppShimmer paints over every opaque pixel, so a
+      // filled card would turn into one shimmering block and hide the bones.
+      return Card.outlined(
+        color: Colors.transparent,
+        elevation: 0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(tokens.radius.md),
+          side: BorderSide(color: theme.colorScheme.outlineVariant),
+        ),
         child: Padding(
           padding: pad,
           child: Column(
