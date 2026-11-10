@@ -48,8 +48,13 @@ class AppTextField extends StatelessWidget {
        onSelectChanged = null,
        hasLabel = true;
 
-  /// Decimal field: accepts comma or dot and emits a [num] (null when empty or
-  /// invalid). Non-empty text that is not a number fails with
+  /// Decimal field: emits a finite [num] (null when empty or invalid).
+  ///
+  /// Accepts an optional leading `-` and either pt-BR (`1.000`, `1.000,50`,
+  /// `12,5`: dots group thousands, comma marks decimals) or plain digits with
+  /// an optional dot decimal (`1.5`, `12.5`). A dot followed by groups of
+  /// exactly 3 digits is a thousands separator, so `1.500` is 1500. Anything
+  /// else (`NaN`, `Infinity`, hex, exponent, inner spaces) fails with
   /// [invalidMessage] before [validator] runs.
   const AppTextField.number({
     super.key,
@@ -329,7 +334,27 @@ class AppTextField extends StatelessWidget {
     }
   }
 
-  static num? _parse(String v) => num.tryParse(v.trim().replaceAll(',', '.'));
+  // pt-BR: dots group thousands (1.000,50) or a comma marks decimals (12,5).
+  static final _brNumber = RegExp(r'^(\d{1,3}(\.\d{3})+(,\d+)?|\d+,\d+)$');
+  // Plain digits, or a dot decimal that is not a thousands group (1.5, 12.5).
+  static final _plainNumber = RegExp(r'^\d+(\.\d+)?$');
+
+  /// Parses [v] as a finite number, or null. See [AppTextField.number].
+  static num? _parse(String v) {
+    final text = v.trim();
+    final negative = text.startsWith('-');
+    final digits = negative ? text.substring(1) : text;
+    final String normalized;
+    if (_brNumber.hasMatch(digits)) {
+      normalized = digits.replaceAll('.', '').replaceAll(',', '.');
+    } else if (_plainNumber.hasMatch(digits)) {
+      normalized = digits;
+    } else {
+      return null;
+    }
+    final value = num.tryParse('${negative ? '-' : ''}$normalized');
+    return value != null && value.isFinite ? value : null;
+  }
 }
 
 String _format(DateTime d) =>

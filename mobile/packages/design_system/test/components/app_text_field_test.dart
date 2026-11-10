@@ -66,6 +66,60 @@ void main() {
     expect(find.text('Informe um número válido'), findsOneWidget);
   });
 
+  testWidgets('number: pt-BR thousands and decimals; anything else invalid', (
+    t,
+  ) async {
+    final key = GlobalKey<FormState>();
+    final emitted = <num?>[];
+    await pumpDs(
+      t,
+      Form(
+        key: key,
+        child: AppTextField.number(label: 'Valor', onChanged: emitted.add),
+      ),
+    );
+    const valid = <String, num>{
+      '1.000': 1000,
+      '1.500': 1500, // dots in groups of 3 are thousands
+      '1.000,50': 1000.5,
+      '12.345.678': 12345678,
+      '12,5': 12.5,
+      '0,75': 0.75,
+      '1.5': 1.5,
+      '12.5': 12.5,
+      '1234.567': 1234.567,
+      '42': 42,
+      '-1.000,50': -1000.5,
+      '-3,5': -3.5,
+      ' 7,25 ': 7.25,
+    };
+    for (final MapEntry(key: text, value: expected) in valid.entries) {
+      await t.enterText(find.byType(TextFormField), text);
+      expect(emitted.last, expected, reason: text);
+      expect(key.currentState!.validate(), isTrue, reason: text);
+    }
+    const invalid = [
+      'NaN',
+      'Infinity',
+      '-Infinity',
+      '0x1F',
+      '1e5',
+      '1 000',
+      '1,000.50',
+      '1.000.5',
+      '1,5,0',
+      '+5',
+      '-',
+      '.5',
+      '5.',
+    ];
+    for (final text in invalid) {
+      await t.enterText(find.byType(TextFormField), text);
+      expect(emitted.last, isNull, reason: text);
+      expect(key.currentState!.validate(), isFalse, reason: text);
+    }
+  });
+
   testWidgets('number: user validator runs after the number check', (t) async {
     final key = GlobalKey<FormState>();
     await pumpDs(
