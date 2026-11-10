@@ -314,6 +314,8 @@ class AppTextField extends StatelessWidget {
         );
       case _Kind.select:
         return DropdownButtonFormField<String>(
+          // initialValue is not re-synced by the form field; re-key on change.
+          key: ValueKey(selectValue),
           initialValue: selectValue,
           items: [
             for (final o in options!)
@@ -387,7 +389,8 @@ class _DateFieldState extends State<_DateField> {
   }
 
   DateTime _initial() {
-    final base = _value ?? DateTime.now();
+    final v = _value ?? DateTime.now();
+    final base = DateTime(v.year, v.month, v.day);
     if (base.isBefore(widget.firstDate)) return widget.firstDate;
     if (base.isAfter(widget.lastDate)) return widget.lastDate;
     return base;

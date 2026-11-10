@@ -50,7 +50,9 @@ class _CupertinoDateSheet extends StatefulWidget {
 }
 
 class _CupertinoDateSheetState extends State<_CupertinoDateSheet> {
-  late DateTime _selected = widget.initialDate;
+  late DateTime _selected = _dateOnly(widget.initialDate);
+
+  static DateTime _dateOnly(DateTime d) => DateTime(d.year, d.month, d.day);
 
   @override
   Widget build(BuildContext context) {
@@ -93,7 +95,7 @@ class _CupertinoDateSheetState extends State<_CupertinoDateSheet> {
                       initialDateTime: widget.initialDate,
                       minimumDate: widget.firstDate,
                       maximumDate: widget.lastDate,
-                      onDateTimeChanged: (d) => _selected = d,
+                      onDateTimeChanged: (d) => _selected = _dateOnly(d),
                     ),
                   ),
                 ],

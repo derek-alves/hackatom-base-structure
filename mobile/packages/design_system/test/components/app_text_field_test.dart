@@ -158,6 +158,30 @@ void main() {
     expect(find.byType(CupertinoDatePicker), findsNothing);
   });
 
+  testWidgets('date: iOS with null value confirms a date-only DateTime', (
+    t,
+  ) async {
+    DateTime? picked;
+    await pumpDs(
+      t,
+      Builder(
+        builder: (context) => Theme(
+          data: Theme.of(context).copyWith(platform: TargetPlatform.iOS),
+          child: AppTextField.date(onChanged: (d) => picked = d),
+        ),
+      ),
+    );
+    await t.tap(find.byType(TextFormField));
+    await t.pumpAndSettle();
+    await t.tap(find.text('Confirmar'));
+    await t.pumpAndSettle();
+    expect(picked, isNotNull);
+    expect(
+      [picked!.hour, picked!.minute, picked!.second, picked!.millisecond],
+      [0, 0, 0, 0],
+    );
+  });
+
   testWidgets('date: Cancelar on iOS returns null and does not emit', (
     t,
   ) async {
@@ -207,6 +231,29 @@ void main() {
     await t.tap(find.text('Dois'));
     await t.pumpAndSettle();
     expect(chosen, 'Dois');
+  });
+
+  testWidgets('select: shows the new option when value changes', (t) async {
+    String? value = 'Um';
+    late StateSetter set;
+    await pumpDs(
+      t,
+      StatefulBuilder(
+        builder: (context, setState) {
+          set = setState;
+          return AppTextField.select(
+            options: const ['Um', 'Dois'],
+            value: value,
+            onChanged: (_) {},
+          );
+        },
+      ),
+    );
+    expect(find.text('Um'), findsOneWidget);
+    set(() => value = 'Dois');
+    await t.pumpAndSettle();
+    expect(find.text('Dois'), findsOneWidget);
+    expect(find.text('Um'), findsNothing);
   });
 
   testWidgets('select: required validator fires when nothing is chosen', (
