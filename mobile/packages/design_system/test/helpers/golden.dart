@@ -21,6 +21,8 @@ void dsGoldenTest(
     goldenTest(
       '$name ${entry.key}',
       fileName: '${name}_${entry.key}',
+      // Infinite animations (spinners) would never settle.
+      pumpBeforeTest: pumpOnce,
       builder: () => Theme(
         data: theme,
         child: MaterialUiCompatibilityBridge(

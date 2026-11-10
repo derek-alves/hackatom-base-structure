@@ -11,11 +11,56 @@
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 
+import 'package:design_system_widgetbook/use_cases/app_button.dart'
+    as _design_system_widgetbook_use_cases_app_button;
 import 'package:design_system_widgetbook/use_cases/loading.dart'
     as _design_system_widgetbook_use_cases_loading;
 import 'package:widgetbook/widgetbook.dart' as _widgetbook;
 
 final directories = <_widgetbook.WidgetbookNode>[
+  _widgetbook.WidgetbookFolder(
+    name: 'components',
+    children: [
+      _widgetbook.WidgetbookComponent(
+        name: 'AppButton',
+        useCases: [
+          _widgetbook.WidgetbookUseCase(
+            name: 'destructive',
+            builder: _design_system_widgetbook_use_cases_app_button
+                .buttonDestructive,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'primary',
+            builder:
+                _design_system_widgetbook_use_cases_app_button.buttonPrimary,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'secondary',
+            builder:
+                _design_system_widgetbook_use_cases_app_button.buttonSecondary,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'sizes',
+            builder: _design_system_widgetbook_use_cases_app_button.buttonSizes,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'skeleton',
+            builder:
+                _design_system_widgetbook_use_cases_app_button.buttonSkeleton,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'tertiary',
+            builder:
+                _design_system_widgetbook_use_cases_app_button.buttonTertiary,
+          ),
+          _widgetbook.WidgetbookUseCase(
+            name: 'with icons',
+            builder: _design_system_widgetbook_use_cases_app_button.buttonIcons,
+          ),
+        ],
+      ),
+    ],
+  ),
   _widgetbook.WidgetbookFolder(
     name: 'loading',
     children: [

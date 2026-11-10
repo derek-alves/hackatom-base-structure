@@ -19,6 +19,10 @@ void main() {
     expect(names, contains('AppShimmer'));
   });
 
+  test('catalog lists the AppButton use cases', () {
+    expect(_componentNames(directories), contains('AppButton'));
+  });
+
   testWidgets('catalog boots with the kit theme', (tester) async {
     await tester.pumpWidget(const WidgetbookApp());
     await tester.pump();

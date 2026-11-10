@@ -3,6 +3,7 @@ import 'package:material_ui/material_ui.dart';
 import '../tokens/token_set.dart';
 import '../tokens/tokens.g.dart';
 import 'app_tokens.dart';
+import 'components/button_theme.dart';
 
 /// Builds [ThemeData] from the kit tokens.
 abstract final class AppTheme {
@@ -59,6 +60,7 @@ abstract final class AppTheme {
           shadow: c.shadow,
         );
     final family = tokens.type.family;
+    final text = _textTheme(tokens.type);
     final shape = RoundedRectangleBorder(
       borderRadius: BorderRadius.circular(tokens.radius.md),
     );
@@ -66,11 +68,11 @@ abstract final class AppTheme {
       useMaterial3: true,
       colorScheme: scheme,
       fontFamily: family == null ? null : 'packages/design_system/$family',
-      textTheme: _textTheme(tokens.type),
+      textTheme: text,
       cardTheme: CardThemeData(shape: shape),
-      filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(shape: shape),
-      ),
+      filledButtonTheme: AppButtonTheme.filled(tokens, text),
+      outlinedButtonTheme: AppButtonTheme.outlined(tokens, text),
+      textButtonTheme: AppButtonTheme.text(tokens, text),
       inputDecorationTheme: InputDecorationTheme(
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(tokens.radius.md),
