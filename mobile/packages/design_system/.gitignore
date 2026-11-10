@@ -29,3 +29,8 @@ migrate_working_dir/
 .flutter-plugins-dependencies
 /build/
 /coverage/
+
+# Platform goldens (only CI goldens are versioned)
+**/goldens/macos/
+**/goldens/linux/
+**/goldens/windows/
