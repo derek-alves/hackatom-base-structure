@@ -1,3 +1,4 @@
+import 'package:alchemist/alchemist.dart';
 import 'package:design_system/design_system.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -43,5 +44,6 @@ void main() {
   for (final size in AppSize.values) {
     scenarios['skeleton ${size.name}'] = AppButton.skeleton(size: size);
   }
-  dsGoldenTest('app_button', scenarios: scenarios);
+  // The loading spinner animates forever, so pumpAndSettle would time out.
+  dsGoldenTest('app_button', scenarios: scenarios, pumpBeforeTest: pumpOnce);
 }

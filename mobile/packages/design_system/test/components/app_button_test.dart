@@ -107,4 +107,30 @@ void main() {
     );
     expect(t.takeException(), isNull);
   });
+
+  testWidgets('semantics: loading is a disabled labeled button', (t) async {
+    final handle = t.ensureSemantics();
+    await pumpDs(
+      t,
+      AppButton.primary(label: 'Salvar', onPressed: () {}, isLoading: true),
+    );
+    expect(
+      t.getSemantics(find.byType(AppButton)),
+      matchesSemantics(label: 'Salvar', isButton: true, hasEnabledState: true),
+    );
+    await pumpDs(t, AppButton.primary(label: 'Salvar', onPressed: () {}));
+    expect(
+      t.getSemantics(find.byType(FilledButton)),
+      matchesSemantics(
+        label: 'Salvar',
+        isButton: true,
+        hasEnabledState: true,
+        isEnabled: true,
+        isFocusable: true,
+        hasTapAction: true,
+        hasFocusAction: true,
+      ),
+    );
+    handle.dispose();
+  });
 }

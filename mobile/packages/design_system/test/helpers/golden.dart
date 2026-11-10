@@ -10,6 +10,7 @@ void dsGoldenTest(
   String name, {
   required Map<String, Widget> scenarios,
   int columns = 3,
+  PumpAction pumpBeforeTest = onlyPumpAndSettle,
 }) {
   final themes = <String, ThemeData?>{
     'light': AppTheme.light(),
@@ -21,8 +22,7 @@ void dsGoldenTest(
     goldenTest(
       '$name ${entry.key}',
       fileName: '${name}_${entry.key}',
-      // Infinite animations (spinners) would never settle.
-      pumpBeforeTest: pumpOnce,
+      pumpBeforeTest: pumpBeforeTest,
       builder: () => Theme(
         data: theme,
         child: MaterialUiCompatibilityBridge(

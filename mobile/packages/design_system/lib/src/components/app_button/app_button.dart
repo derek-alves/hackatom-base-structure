@@ -1,8 +1,8 @@
 import 'package:material_ui/material_ui.dart';
 
-import '../loading/app_skeleton.dart';
-import '../theme/app_tokens.dart';
-import 'app_size.dart';
+import '../../loading/app_skeleton.dart';
+import '../../theme/app_tokens.dart';
+import '../app_size.dart';
 
 enum _Variant { primary, secondary, tertiary, destructive, skeleton }
 
@@ -12,7 +12,14 @@ enum _Variant { primary, secondary, tertiary, destructive, skeleton }
 /// While [isLoading] the label stays laid out (invisible) to keep the width,
 /// a spinner replaces it and taps are ignored. The button keeps its enabled
 /// colors: it is an enabled button wrapped in [IgnorePointer]/[ExcludeFocus],
-/// not a disabled one.
+/// not a disabled one. Screen readers get a single disabled button node
+/// labeled with [label].
+///
+/// Tap targets: the button uses `MaterialTapTargetSize.shrinkWrap`, so its
+/// height equals `tokens.size.controlSm/Md/Lg` (the Figma contract). `sm` (32)
+/// and `md` (40) are below the 48dp recommended tap target. Projects that need
+/// 48dp should set the `size/control-*` tokens to at least 48 or wrap the
+/// button with padding.
 class AppButton extends StatelessWidget {
   const AppButton.primary({
     super.key,
@@ -145,7 +152,13 @@ class AppButton extends StatelessWidget {
       _Variant.skeleton => const SizedBox.shrink(),
     };
     if (isLoading) {
-      button = ExcludeFocus(child: IgnorePointer(child: button));
+      button = Semantics(
+        label: label,
+        button: true,
+        enabled: false,
+        excludeSemantics: true,
+        child: ExcludeFocus(child: IgnorePointer(child: button)),
+      );
     }
     return expand ? SizedBox(width: double.infinity, child: button) : button;
   }
