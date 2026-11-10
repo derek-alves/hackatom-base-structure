@@ -17,6 +17,11 @@ void main(List<String> args) {
   }
   final check = args.contains('--check');
   final root = Directory.current.path;
+  if (packageRootError(root) case final error?) {
+    stderr.writeln(error);
+    exitCode = 1;
+    return;
+  }
   final inputs = readTokenInputs(root);
   final result = buildTokens(
     figmaFiles: inputs.figmaFiles,

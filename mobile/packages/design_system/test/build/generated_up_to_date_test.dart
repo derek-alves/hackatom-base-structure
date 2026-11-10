@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:design_system/src/build/build_tokens.dart';
 import 'package:design_system/src/build/token_files.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -39,5 +41,16 @@ void main() {
 
     expect(files[resolvedPath('dark')], isNull);
     expect(staleGeneratedFiles(files, onDisk), [resolvedPath('dark')]);
+  });
+
+  test('outside the package root the CLI asks to run from it', () {
+    final elsewhere = Directory.systemTemp.createTempSync('not_the_package_');
+    addTearDown(() => elsewhere.deleteSync(recursive: true));
+
+    expect(
+      packageRootError(elsewhere.path),
+      'Rode na raiz do pacote: mobile/packages/design_system',
+    );
+    expect(packageRootError('.'), isNull);
   });
 }

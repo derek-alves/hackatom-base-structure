@@ -6,6 +6,13 @@ import 'build_tokens.dart';
 /// Generated Dart, relative to the package root.
 const generatedDartPath = 'lib/src/tokens/tokens.g.dart';
 
+/// Error for the CLI when [root] is not the package root (no
+/// `tokens/contract/`), or null when it is.
+String? packageRootError(String root) =>
+    Directory('$root/tokens/contract').existsSync()
+    ? null
+    : 'Rode na raiz do pacote: mobile/packages/design_system';
+
 /// Resolved JSON of [mode], relative to the package root.
 String resolvedPath(String mode) => 'tokens/resolved/$mode.tokens.json';
 
