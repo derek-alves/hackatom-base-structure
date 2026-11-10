@@ -5,7 +5,7 @@ paths: ["mobile/**"]
 # Mobile: Flutter + a2ui_flutter
 
 - Sempre `fvm flutter` / `fvm dart`.
-- Proibido fora de `lib/core/theme/` e dos diretórios `tokens/`, `theme/` e `build/` do pacote `design_system`: `Color(0x..)`, `Colors.*`, `fontSize:` literal, `EdgeInsets.*(<número>)` e `BorderRadius.circular(<número>)`. Usar `context.tokens`. `test/architecture/no_hardcoded_style_test.dart` garante.
+- Proibido fora de `lib/core/theme/` e de `lib/src/tokens/`, `lib/src/theme/` e `lib/src/build/` do pacote `design_system`: `Color(0x..)`, `Colors.*` (exceto `transparent`), `fontSize:` literal, `EdgeInsets.*(<número>)` e `BorderRadius.circular(<número>)`. Usar `context.tokens` ou `Theme.of(context)`. `test/architecture/design_system_guard_test.dart` garante (`lib/core/theme/` só guarda `app_brand.dart`).
 - Estado com Cubit + `Equatable`; nada de `setState` para I/O.
 - Organização modular:
   - `lib/modules/<nome>/` com `data/`, `cubit/`, `view/`, `widgets/` e o barrel `<nome>.dart`, que exporta a API pública e o `AppModule`.
