@@ -21,7 +21,7 @@ builder: (context, child) => MaterialUiCompatibilityBridge(child: child!),
 
 ## (b) Goldens: `alchemist`
 
-`goldenTest` do `alchemist` 0.14 renderiza widgets do `material_ui` (com a ponte) sem exceção de tema ou localizations, e gera goldens `ci/` e `macos/`. Usar `alchemist`. Cuidado: o cenário não pode ter `Scaffold` solto (tamanho infinito); usar `Material` + `Padding`/`SizedBox` limitados.
+`goldenTest` do `alchemist` 0.14 renderiza widgets do `material_ui` (com a ponte) sem exceção de tema ou localizations. Usar `alchemist`. Só os goldens `ci/` são versionados e comparados: `test/flutter_test_config.dart` do pacote desliga os goldens de plataforma (`PlatformGoldensConfig(enabled: false)`), que o git ignora, então um clone novo passa sem `--update-goldens`. Cuidado: o cenário não pode ter `Scaffold` solto (tamanho infinito); usar `Material` + `Padding`/`SizedBox` limitados.
 
 ## (c) Widgetbook 3.25 com tema do kit
 
@@ -125,4 +125,4 @@ Conclusão: nenhum `.dart` além de `tokens.g.dart` mudou, e os goldens de compo
 
 Resultado dos testes: com a alt-brand ativa, `fvm flutter test` do pacote passa inteiro (114 testes), sem `--update-goldens` na segunda rodada. Os testes do contrato do kit leem `tokens/contract/` com mapping vazio (`test/helpers/kit_contract.dart`), o teste de drift compara a saída do gerador para as entradas atuais com os arquivos em disco, e os demais comparam com `kitLightTokens` em vez de literais. Só os goldens mudam num rebrand.
 
-Restauração: `git checkout -- tokens lib/src/tokens test/components/goldens test/loading/goldens` e `git clean -f -- tokens/figma`, seguido de `--update-goldens` para os goldens de plataforma (ignorados pelo git).
+Restauração: `git checkout -- tokens lib/src/tokens test/components/goldens test/loading/goldens` e `git clean -f -- tokens/figma`. Os goldens de plataforma estão desligados (ver (b)), então não há `--update-goldens` depois.
