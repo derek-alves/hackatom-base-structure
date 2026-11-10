@@ -189,7 +189,9 @@ void main() {
     expect((h.actions.single.context['values'] as Map)['quando'], expected);
   });
 
-  testWidgets('form: submit twice dispatches one action', (t) async {
+  testWidgets('form: submit disables the button, no spinner; one action', (
+    t,
+  ) async {
     final h = await pumpComponent(
       t,
       'DynamicFormCard',
@@ -197,8 +199,13 @@ void main() {
         {'name': 'nome', 'label': 'Nome', 'type': 'text'},
       ]),
     );
+    AppButton button() => t.widget<AppButton>(find.byType(AppButton));
+    expect(button().onPressed, isNotNull);
     await t.tap(find.text('Enviar'));
     await t.pump();
+    expect(button().onPressed, isNull);
+    expect(button().isLoading, isFalse);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
     await t.tap(find.text('Enviar'), warnIfMissed: false);
     await t.pump();
     expect(h.actions, hasLength(1));
@@ -264,14 +271,21 @@ void main() {
     },
   );
 
-  testWidgets('checklist: submit twice dispatches one action', (t) async {
+  testWidgets('checklist: submit disables the button, no spinner; one action', (
+    t,
+  ) async {
     final h = await pumpComponent(
       t,
       'ActionChecklistCard',
       fixture('ActionChecklistCard'),
     );
+    AppButton button() => t.widget<AppButton>(find.byType(AppButton));
+    expect(button().onPressed, isNotNull);
     await t.tap(find.text('Confirmar'));
     await t.pump();
+    expect(button().onPressed, isNull);
+    expect(button().isLoading, isFalse);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
     await t.tap(find.text('Confirmar'), warnIfMissed: false);
     await t.pump();
     expect(h.actions, hasLength(1));

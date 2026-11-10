@@ -96,8 +96,9 @@ class _ActionChecklistCardState extends State<_ActionChecklistCard> {
       actions: [
         AppButton.primary(
           label: widget.submitLabel,
-          isLoading: _submitting,
-          onPressed: _submit,
+          // Disabled after submit (no spinner): the card stays locked and
+          // nothing resets it, so a loading state would spin forever.
+          onPressed: _submitting ? null : _submit,
         ),
       ],
       child: Column(
