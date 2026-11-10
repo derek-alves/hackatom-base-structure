@@ -1,0 +1,25 @@
+{
+  "color": {
+    "primary": {
+      "$type": "color",
+      "$value": { "colorSpace": "srgb", "components": [0.12157, 0.30588, 0.47451] }
+    },
+    "on-primary": { "$type": "color", "$value": "#ffffff" },
+    "secondary": {
+      "$type": "color",
+      "$value": { "colorSpace": "srgb", "components": [0.05882, 0.46275, 0.43137], "alpha": 1, "hex": "#0f766e" }
+    },
+    "on-secondary": { "$type": "color", "$value": "#FFFFFFFF" },
+    "error": { "$type": "color", "$value": "#B3261E" },
+    "on-error": { "$type": "color", "$value": "#FFFFFF" },
+    "surface": { "$type": "color", "$value": "#FAFAFC" },
+    "on-surface": { "$type": "color", "$value": "#1A1C1E" },
+    "outline": {
+      "$type": "color",
+      "$value": { "colorSpace": "srgb", "components": [0.45098, 0.46667, 0.49804], "alpha": 0.5 }
+    }
+  },
+  "type": {
+    "family": { "$type": "fontFamily", "$value": "system" }
+  }
+}

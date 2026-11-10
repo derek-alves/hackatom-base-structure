@@ -1,0 +1,17 @@
+{
+  "brand": {
+    "main": { "$type": "color", "$value": "{palette.plum.200}" },
+    "on-main": { "$type": "color", "$value": "{palette.plum.900}" },
+    "accent": { "$type": "color", "$value": "{palette.amber.200}" },
+    "on-accent": { "$type": "color", "$value": "{palette.amber.900}" }
+  },
+  "feedback": {
+    "danger": { "$type": "color", "$value": "{palette.red.200}" },
+    "on-danger": { "$type": "color", "$value": "{palette.red.900}" }
+  },
+  "neutral": {
+    "bg": { "$type": "color", "$value": "{palette.ink.950}" },
+    "on-bg": { "$type": "color", "$value": "{palette.ink.100}" },
+    "line": { "$type": "color", "$value": "{palette.ink.400}" }
+  }
+}

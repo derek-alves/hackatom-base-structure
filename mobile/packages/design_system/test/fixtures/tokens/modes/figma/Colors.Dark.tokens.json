@@ -1,0 +1,6 @@
+{
+  "color": {
+    "primary": { "$type": "color", "$value": "#9ECAFF" },
+    "on-primary": { "$type": "color", "$value": "#003258" }
+  }
+}

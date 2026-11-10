@@ -1,0 +1,22 @@
+# Exemplo de rebrand: export do Figma com nomes fora do padrão do kit.
+map:
+  brand/main: color/primary
+  brand/on-main: color/on-primary
+  brand/accent: color/secondary
+  brand/on-accent: color/on-secondary
+  feedback/danger: color/error
+  feedback/on-danger: color/on-error
+  neutral/bg: color/surface
+  neutral/on-bg: color/on-surface
+  neutral/line: color/outline
+  space/1: spacing/xs
+  space/2: spacing/sm
+  space/3: spacing/md
+  space/5: spacing/lg
+  space/7: spacing/xl
+  corner/soft: radius/sm
+  corner/round: radius/md
+  font/base: type/family
+  text/heading: type/headline-md
+defaults:
+  - color/tertiary

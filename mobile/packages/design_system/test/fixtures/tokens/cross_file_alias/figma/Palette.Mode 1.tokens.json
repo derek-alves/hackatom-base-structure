@@ -1,0 +1,8 @@
+{
+  "palette": {
+    "plum": {
+      "700": { "$type": "color", "$value": "#7A1F5C" }
+    },
+    "white": { "$type": "color", "$value": "#FFFFFF" }
+  }
+}

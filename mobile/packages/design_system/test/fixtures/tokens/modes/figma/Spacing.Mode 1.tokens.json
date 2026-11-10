@@ -1,0 +1,5 @@
+{
+  "spacing": {
+    "md": { "$type": "number", "$value": 20 }
+  }
+}
