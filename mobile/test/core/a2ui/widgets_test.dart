@@ -263,4 +263,34 @@ void main() {
       );
     },
   );
+
+  testWidgets('checklist: submit twice dispatches one action', (t) async {
+    final h = await pumpComponent(
+      t,
+      'ActionChecklistCard',
+      fixture('ActionChecklistCard'),
+    );
+    await t.tap(find.text('Confirmar'));
+    await t.pump();
+    await t.tap(find.text('Confirmar'), warnIfMissed: false);
+    await t.pump();
+    expect(h.actions, hasLength(1));
+  });
+
+  testWidgets('checklist: items are disabled after submit', (t) async {
+    await pumpComponent(
+      t,
+      'ActionChecklistCard',
+      fixture('ActionChecklistCard'),
+    );
+    Iterable<Checkbox> boxes() => t.widgetList<Checkbox>(find.byType(Checkbox));
+    expect(boxes().every((c) => c.onChanged != null), isTrue);
+    await t.tap(find.text('Confirmar'));
+    await t.pump();
+    final before = boxes().map((c) => c.value).toList();
+    expect(boxes().every((c) => c.onChanged == null), isTrue);
+    await t.tap(find.text('Verificar o estoque'), warnIfMissed: false);
+    await t.pump();
+    expect(boxes().map((c) => c.value).toList(), before);
+  });
 }

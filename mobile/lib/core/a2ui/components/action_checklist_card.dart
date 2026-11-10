@@ -106,7 +106,9 @@ class _ActionChecklistCardState extends State<_ActionChecklistCard> {
             AppListTile.checkbox(
               title: i.label,
               value: _done[i.id] ?? false,
-              onChanged: (v) => setState(() => _done[i.id] = v ?? false),
+              onChanged: _submitting
+                  ? null
+                  : (v) => setState(() => _done[i.id] = v ?? false),
             ),
         ],
       ),
