@@ -50,24 +50,19 @@ class _SummaryKpiCard extends StatelessWidget {
       _ => theme.colorScheme.onSurfaceVariant,
     };
     final delta = deltaPercent;
-    return Card(
-      child: Padding(
-        padding: EdgeInsets.all(tokens.spacing.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: theme.textTheme.labelLarge),
-            SizedBox(height: tokens.spacing.xs),
-            Text(value, style: theme.textTheme.headlineMedium),
-            if (delta != null)
-              Text(
-                '${delta > 0 ? '+' : ''}${delta.toStringAsFixed(1)}%',
-                style: theme.textTheme.titleSmall?.copyWith(color: deltaColor),
-              ),
-            if (caption != null)
-              Text(caption!, style: theme.textTheme.bodySmall),
-          ],
-        ),
+    return AppCard.elevated(
+      title: title,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(value, style: theme.textTheme.headlineMedium),
+          if (delta != null)
+            Text(
+              '${delta > 0 ? '+' : ''}${delta.toStringAsFixed(1)}%',
+              style: theme.textTheme.titleSmall?.copyWith(color: deltaColor),
+            ),
+          if (caption != null) Text(caption!, style: theme.textTheme.bodySmall),
+        ],
       ),
     );
   }

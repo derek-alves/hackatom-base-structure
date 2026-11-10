@@ -84,47 +84,33 @@ class _ApprovalConfirmationCardState extends State<_ApprovalConfirmationCard> {
   Widget build(BuildContext context) {
     final tokens = context.tokens;
     final theme = Theme.of(context);
-    return Card(
-      child: Padding(
-        padding: EdgeInsets.all(tokens.spacing.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(widget.title, style: theme.textTheme.titleMedium),
-            SizedBox(height: tokens.spacing.xs),
-            Text(widget.summary, style: theme.textTheme.bodyMedium),
-            SizedBox(height: tokens.spacing.sm),
-            for (final (label, value) in widget.fields)
-              Padding(
-                padding: EdgeInsets.symmetric(vertical: tokens.spacing.xs),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(label, style: theme.textTheme.bodySmall),
-                    Text(value, style: theme.textTheme.bodyMedium),
-                  ],
-                ),
-              ),
-            SizedBox(height: tokens.spacing.sm),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: _decided ? null : () => _decide('rejected'),
-                    child: Text(widget.rejectLabel),
-                  ),
-                ),
-                SizedBox(width: tokens.spacing.sm),
-                Expanded(
-                  child: FilledButton(
-                    onPressed: _decided ? null : () => _decide('approved'),
-                    child: Text(widget.approveLabel),
-                  ),
-                ),
-              ],
-            ),
-          ],
+    return AppCard.elevated(
+      title: widget.title,
+      subtitle: widget.summary,
+      actions: [
+        AppButton.secondary(
+          label: widget.rejectLabel,
+          onPressed: _decided ? null : () => _decide('rejected'),
         ),
+        AppButton.primary(
+          label: widget.approveLabel,
+          onPressed: _decided ? null : () => _decide('approved'),
+        ),
+      ],
+      child: Column(
+        children: [
+          for (final (label, value) in widget.fields)
+            Padding(
+              padding: EdgeInsets.symmetric(vertical: tokens.spacing.xs),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(label, style: theme.textTheme.bodySmall),
+                  Text(value, style: theme.textTheme.bodyMedium),
+                ],
+              ),
+            ),
+        ],
       ),
     );
   }
