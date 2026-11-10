@@ -1,0 +1,39 @@
+# Backend em container.
+#   docker compose up --build   sobe o backend em http://localhost:8000
+#   docker compose watch        idem, e reinicia ao salvar arquivos em backend/app
+# A chave e as demais configurações vêm de backend/.env (opcional; modelo em backend/.env.example).
+name: hackathon-starter
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    env_file:
+      - path: ./backend/.env
+        required: false
+    volumes:
+      - backend-data:/app/data
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/health', timeout=2)"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./backend/app
+          target: /app/app
+        - action: rebuild
+          path: ./backend/pyproject.toml
+        - action: rebuild
+          path: ./backend/uv.lock
+
+volumes:
+  backend-data:

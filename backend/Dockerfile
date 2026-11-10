@@ -1,0 +1,34 @@
+# syntax=docker/dockerfile:1
+
+# Backend FastAPI + ADK em container. Uso normal pela raiz do repo:
+#   docker compose up --build
+# Rodar sem Docker continua valendo: cd backend && uv run fastapi dev app/main.py
+
+FROM python:3.14-slim-trixie AS builder
+COPY --from=ghcr.io/astral-sh/uv:0.13.7 /uv /uvx /bin/
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_PYTHON_DOWNLOADS=0
+WORKDIR /app
+
+# Dependências primeiro, para o cache da camada sobreviver a mudanças de código.
+RUN --mount=type=cache,target=/root/.cache/uv \
+    --mount=type=bind,source=uv.lock,target=uv.lock \
+    --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    uv sync --locked --no-install-project --no-dev
+
+COPY . /app
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --locked --no-dev
+
+FROM python:3.14-slim-trixie
+RUN useradd --create-home --uid 1000 app
+WORKDIR /app
+COPY --from=builder --chown=app:app /app /app
+# SQLite fica em /app/data (montado como volume pelo compose).
+RUN mkdir -p /app/data && chown app:app /app/data
+ENV PATH="/app/.venv/bin:$PATH" \
+    PYTHONUNBUFFERED=1
+USER app
+EXPOSE 8000
+CMD ["fastapi", "run", "app/main.py", "--host", "0.0.0.0", "--port", "8000"]
