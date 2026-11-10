@@ -23,6 +23,10 @@ void main() {
     expect(_componentNames(directories), contains('AppButton'));
   });
 
+  test('catalog lists the AppTextField use cases', () {
+    expect(_componentNames(directories), contains('AppTextField'));
+  });
+
   testWidgets('catalog boots with the kit theme', (tester) async {
     await tester.pumpWidget(const WidgetbookApp());
     await tester.pump();

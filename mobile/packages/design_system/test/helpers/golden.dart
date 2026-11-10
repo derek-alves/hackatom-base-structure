@@ -26,20 +26,28 @@ void dsGoldenTest(
       builder: () => Theme(
         data: theme,
         child: MaterialUiCompatibilityBridge(
-          child: Material(
-            color: theme.colorScheme.surface,
-            child: GoldenTestGroup(
-              columns: columns,
-              children: [
-                for (final s in scenarios.entries)
-                  GoldenTestScenario(
-                    name: s.key,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: s.value,
+          // Text fields need MaterialLocalizations, which MaterialApp would give.
+          child: Localizations(
+            locale: const Locale('en'),
+            delegates: const [
+              DefaultMaterialLocalizations.delegate,
+              DefaultWidgetsLocalizations.delegate,
+            ],
+            child: Material(
+              color: theme.colorScheme.surface,
+              child: GoldenTestGroup(
+                columns: columns,
+                children: [
+                  for (final s in scenarios.entries)
+                    GoldenTestScenario(
+                      name: s.key,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: s.value,
+                      ),
                     ),
-                  ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

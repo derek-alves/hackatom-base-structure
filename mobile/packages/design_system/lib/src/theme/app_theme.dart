@@ -4,6 +4,7 @@ import '../tokens/token_set.dart';
 import '../tokens/tokens.g.dart';
 import 'app_tokens.dart';
 import 'components/button_theme.dart';
+import 'components/input_theme.dart';
 
 /// Builds [ThemeData] from the kit tokens.
 abstract final class AppTheme {
@@ -73,11 +74,8 @@ abstract final class AppTheme {
       filledButtonTheme: AppButtonTheme.filled(tokens, text),
       outlinedButtonTheme: AppButtonTheme.outlined(tokens, text),
       textButtonTheme: AppButtonTheme.text(tokens, text),
-      inputDecorationTheme: InputDecorationTheme(
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(tokens.radius.md),
-        ),
-      ),
+      inputDecorationTheme: AppInputTheme.decoration(tokens, scheme),
+      datePickerTheme: AppInputTheme.datePicker(tokens, scheme),
       extensions: [
         AppTokens(
           status: StatusColors(
