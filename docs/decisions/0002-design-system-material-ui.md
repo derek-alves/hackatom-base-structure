@@ -41,7 +41,10 @@ Widgetbook(
         WidgetbookTheme(name: 'Light', data: lightTheme),
         WidgetbookTheme(name: 'Dark', data: darkTheme),
       ],
-      themeBuilder: (context, theme, child) => Theme(data: theme, child: child),
+      themeBuilder: (context, theme, child) => Theme(
+        data: theme,
+        child: Material(color: theme.colorScheme.surface, child: child),
+      ),
     ),
   ],
 )

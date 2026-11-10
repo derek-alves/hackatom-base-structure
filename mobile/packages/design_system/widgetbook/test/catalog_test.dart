@@ -2,6 +2,7 @@ import 'package:design_system/design_system.dart';
 import 'package:design_system_widgetbook/main.dart';
 import 'package:design_system_widgetbook/main.directories.g.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:widgetbook/widgetbook.dart';
 
 Iterable<String> _componentNames(List<WidgetbookNode> nodes) sync* {
@@ -51,5 +52,21 @@ void main() {
     await tester.pump();
     expect(tester.takeException(), isNull);
     expect(find.byType(AppSkeleton), findsWidgets);
+  });
+
+  testWidgets('use cases sit on the selected theme surface', (tester) async {
+    await tester.pumpWidget(
+      const WidgetbookApp(initialRoute: '/?path=loading/appskeleton/line'),
+    );
+    await tester.pump();
+    final surfaces = tester
+        .widgetList<Material>(
+          find.ancestor(
+            of: find.byType(AppSkeleton).first,
+            matching: find.byType(Material),
+          ),
+        )
+        .map((m) => m.color);
+    expect(surfaces.first, AppTheme.light().colorScheme.surface);
   });
 }

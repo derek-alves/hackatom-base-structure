@@ -37,8 +37,12 @@ class WidgetbookApp extends StatelessWidget {
             WidgetbookTheme(name: 'Light', data: AppTheme.light()),
             if (dark != null) WidgetbookTheme(name: 'Dark', data: dark),
           ],
-          themeBuilder: (context, theme, child) =>
-              Theme(data: theme, child: child),
+          // Material paints the theme surface, so dark previews get a dark
+          // background (the app's Scaffold stays on the default theme).
+          themeBuilder: (context, theme, child) => Theme(
+            data: theme,
+            child: Material(color: theme.colorScheme.surface, child: child),
+          ),
         ),
         // Slider stops at 1.0, 1.5 and 2.0 (`scales` is deprecated in 3.25).
         TextScaleAddon(min: 1.0, max: 2.0, divisions: 2, initialScale: 1.0),
