@@ -17,6 +17,8 @@ import 'package:design_system_widgetbook/use_cases/app_card.dart'
     as _design_system_widgetbook_use_cases_app_card;
 import 'package:design_system_widgetbook/use_cases/app_chip.dart'
     as _design_system_widgetbook_use_cases_app_chip;
+import 'package:design_system_widgetbook/use_cases/app_list_tile.dart'
+    as _design_system_widgetbook_use_cases_app_list_tile;
 import 'package:design_system_widgetbook/use_cases/app_text_field.dart'
     as _design_system_widgetbook_use_cases_app_text_field;
 import 'package:design_system_widgetbook/use_cases/loading.dart'
@@ -136,6 +138,36 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'status',
                 builder:
                     _design_system_widgetbook_use_cases_app_chip.chipStatus,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'app_list_tile',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'AppListTile',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'checkbox',
+                builder: _design_system_widgetbook_use_cases_app_list_tile
+                    .listTileCheckbox,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'navigation',
+                builder: _design_system_widgetbook_use_cases_app_list_tile
+                    .listTileNavigation,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'skeleton',
+                builder: _design_system_widgetbook_use_cases_app_list_tile
+                    .listTileSkeleton,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'standard',
+                builder: _design_system_widgetbook_use_cases_app_list_tile
+                    .listTileStandard,
               ),
             ],
           ),

@@ -33,6 +33,10 @@ void main() {
     expect(names, contains('AppChip'));
   });
 
+  test('catalog lists the AppListTile use cases', () {
+    expect(_componentNames(directories), contains('AppListTile'));
+  });
+
   testWidgets('catalog boots with the kit theme', (tester) async {
     await tester.pumpWidget(const WidgetbookApp());
     await tester.pump();

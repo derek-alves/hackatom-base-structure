@@ -7,6 +7,7 @@ import 'components/button_theme.dart';
 import 'components/card_theme.dart';
 import 'components/chip_theme.dart';
 import 'components/input_theme.dart';
+import 'components/list_tile_theme.dart';
 
 /// Builds [ThemeData] from the kit tokens.
 abstract final class AppTheme {
@@ -71,6 +72,8 @@ abstract final class AppTheme {
       textTheme: text,
       cardTheme: AppCardTheme.data(tokens),
       chipTheme: AppChipTheme.data(tokens, text),
+      listTileTheme: AppListTileTheme.data(tokens, text, scheme),
+      checkboxTheme: AppListTileTheme.checkbox(tokens, scheme),
       filledButtonTheme: AppButtonTheme.filled(tokens, text),
       outlinedButtonTheme: AppButtonTheme.outlined(tokens, text),
       textButtonTheme: AppButtonTheme.text(tokens, text),
