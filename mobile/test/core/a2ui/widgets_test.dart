@@ -177,16 +177,16 @@ void main() {
     expect(find.text('Campo obrigatório'), findsOneWidget);
     await t.tap(find.byType(TextFormField));
     await t.pumpAndSettle();
+    // Type a fixed date instead of accepting "today": no clock in the test,
+    // so it cannot flake at midnight.
+    await t.tap(find.byTooltip('Switch to input'));
+    await t.pumpAndSettle();
+    await t.enterText(find.byType(TextField).last, '03/09/2026');
     await t.tap(find.text('OK'));
     await t.pumpAndSettle();
     await t.tap(find.text('Enviar'));
     await t.pump();
-    final n = DateTime.now();
-    final expected =
-        '${n.year.toString().padLeft(4, '0')}-'
-        '${n.month.toString().padLeft(2, '0')}-'
-        '${n.day.toString().padLeft(2, '0')}';
-    expect((h.actions.single.context['values'] as Map)['quando'], expected);
+    expect((h.actions.single.context['values'] as Map)['quando'], '2026-03-09');
   });
 
   testWidgets('form: submit disables the button, no spinner; one action', (
