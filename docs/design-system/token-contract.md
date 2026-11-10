@@ -15,7 +15,12 @@ Se o seu Figma não segue estes nomes, não tem problema: a IA (`/boot-theme`) p
 
 - `light` é obrigatório. `dark` é opcional: sem ele o app só tem tema claro.
 - Um arquivo por coleção e modo, como no export nativo do Figma (ex.: `Colors.Light.tokens.json`, `Colors.Dark.tokens.json`, `Spacing.Mode 1.tokens.json`). Os arquivos vão em `mobile/packages/design_system/tokens/figma/`.
-- Arquivo cujo nome contém `dark` é o modo dark; qualquer outro é light. O dark herda do light o que não definir.
+- O modo vem do nome do arquivo:
+  - Nome com `dark` ou `escuro` (qualquer caixa) é o modo dark. Ex.: `Colors.Dark.tokens.json`, `Colors.Escuro.tokens.json`.
+  - Qualquer outro nome é light. Ex.: `Colors.Light.tokens.json`, `Colors.Claro.tokens.json`, `Spacing.Mode 1.tokens.json`.
+  - Se o modo escuro tiver outro nome (ex.: `Noite`), renomeie o arquivo antes do build.
+- O dark herda do light o que não definir.
+- Um token só pode aparecer em um arquivo de cada modo. Se o mesmo nome estiver em dois arquivos do mesmo modo, o build falha citando o token e os dois arquivos. Isso acontece quando a amostra do kit (`light.tokens.json` e `dark.tokens.json`) fica ao lado do export do projeto: apague a amostra.
 
 ## Tokens
 

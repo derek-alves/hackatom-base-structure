@@ -177,6 +177,67 @@ void main() {
     expect(dark['color/on-surface'], '#1A1C1E');
   });
 
+  test('files named Claro/Escuro resolve to light and dark', () {
+    final modes = _fixture('modes').figmaFiles;
+    final result = buildTokens(
+      figmaFiles: {
+        'Colors.Claro.tokens.json': modes['Colors.Light.tokens.json']!,
+        'Colors.Escuro.tokens.json': modes['Colors.Dark.tokens.json']!,
+        'Spacing.Mode 1.tokens.json': modes['Spacing.Mode 1.tokens.json']!,
+      },
+      mappingYaml: '',
+      contractFiles: _kit.contractFiles,
+    );
+
+    expect(result.errors, isEmpty);
+    expect(result.resolved['light']!['color/primary'], '#1F4E79');
+    expect(result.resolved['light']!['color/on-primary'], '#FFFFFF');
+    expect(result.resolved['dark']!['color/primary'], '#9ECAFF');
+    expect(result.resolved['dark']!['spacing/md'], 20);
+    expect(result.dartSource, isNot(contains('kitDarkTokens = null')));
+  });
+
+  test('same token in two files of one mode fails naming both files', () {
+    // The kit sample left next to a project export: both are light.
+    final result = _build(
+      _fixture('modes'),
+      extraFigma: {'light.tokens.json': _kit.figmaFiles['light.tokens.json']!},
+    );
+
+    expect(result.ok, isFalse);
+    final collision = result.errors.where((e) => e.contains('color/primary'));
+    expect(collision, hasLength(1));
+    expect(collision.single, contains('Colors.Light.tokens.json'));
+    expect(collision.single, contains('light.tokens.json'));
+    expect(
+      collision.single,
+      contains(
+        "o arquivo do modo escuro precisa ter 'dark' ou 'escuro' no nome",
+      ),
+    );
+    expect(result.resolved, isEmpty);
+  });
+
+  test('same token in two dark files fails too', () {
+    final result = _build(
+      _fixture('modes'),
+      extraFigma: {
+        'Brand.Dark.tokens.json':
+            '{"color":{"primary":{"\$type":"color","\$value":"#FFAFDB"}}}',
+      },
+    );
+
+    expect(result.errors.single, contains('color/primary'));
+    expect(result.errors.single, contains('Brand.Dark.tokens.json'));
+    expect(result.errors.single, contains('Colors.Dark.tokens.json'));
+  });
+
+  test('kit and alt-brand inputs have no same-mode collision', () {
+    expect(_build(readTokenInputs('.')).errors, isEmpty);
+    expect(_build(_altBrand).errors, isEmpty);
+    expect(_build(_kit).errors, isEmpty);
+  });
+
   test('no dark file yields kitDarkTokens = null and no dark resolved', () {
     final result = _build(_fixture('cross_file_alias'));
 

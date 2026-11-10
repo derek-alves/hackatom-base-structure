@@ -29,11 +29,19 @@ class TokenBuildResult {
   bool get ok => errors.isEmpty;
 }
 
+/// Whether the Figma export [fileName] holds the dark mode: its name contains
+/// `dark` or `escuro` (any case). Every other file is light.
+bool isDarkTokenFile(String fileName) {
+  final name = fileName.toLowerCase();
+  return name.contains('dark') || name.contains('escuro');
+}
+
 /// Maps a Figma DTCG export onto the kit contract and generates the Dart.
 ///
-/// [figmaFiles] is file name → JSON; a name containing `dark` (any case) is
-/// the dark mode, every other file is light. [contractFiles] is
-/// `'light'|'dark'` → JSON with the kit default values.
+/// [figmaFiles] is file name → JSON; see [isDarkTokenFile] for the mode of
+/// each file. A token path defined in two files of the same mode is an
+/// error. [contractFiles] is `'light'|'dark'` → JSON with the kit default
+/// values.
 TokenBuildResult buildTokens({
   required Map<String, String> figmaFiles,
   required String mappingYaml,
@@ -45,15 +53,34 @@ TokenBuildResult buildTokens({
 
   final light = <String, DtcgToken>{};
   final darkOnly = <String, DtcgToken>{};
+  // Mode → token path → first file that defined it.
+  final origin = {'light': <String, String>{}, 'dark': <String, String>{}};
+  // (mode, first file, second file) → paths defined in both.
+  final collisions = <(String, String, String), List<String>>{};
   var hasDark = false;
   for (final name in figmaFiles.keys.toList()..sort()) {
     final tokens = parseDtcgFile(name, figmaFiles[name]!, errors);
-    if (name.toLowerCase().contains('dark')) {
+    final mode = isDarkTokenFile(name) ? 'dark' : 'light';
+    for (final path in tokens.keys) {
+      final first = origin[mode]!.putIfAbsent(path, () => name);
+      if (first != name) {
+        collisions.putIfAbsent((mode, first, name), () => []).add(path);
+      }
+    }
+    if (mode == 'dark') {
       hasDark = true;
       darkOnly.addAll(tokens);
     } else {
       light.addAll(tokens);
     }
+  }
+  for (final MapEntry(key: (mode, first, second), value: paths)
+      in collisions.entries) {
+    errors.add(
+      'Token repetido em dois arquivos do modo $mode: ${paths.join(', ')} '
+      '(em $first e $second). Deixe um só arquivo por coleção e modo; '
+      "o arquivo do modo escuro precisa ter 'dark' ou 'escuro' no nome.",
+    );
   }
   for (final MapEntry(key: figma, value: kit) in mapping.map.entries) {
     if (!light.containsKey(figma) && !darkOnly.containsKey(figma)) {
