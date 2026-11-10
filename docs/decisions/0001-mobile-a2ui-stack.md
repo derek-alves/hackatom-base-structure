@@ -7,7 +7,7 @@ Accepted (spike passed on iOS and Android).
 - Flutter 3.47.9 (fvm, `.fvmrc`), Dart 3.13.x.
 - A2UI renderer: `a2ui_flutter` 0.1.0 with `a2ui_core` 0.5.0, protocol v1.0.
 - Resolved: json_schema_builder 0.1.7, flutter_bloc 9.1.1, flutter_markdown_plus 1.0.12.
-- Material import: keep `package:flutter/material.dart`. `flutter analyze` on the fresh scaffold reports no deprecation, so `material_ui` is not added.
+- Material import: keep `package:flutter/material.dart`. `flutter analyze` on the fresh scaffold reports no deprecation, so `material_ui` is not added. Substituído pela ADR 0002.
 
 ## Spike result
 `mobile/integration_test/a2ui_smoke_test.dart` renders a custom `Hello` component from a v1.0 `createSurface` message.
