@@ -55,3 +55,13 @@ Widgetbook(
 - `fvm flutter test integration_test`: PASS no iPhone 17 (simulador) e no Galaxy S25+ API 35 (emulador).
 - `fvm flutter build apk --debug`: OK.
 - Sondagem `shimmer` 4.0.0 (`Shimmer.fromColors`) renderiza sob `material_ui`.
+
+## Kit entregue
+
+- Componentes: `AppButton`, `AppTextField`, `AppCard`, `AppChip`, `AppListTile` e `showAppDatePicker` (Cupertino no iOS), todos com `AppSize` e `.skeleton()` onde se aplica.
+- Loading: `AppShimmer` (uma região) e `AppSkeleton` (`.line`, `.box`, `.circle`), com animação reduzida respeitada.
+- Tokens: contrato DTCG em `tokens/contract/`, `build_tokens` (`--check` incluso), `mapping.yaml` e `AppTheme`/`AppTokens` gerados dos tokens. Documentação para designers em `docs/design-system/token-contract.md`.
+- Catálogo e testes: Widgetbook 3.25 em `packages/design_system/widgetbook/` e goldens `alchemist` (só `goldens/ci/` versionado).
+- Guards em `mobile/test/architecture/`: `design_system_guard_test.dart` (estilo fixo, import do material do framework, widget cru com equivalente no kit, cabeçalho do gerado, pastas) e `module_boundaries_test.dart`.
+- Fluxo de IA: `/boot-theme` e `/add-ds-component`; regra por caminho em `.claude/rules/design-system.md`; mapa nó do Figma → widget em `packages/design_system/figma-map.json`.
+- Pendente: o caminho de import de `tokens/contract/*.tokens.json` no Figma está por validar (ver `token-contract.md`).

@@ -8,6 +8,7 @@ Copy da UI em pt-BR; identificadores de código em inglês.
 
 - `backend/`: FastAPI, ADK 2.x, SQLModel/SQLite. Gerenciado só com `uv`.
 - `mobile/`: Flutter 3.47.9 via `fvm` (`.fvmrc` na raiz), Cubit, `a2ui_flutter`.
+- `mobile/packages/design_system/`: design system (tokens, tema, kit de componentes, loading, Widgetbook), sobre `material_ui`. Contrato de tokens para designers: `docs/design-system/token-contract.md`.
 - `contracts/`: contrato A2UI compartilhado (`README.md`, `catalog.json` gerado, `examples/`).
 - `scripts/`: `new_module.sh` (gerador de módulos) e `test_new_module.sh` (self-test).
 - `templates/`: esqueletos usados pelo gerador.
@@ -65,6 +66,17 @@ fvm flutter test
 fvm flutter test integration_test -d <device>
 ```
 
+Design system (`cd mobile/packages/design_system`):
+
+```bash
+fvm dart run design_system:build_tokens            # tokens/figma + mapping.yaml → tokens/resolved e lib/src/tokens/*.g.dart
+fvm dart run design_system:build_tokens --check    # falha se o gerado está desatualizado
+fvm flutter test                                   # testes e goldens do pacote
+fvm flutter test --update-goldens                  # atualiza goldens (só goldens/ci/ é versionado)
+cd widgetbook && fvm flutter run -d chrome         # catálogo de componentes
+cd widgetbook && fvm dart run build_runner build --delete-conflicting-outputs   # após novos use-cases
+```
+
 ## Fluxo
 
 ```text
@@ -91,12 +103,13 @@ Detalhes em `contracts/README.md` (componentes, ações, SSE). As 3 fontes mudam
 
 - Ler `.claude/rules/backend-adk2.md` antes de editar `backend/**`.
 - Ler `.claude/rules/flutter-genui.md` antes de editar `mobile/**`.
-- `/boot-theme`: aplicar identidade visual (marca, cores, fonte).
+- `/boot-theme <url-do-figma>`: rebrand por dados a partir do Figma (variáveis → `tokens/`, `mapping.yaml`, fontes, `AppBrand`); sem editar widget.
+- `/add-ds-component <url-do-nó>`: componente novo no kit do design system, no mesmo padrão.
 - `/new-flow`: fluxo de negócio novo de ponta a ponta.
 - `/add-genui-widget`: componente A2UI novo.
 - Usar essas skills para mudanças estruturais.
 - Nunca rodar `-m e2e` sem pedir.
-- Sempre a versão mais recente das ferramentas; registrar divergências em `docs/decisions/`. Decisão vigente do mobile: `docs/decisions/0001-mobile-a2ui-stack.md`.
+- Sempre a versão mais recente das ferramentas; registrar divergências em `docs/decisions/`. Decisão vigente do mobile: `docs/decisions/0002-design-system-material-ui.md` (histórico: `docs/decisions/0001-mobile-a2ui-stack.md`).
 - Gerar com CLI quando existir (`scripts/new_module.sh`, `uv add`, `fvm flutter pub add`); escrever à mão só a lógica.
 
 ## Troubleshooting

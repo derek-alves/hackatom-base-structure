@@ -5,7 +5,7 @@ paths: ["mobile/**"]
 # Mobile: Flutter + a2ui_flutter
 
 - Sempre `fvm flutter` / `fvm dart`.
-- Proibido fora de `lib/core/theme/`: `Color(0x..)`, `Colors.*`, `fontSize:` literal, `EdgeInsets.*(<número>)` e `BorderRadius.circular(<número>)`. Usar `context.tokens`. `test/architecture/no_hardcoded_style_test.dart` garante.
+- Proibido fora de `lib/core/theme/` e dos diretórios `tokens/`, `theme/` e `build/` do pacote `design_system`: `Color(0x..)`, `Colors.*`, `fontSize:` literal, `EdgeInsets.*(<número>)` e `BorderRadius.circular(<número>)`. Usar `context.tokens`. `test/architecture/no_hardcoded_style_test.dart` garante.
 - Estado com Cubit + `Equatable`; nada de `setState` para I/O.
 - Organização modular:
   - `lib/modules/<nome>/` com `data/`, `cubit/`, `view/`, `widgets/` e o barrel `<nome>.dart`, que exporta a API pública e o `AppModule`.
@@ -21,7 +21,7 @@ paths: ["mobile/**"]
 - Toda tela com rede tem loading com label, erro com retry e fallback: `UnsupportedComponentNotice` + markdown, porque o `a2ui_flutter` 0.1 não tem fallback próprio.
 - No assistente, "Tentar novamente" reenvia a última requisição de fato enviada (texto ou ação A2UI) via `GenUiManager.retryLast()`. Enquanto há requisição em andamento, o `GenUiManager` emite `AgentWorking` antes da rede, as surfaces ficam sob `IgnorePointer` e o composer fica desabilitado. O `ApiClient` tem timeout de 15 s para conectar e de 90 s entre chunks do stream.
 - `A2uiMarkdown` vem de `package:a2ui_flutter/basic_catalog.dart`.
-- Import do Material conforme `docs/decisions/0001-mobile-a2ui-stack.md` (hoje `package:flutter/material.dart`).
+- Import do Material só `package:material_ui/material_ui.dart` (e `package:cupertino_ui/cupertino_ui.dart`); nunca `package:flutter/material.dart`. UI com os widgets do kit (`package:design_system/design_system.dart`). Ver `.claude/rules/design-system.md` e `docs/decisions/0002-design-system-material-ui.md`.
 - Dependências SDK (ex.: `integration_test`) entram editando `pubspec.yaml`; `pub add` não cobre.
 - Nunca usar `genui` nem `a2ui_core` < 0.5.
 - Antes de concluir: `fvm flutter analyze && fvm dart format --set-exit-if-changed lib test && fvm flutter test`.
