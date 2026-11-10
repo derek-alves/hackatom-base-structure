@@ -23,7 +23,6 @@ Ajustes pequenos adiados durante o bootstrap (branch `feat/hackathon-starter-boo
 ## Mobile
 
 - `mobile/README.md` e `description` do `pubspec.yaml` ainda são os padrões do scaffold.
-- Testes de fronteira passam sem checar nada se `lib/core` ou `lib/modules` não existir; verificar que as pastas existem.
 - O resolvedor de fronteiras não checa `part`/`part of` nem imports condicionais.
 - Padrão Android `10.0.2.2` em `AppConfig` sem teste.
 - Testes de página esperam 300 ms fixos em `runAsync`; esperar um estado do cubit (risco de flake no CI).

@@ -4,8 +4,8 @@ import 'package:design_system/design_system.dart';
 import 'package:hackathon_starter/modules/assistant/widgets/markdown_message.dart';
 import 'package:material_ui/material_ui.dart';
 
-/// Evidência da ADR 0002: o flutter_markdown_plus (ainda em
-/// `package:flutter/material.dart`) recebe o tema do app com e sem a ponte.
+/// Evidência da ADR 0002: o flutter_markdown_plus (ainda no
+/// material do framework) recebe o tema do app com e sem a ponte.
 void main() {
   const probeColor = Color(0xFF123456);
   const probeSize = 23.0;
