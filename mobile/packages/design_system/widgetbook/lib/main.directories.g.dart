@@ -13,6 +13,10 @@
 
 import 'package:design_system_widgetbook/use_cases/app_button.dart'
     as _design_system_widgetbook_use_cases_app_button;
+import 'package:design_system_widgetbook/use_cases/app_card.dart'
+    as _design_system_widgetbook_use_cases_app_card;
+import 'package:design_system_widgetbook/use_cases/app_chip.dart'
+    as _design_system_widgetbook_use_cases_app_chip;
 import 'package:design_system_widgetbook/use_cases/app_text_field.dart'
     as _design_system_widgetbook_use_cases_app_text_field;
 import 'package:design_system_widgetbook/use_cases/loading.dart'
@@ -63,6 +67,75 @@ final directories = <_widgetbook.WidgetbookNode>[
                 name: 'with icons',
                 builder:
                     _design_system_widgetbook_use_cases_app_button.buttonIcons,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'app_card',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'AppCard',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'elevated',
+                builder:
+                    _design_system_widgetbook_use_cases_app_card.cardElevated,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'filled',
+                builder:
+                    _design_system_widgetbook_use_cases_app_card.cardFilled,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'outlined',
+                builder:
+                    _design_system_widgetbook_use_cases_app_card.cardOutlined,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'skeleton',
+                builder:
+                    _design_system_widgetbook_use_cases_app_card.cardSkeleton,
+              ),
+            ],
+          ),
+        ],
+      ),
+      _widgetbook.WidgetbookFolder(
+        name: 'app_chip',
+        children: [
+          _widgetbook.WidgetbookComponent(
+            name: 'AppChip',
+            useCases: [
+              _widgetbook.WidgetbookUseCase(
+                name: 'all statuses',
+                builder:
+                    _design_system_widgetbook_use_cases_app_chip.chipStatuses,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'assist',
+                builder:
+                    _design_system_widgetbook_use_cases_app_chip.chipAssist,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'filter',
+                builder:
+                    _design_system_widgetbook_use_cases_app_chip.chipFilter,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'input',
+                builder: _design_system_widgetbook_use_cases_app_chip.chipInput,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'skeleton',
+                builder:
+                    _design_system_widgetbook_use_cases_app_chip.chipSkeleton,
+              ),
+              _widgetbook.WidgetbookUseCase(
+                name: 'status',
+                builder:
+                    _design_system_widgetbook_use_cases_app_chip.chipStatus,
               ),
             ],
           ),

@@ -27,6 +27,12 @@ void main() {
     expect(_componentNames(directories), contains('AppTextField'));
   });
 
+  test('catalog lists the AppCard and AppChip use cases', () {
+    final names = _componentNames(directories).toList();
+    expect(names, contains('AppCard'));
+    expect(names, contains('AppChip'));
+  });
+
   testWidgets('catalog boots with the kit theme', (tester) async {
     await tester.pumpWidget(const WidgetbookApp());
     await tester.pump();

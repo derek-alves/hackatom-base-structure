@@ -4,6 +4,8 @@ import '../tokens/token_set.dart';
 import '../tokens/tokens.g.dart';
 import 'app_tokens.dart';
 import 'components/button_theme.dart';
+import 'components/card_theme.dart';
+import 'components/chip_theme.dart';
 import 'components/input_theme.dart';
 
 /// Builds [ThemeData] from the kit tokens.
@@ -62,15 +64,13 @@ abstract final class AppTheme {
         );
     final family = tokens.type.family;
     final text = _textTheme(tokens.type);
-    final shape = RoundedRectangleBorder(
-      borderRadius: BorderRadius.circular(tokens.radius.md),
-    );
     return ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
       fontFamily: family == null ? null : 'packages/design_system/$family',
       textTheme: text,
-      cardTheme: CardThemeData(shape: shape),
+      cardTheme: AppCardTheme.data(tokens),
+      chipTheme: AppChipTheme.data(tokens, text),
       filledButtonTheme: AppButtonTheme.filled(tokens, text),
       outlinedButtonTheme: AppButtonTheme.outlined(tokens, text),
       textButtonTheme: AppButtonTheme.text(tokens, text),
