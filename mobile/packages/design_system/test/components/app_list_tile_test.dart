@@ -108,4 +108,35 @@ void main() {
     );
     expect(t.takeException(), isNull);
   });
+
+  testWidgets('size contract is shared by checkbox and standard', (t) async {
+    final heights = <String, double>{};
+    for (final size in AppSize.values) {
+      await pumpDs(t, AppListTile.standard(title: 'Item', size: size));
+      heights['standard ${size.name}'] = t
+          .getSize(find.byType(AppListTile))
+          .height;
+      await pumpDs(
+        t,
+        AppListTile.checkbox(
+          title: 'Item',
+          value: false,
+          onChanged: (_) {},
+          size: size,
+        ),
+      );
+      heights['checkbox ${size.name}'] = t
+          .getSize(find.byType(AppListTile))
+          .height;
+    }
+    for (final size in AppSize.values) {
+      expect(
+        heights['checkbox ${size.name}'],
+        heights['standard ${size.name}'],
+        reason: size.name,
+      );
+    }
+    expect(heights['standard sm']!, lessThan(heights['standard md']!));
+    expect(heights['standard lg']!, greaterThan(heights['standard md']!));
+  });
 }

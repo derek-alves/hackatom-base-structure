@@ -9,8 +9,9 @@ enum _Variant { standard, checkbox, navigation, skeleton }
 /// Kit list tile. `.standard` and `.navigation` map to ListTile, `.checkbox`
 /// to CheckboxListTile with the checkbox on the left.
 ///
-/// The tile is at least `tokens.size.controlLg` high (`controlMd` for
-/// [AppSize.sm]); [AppListTile.skeleton] has the same height as a `.standard`
+/// The tile is at least `controlMd` high for [AppSize.sm], `controlLg` for
+/// [AppSize.md] and `controlLg + spacing.md` for [AppSize.lg];
+/// [AppListTile.skeleton] has the same height as a `.standard`
 /// tile of the default size with the same flags. Long titles wrap.
 class AppListTile extends StatelessWidget {
   const AppListTile.standard({
@@ -86,7 +87,11 @@ class AppListTile extends StatelessWidget {
     final theme = Theme.of(context);
     final dense = size == AppSize.sm;
     final density = dense ? VisualDensity.compact : VisualDensity.standard;
-    final minHeight = dense ? tokens.size.controlMd : tokens.size.controlLg;
+    final minHeight = switch (size) {
+      AppSize.sm => tokens.size.controlMd,
+      AppSize.md => tokens.size.controlLg,
+      AppSize.lg => tokens.size.controlLg + tokens.spacing.md,
+    };
     final verticalPadding = size == AppSize.lg
         ? tokens.spacing.md
         : tokens.spacing.sm;
@@ -94,14 +99,22 @@ class AppListTile extends StatelessWidget {
     final subtitleWidget = subtitle == null ? null : Text(subtitle!);
 
     return switch (_variant) {
-      _Variant.checkbox => CheckboxListTile(
-        title: titleWidget,
-        subtitle: subtitleWidget,
-        value: value,
-        onChanged: onChanged,
-        controlAffinity: ListTileControlAffinity.leading,
-        dense: dense,
-        visualDensity: density,
+      // CheckboxListTile has no minTileHeight/minVerticalPadding, so the
+      // per-size values go through the list tile theme.
+      _Variant.checkbox => ListTileTheme(
+        data: theme.listTileTheme.copyWith(
+          minTileHeight: minHeight,
+          minVerticalPadding: verticalPadding,
+        ),
+        child: CheckboxListTile(
+          title: titleWidget,
+          subtitle: subtitleWidget,
+          value: value,
+          onChanged: onChanged,
+          controlAffinity: ListTileControlAffinity.leading,
+          dense: dense,
+          visualDensity: density,
+        ),
       ),
       _Variant.navigation => ListTile(
         title: titleWidget,
