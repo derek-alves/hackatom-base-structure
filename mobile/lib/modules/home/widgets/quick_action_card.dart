@@ -1,6 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 
-import '../../../core/theme/app_tokens.dart';
+import 'package:design_system/design_system.dart';
+
 import '../quick_actions.dart';
 
 class QuickActionCard extends StatelessWidget {
@@ -14,19 +15,19 @@ class QuickActionCard extends StatelessWidget {
     final t = context.tokens;
     return Card(
       child: InkWell(
-        borderRadius: BorderRadius.circular(t.borderRadius.md),
+        borderRadius: BorderRadius.circular(t.radius.md),
         onTap: onTap,
         child: Padding(
           padding: EdgeInsets.all(t.spacing.md),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(action.icon, color: t.primaryColor),
+              Icon(action.icon, color: Theme.of(context).colorScheme.primary),
               SizedBox(height: t.spacing.sm),
               Text(
                 action.label,
                 textAlign: TextAlign.center,
-                style: t.textTheme.titleSmall,
+                style: Theme.of(context).textTheme.titleSmall,
               ),
             ],
           ),

@@ -2,7 +2,7 @@ import 'package:a2ui_flutter/a2ui_flutter.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:json_schema_builder/json_schema_builder.dart';
 
-import '../../theme/app_tokens.dart';
+import 'package:design_system/design_system.dart';
 
 final ComponentImplementation summaryKpiCardComponent = ComponentImplementation(
   name: 'SummaryKpiCard',
@@ -45,8 +45,8 @@ class _SummaryKpiCard extends StatelessWidget {
     final tokens = context.tokens;
     final theme = Theme.of(context);
     final deltaColor = switch (status) {
-      'positive' => tokens.successColor,
-      'negative' => tokens.errorColor,
+      'positive' => tokens.status.success,
+      'negative' => Theme.of(context).colorScheme.error,
       _ => theme.colorScheme.onSurfaceVariant,
     };
     final delta = deltaPercent;

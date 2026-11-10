@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hackathon_starter/core/network/api_models.dart';
-import 'package:hackathon_starter/core/theme/app_theme.dart';
+import 'package:design_system/design_system.dart';
 import 'package:hackathon_starter/shared/widgets/composer_bar.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -15,7 +15,7 @@ Widget _bar({
   bool enabled = true,
   PickImage? pick,
 }) => MaterialApp(
-  theme: AppTheme.build(),
+  theme: AppTheme.light(),
   home: Scaffold(
     body: Align(
       alignment: Alignment.bottomCenter,

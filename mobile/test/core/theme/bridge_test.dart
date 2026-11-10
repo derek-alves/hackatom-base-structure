@@ -1,6 +1,6 @@
 // ignore_for_file: deprecated_member_use
 import 'package:flutter_test/flutter_test.dart';
-import 'package:hackathon_starter/core/theme/app_theme.dart';
+import 'package:design_system/design_system.dart';
 import 'package:hackathon_starter/modules/assistant/widgets/markdown_message.dart';
 import 'package:material_ui/material_ui.dart';
 
@@ -14,7 +14,7 @@ void main() {
     WidgetTester t, {
     required bool bridge,
   }) async {
-    final theme = AppTheme.build().copyWith(
+    final theme = AppTheme.light().copyWith(
       textTheme: const TextTheme(
         bodyMedium: TextStyle(color: probeColor, fontSize: probeSize),
       ),

@@ -8,7 +8,9 @@ import 'package:uuid/uuid.dart';
 import '../../../core/a2ui/genui_manager.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_models.dart';
-import '../../../core/theme/app_tokens.dart';
+
+import 'package:design_system/design_system.dart';
+
 import '../../../shared/widgets/composer_bar.dart';
 import '../cubit/assistant_cubit.dart';
 import '../cubit/assistant_state.dart';
@@ -136,8 +138,9 @@ class _AssistantViewState extends State<_AssistantView> {
             margin: EdgeInsets.all(t.spacing.sm),
             padding: EdgeInsets.all(t.spacing.sm),
             decoration: BoxDecoration(
-              color: t.primaryColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(t.borderRadius.md),
+              color: Theme.of(context).colorScheme.primary
+                  .withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(t.radius.md),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,

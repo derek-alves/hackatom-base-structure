@@ -8,7 +8,7 @@ import 'package:a2ui_flutter/a2ui_flutter.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hackathon_starter/app/registry.dart';
-import 'package:hackathon_starter/core/theme/app_theme.dart';
+import 'package:design_system/design_system.dart';
 
 Map<String, Object?> fixture(String component) =>
     jsonDecode(File('../contracts/examples/$component.json').readAsStringSync())
@@ -50,7 +50,7 @@ Future<A2uiHarness> pumpComponent(
   await t.pumpWidget(
     MaterialApp(
       builder: (context, child) => MaterialUiCompatibilityBridge(child: child!),
-      theme: AppTheme.build(),
+      theme: AppTheme.light(),
       home: Scaffold(
         body: SingleChildScrollView(
           child: A2uiSurface(key: ObjectKey(surface), surface: surface),

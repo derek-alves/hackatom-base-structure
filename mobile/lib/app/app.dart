@@ -8,7 +8,9 @@ import 'package:http/http.dart' as http;
 import '../core/config/app_config.dart';
 import '../core/network/api_client.dart';
 import '../core/theme/app_brand.dart';
-import '../core/theme/app_theme.dart';
+
+import 'package:design_system/design_system.dart';
+
 import '../modules/home/home.dart';
 import 'registry.dart';
 
@@ -33,7 +35,9 @@ class HackathonApp extends StatelessWidget {
         title: AppBrand.name,
         builder: (context, child) =>
             MaterialUiCompatibilityBridge(child: child!),
-        theme: AppTheme.build(),
+        theme: AppTheme.light(),
+        darkTheme: AppTheme.dark(),
+        themeMode: AppTheme.themeMode,
         home: const HomePage(),
       ),
     );

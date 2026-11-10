@@ -2,7 +2,7 @@ import 'package:a2ui_flutter/a2ui_flutter.dart';
 import 'package:material_ui/material_ui.dart';
 import 'package:json_schema_builder/json_schema_builder.dart';
 
-import '../../theme/app_tokens.dart';
+import 'package:design_system/design_system.dart';
 
 const Map<String, IconData> _icons = {
   'task': Icons.task_alt,

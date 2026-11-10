@@ -1,6 +1,6 @@
 import 'package:material_ui/material_ui.dart';
 
-import '../../../core/theme/app_tokens.dart';
+import 'package:design_system/design_system.dart';
 
 class ProgressBanner extends StatelessWidget {
   const ProgressBanner({super.key, this.label});
@@ -18,7 +18,10 @@ class ProgressBanner extends StatelessWidget {
           if (label != null)
             Padding(
               padding: EdgeInsets.only(bottom: t.spacing.xs),
-              child: Text(label!, style: t.textTheme.bodyMedium),
+              child: Text(
+                label!,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
             ),
           const LinearProgressIndicator(),
         ],

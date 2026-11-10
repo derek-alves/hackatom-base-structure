@@ -1,7 +1,7 @@
 import 'package:material_ui/material_ui.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 
-import '../../../core/theme/app_tokens.dart';
+import 'package:design_system/design_system.dart';
 
 class MarkdownMessage extends StatelessWidget {
   const MarkdownMessage({super.key, required this.markdown});

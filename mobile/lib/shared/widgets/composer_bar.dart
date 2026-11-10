@@ -4,7 +4,8 @@ import 'package:material_ui/material_ui.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../core/network/api_models.dart';
-import '../../core/theme/app_tokens.dart';
+
+import 'package:design_system/design_system.dart';
 
 typedef PickImage = Future<Attachment?> Function(ImageSource source);
 
@@ -88,7 +89,7 @@ class _ComposerBarState extends State<ComposerBar> {
   Widget build(BuildContext context) {
     final t = context.tokens;
     return Material(
-      color: t.surfaceColor,
+      color: Theme.of(context).colorScheme.surface,
       child: SafeArea(
         top: false,
         child: Padding(
