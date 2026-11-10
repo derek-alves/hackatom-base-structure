@@ -65,3 +65,59 @@ Widgetbook(
 - Guards em `mobile/test/architecture/`: `design_system_guard_test.dart` (estilo fixo, import do material do framework, widget cru com equivalente no kit, cabeçalho do gerado, pastas) e `module_boundaries_test.dart`.
 - Fluxo de IA: `/boot-theme` e `/add-ds-component`; regra por caminho em `.claude/rules/design-system.md`; mapa nó do Figma → widget em `packages/design_system/figma-map.json`.
 - Pendente: o caminho de import de `tokens/contract/*.tokens.json` no Figma está por validar (ver `token-contract.md`).
+
+## Demo de rebrand
+
+Data: 2026-11-10. Prova de que um rebrand troca só dados.
+
+Comandos, em `mobile/packages/design_system/`:
+
+```bash
+rm tokens/figma/*.json
+cp tokens/examples/alt-brand/figma/* tokens/figma/
+cp tokens/examples/alt-brand/mapping.yaml tokens/mapping.yaml
+fvm dart run design_system:build_tokens
+fvm flutter test --update-goldens
+git status --porcelain
+```
+
+Relatório do `build_tokens` (trecho):
+
+```text
+Mapeados (18):
+  - brand/main → color/primary
+  - brand/on-main → color/on-primary
+  - brand/accent → color/secondary
+  - brand/on-accent → color/on-secondary
+  - feedback/danger → color/error
+  - feedback/on-danger → color/on-error
+  - neutral/bg → color/surface
+  - neutral/on-bg → color/on-surface
+  - neutral/line → color/outline
+  - space/1 → spacing/xs
+  - space/2 → spacing/sm
+  - space/3 → spacing/md
+  - space/5 → spacing/lg
+  - space/7 → spacing/xl
+  - corner/soft → radius/sm
+  - corner/round → radius/md
+  - font/base → type/family
+  - text/heading → type/headline-md
+
+Derivados (24): color/primary-container, color/tertiary, color/surface-container-*, ... (cores derivadas do contrato)
+Defaults e demais tokens de tipografia: preenchidos pelo kit.
+
+Ignorados (2):
+  - palette/plum/100
+  - space/12
+```
+
+Caminhos alterados (`git status --porcelain` durante a demo):
+
+- `tokens/`: `mapping.yaml` (M), `figma/{light,dark}.tokens.json` (D), `figma/Colors.{Light,Dark}.tokens.json`, `figma/Spacing.Mode 1.tokens.json`, `figma/Type.Mode 1.tokens.json` (novos), `resolved/{light,dark}.tokens.json` (M).
+- Gerado: `lib/src/tokens/tokens.g.dart` (M).
+- Goldens: `test/components/goldens/ci/app_{button,card,chip,list_tile,text_field}_{light,dark}.png` e `test/loading/goldens/ci/loading_{light,dark}.png` (12 arquivos, M).
+
+Conclusão: nenhum `.dart` além de `tokens.g.dart` mudou, e os goldens de componente mudaram. O rebrand é só dados.
+
+Observação: durante a demo, 13 testes do pacote falharam. São testes que fixam valores da marca atual (por exemplo `#1F4E79`) ou leem `tokens/figma` real, e o teste que compara com a alt-brand (a marca ativa já era a alt-brand). Isso é esperado e não é código de produto. Tudo restaurado com `git checkout -- tokens lib/src/tokens test` e `git clean -f -- tokens/figma`.
