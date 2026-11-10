@@ -25,21 +25,19 @@ Future<void> pumpDs(
       builder: (context, app) {
         var content = app!;
         if (width != null) {
-          final media = MediaQuery.of(context);
-          content = MediaQuery(
-            data: media.copyWith(size: Size(width, media.size.height)),
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: SizedBox(width: width, child: content),
-            ),
+          content = Align(
+            alignment: Alignment.topLeft,
+            child: SizedBox(width: width, child: content),
           );
         }
-        if (textScaler != null) {
-          content = MediaQuery(
-            data: MediaQuery.of(context).copyWith(textScaler: textScaler),
-            child: content,
-          );
-        }
+        final media = MediaQuery.of(context);
+        content = MediaQuery(
+          data: media.copyWith(
+            size: width == null ? null : Size(width, media.size.height),
+            textScaler: textScaler,
+          ),
+          child: content,
+        );
         return MaterialUiCompatibilityBridge(child: content);
       },
       home: Scaffold(body: Center(child: child)),
