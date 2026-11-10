@@ -29,7 +29,7 @@ class ErrorBanner extends StatelessWidget {
                   ?.copyWith(color: Theme.of(context).colorScheme.error),
             ),
           ),
-          TextButton(onPressed: onRetry, child: const Text('Tentar novamente')),
+          AppButton.tertiary(label: 'Tentar novamente', onPressed: onRetry),
         ],
       ),
     );

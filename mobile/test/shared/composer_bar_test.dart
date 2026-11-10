@@ -37,7 +37,7 @@ void main() {
     final out = <ComposerSubmission>[];
     await t.pumpWidget(_bar(out: out));
     expect(_sendEnabled(t), isFalse);
-    await t.enterText(find.byType(TextField), 'oi');
+    await t.enterText(find.byType(AppTextField), 'oi');
     await t.pump();
     expect(_sendEnabled(t), isTrue);
     await t.tap(_send);
@@ -62,11 +62,11 @@ void main() {
     await t.tap(find.byKey(const Key('composer-camera')));
     await t.pumpAndSettle();
     expect(asked, ImageSource.camera);
-    expect(find.byType(InputChip), findsOneWidget);
+    expect(find.byType(AppChip), findsOneWidget);
     expect(_sendEnabled(t), isTrue);
     await t.tap(find.byIcon(Icons.clear).first);
     await t.pump();
-    expect(find.byType(InputChip), findsNothing);
+    expect(find.byType(AppChip), findsNothing);
     expect(_sendEnabled(t), isFalse);
 
     await t.tap(find.byKey(const Key('composer-gallery')));
@@ -80,9 +80,9 @@ void main() {
   testWidgets('disabled when enabled=false', (t) async {
     final out = <ComposerSubmission>[];
     await t.pumpWidget(_bar(out: out, enabled: false));
-    await t.enterText(find.byType(TextField), 'oi');
+    await t.enterText(find.byType(AppTextField), 'oi');
     await t.pump();
     expect(_sendEnabled(t), isFalse);
-    expect(t.widget<TextField>(find.byType(TextField)).enabled, isFalse);
+    expect(t.widget<AppTextField>(find.byType(AppTextField)).enabled, isFalse);
   });
 }

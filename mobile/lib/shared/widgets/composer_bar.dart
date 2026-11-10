@@ -101,9 +101,9 @@ class _ComposerBarState extends State<ComposerBar> {
               if (_attachment != null)
                 Padding(
                   padding: EdgeInsets.only(bottom: t.spacing.xs),
-                  child: InputChip(
+                  child: AppChip.input(
                     avatar: const Icon(Icons.image_outlined),
-                    label: const Text('Imagem anexada'),
+                    label: 'Imagem anexada',
                     onDeleted: widget.enabled
                         ? () => setState(() => _attachment = null)
                         : null,
@@ -128,7 +128,7 @@ class _ComposerBarState extends State<ComposerBar> {
                         : null,
                   ),
                   Expanded(
-                    child: TextField(
+                    child: AppTextField(
                       controller: _controller,
                       enabled: widget.enabled,
                       minLines: 1,
@@ -136,9 +136,7 @@ class _ComposerBarState extends State<ComposerBar> {
                       textInputAction: TextInputAction.send,
                       onChanged: (_) => setState(() {}),
                       onSubmitted: (_) => _submit(),
-                      decoration: const InputDecoration(
-                        hintText: 'Escreva uma mensagem',
-                      ),
+                      hint: 'Escreva uma mensagem',
                     ),
                   ),
                   IconButton(

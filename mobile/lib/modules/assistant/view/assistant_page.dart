@@ -98,6 +98,12 @@ class _AssistantViewState extends State<_AssistantView> {
                           child: _entry(context, cubit, e),
                         ),
                       ),
+                    if (state.status == AssistantStatus.working &&
+                        state.entries.lastOrNull is UserEntry)
+                      Padding(
+                        padding: EdgeInsets.all(context.tokens.spacing.sm),
+                        child: const AppShimmer(child: AppCard.skeleton()),
+                      ),
                   ],
                 ),
               ),
