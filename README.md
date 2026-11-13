@@ -91,9 +91,18 @@ fvm flutter test
 fvm flutter test integration_test -d <device>
 ```
 
+Design system (`cd mobile/packages/design_system`):
+
+```bash
+fvm dart run design_system:build_tokens --check    # falha se o código gerado está desatualizado
+fvm flutter test                                   # testes e goldens do pacote
+cd widgetbook && fvm flutter run -d chrome         # catálogo de componentes
+```
+
 ## Referências
 
 - Mapa de pastas, comandos e regras: [`CLAUDE.md`](CLAUDE.md).
 - Contrato A2UI: [`contracts/README.md`](contracts/README.md).
 - Decisões e divergências de versão: [`docs/decisions/`](docs/decisions/).
 - Ajustes pendentes: [`docs/backlog.md`](docs/backlog.md).
+- Testes e verificações pendentes: [`docs/test-plan.md`](docs/test-plan.md).
