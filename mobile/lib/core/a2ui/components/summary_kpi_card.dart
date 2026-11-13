@@ -1,8 +1,8 @@
 import 'package:a2ui_flutter/a2ui_flutter.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:json_schema_builder/json_schema_builder.dart';
 
-import '../../theme/app_tokens.dart';
+import 'package:design_system/design_system.dart';
 
 final ComponentImplementation summaryKpiCardComponent = ComponentImplementation(
   name: 'SummaryKpiCard',
@@ -45,29 +45,24 @@ class _SummaryKpiCard extends StatelessWidget {
     final tokens = context.tokens;
     final theme = Theme.of(context);
     final deltaColor = switch (status) {
-      'positive' => tokens.successColor,
-      'negative' => tokens.errorColor,
+      'positive' => tokens.status.success,
+      'negative' => Theme.of(context).colorScheme.error,
       _ => theme.colorScheme.onSurfaceVariant,
     };
     final delta = deltaPercent;
-    return Card(
-      child: Padding(
-        padding: EdgeInsets.all(tokens.spacing.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: theme.textTheme.labelLarge),
-            SizedBox(height: tokens.spacing.xs),
-            Text(value, style: theme.textTheme.headlineMedium),
-            if (delta != null)
-              Text(
-                '${delta > 0 ? '+' : ''}${delta.toStringAsFixed(1)}%',
-                style: theme.textTheme.titleSmall?.copyWith(color: deltaColor),
-              ),
-            if (caption != null)
-              Text(caption!, style: theme.textTheme.bodySmall),
-          ],
-        ),
+    return AppCard.elevated(
+      title: title,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(value, style: theme.textTheme.headlineMedium),
+          if (delta != null)
+            Text(
+              '${delta > 0 ? '+' : ''}${delta.toStringAsFixed(1)}%',
+              style: theme.textTheme.titleSmall?.copyWith(color: deltaColor),
+            ),
+          if (caption != null) Text(caption!, style: theme.textTheme.bodySmall),
+        ],
       ),
     );
   }

@@ -38,7 +38,7 @@ bool bannedFromModule(String module, String resolved) {
 
 List<String> violations(String dir, bool Function(String resolved) banned) {
   final root = Directory(dir);
-  if (!root.existsSync()) return [];
+  expect(root.existsSync(), isTrue, reason: 'Pasta $dir não existe');
   return [
     for (final f in root.listSync(recursive: true).whereType<File>())
       if (f.path.endsWith('.dart'))
@@ -92,13 +92,24 @@ void main() {
     expect(resolveImport('core/a.dart', "import 'dart:io';"), isNull);
   });
 
+  test('boundary folders exist', () {
+    for (final d in ['lib/core', 'lib/modules']) {
+      expect(
+        Directory(d).existsSync(),
+        isTrue,
+        reason:
+            'Pasta $d não existe: os testes de fronteira não checariam nada.',
+      );
+    }
+  });
+
   test('core does not import modules/ or app/', () {
     expect(violations('lib/core', bannedFromCore), isEmpty);
   });
 
   test('a module imports another module only via its barrel', () {
     final modules = Directory('lib/modules');
-    if (!modules.existsSync()) return;
+    expect(modules.existsSync(), isTrue, reason: 'lib/modules não existe');
     for (final m in modules.listSync().whereType<Directory>()) {
       final name = m.uri.pathSegments.where((s) => s.isNotEmpty).last;
       expect(

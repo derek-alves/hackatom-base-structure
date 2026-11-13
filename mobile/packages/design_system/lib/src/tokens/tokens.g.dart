@@ -1,0 +1,238 @@
+// GERADO: não editar. Rode: fvm dart run design_system:build_tokens
+
+import 'dart:ui';
+
+import 'token_set.dart';
+
+const TokenSet kitLightTokens = TokenSet(
+  colors: ColorTokens(
+    primary: Color(0xFF1F4E79),
+    onPrimary: Color(0xFFFFFFFF),
+    secondary: Color(0xFF0F766E),
+    onSecondary: Color(0xFFFFFFFF),
+    error: Color(0xFFB3261E),
+    onError: Color(0xFFFFFFFF),
+    surface: Color(0xFFFAFAFC),
+    onSurface: Color(0xFF1A1C1E),
+    outline: Color(0xFF73777F),
+    success: Color(0xFF1B7F3B),
+    onSuccess: Color(0xFFFFFFFF),
+    warning: Color(0xFF8A5A00),
+    onWarning: Color(0xFFFFFFFF),
+    info: Color(0xFF0B5CAD),
+    onInfo: Color(0xFFFFFFFF),
+  ),
+  spacing: SpacingTokens(xs: 4, sm: 8, md: 16, lg: 24, xl: 32),
+  radius: RadiusTokens(sm: 8, md: 12, lg: 20, full: 999),
+  size: SizeTokens(controlSm: 32, controlMd: 40, controlLg: 48),
+  type: TypeTokens(
+    family: null,
+    displayLg: TypeStyleToken(
+      size: 57,
+      lineHeight: 64,
+      weight: 400,
+      letterSpacing: -0.25,
+    ),
+    displayMd: TypeStyleToken(
+      size: 45,
+      lineHeight: 52,
+      weight: 400,
+      letterSpacing: 0,
+    ),
+    displaySm: TypeStyleToken(
+      size: 36,
+      lineHeight: 44,
+      weight: 400,
+      letterSpacing: 0,
+    ),
+    headlineLg: TypeStyleToken(
+      size: 32,
+      lineHeight: 40,
+      weight: 400,
+      letterSpacing: 0,
+    ),
+    headlineMd: TypeStyleToken(
+      size: 28,
+      lineHeight: 36,
+      weight: 600,
+      letterSpacing: 0,
+    ),
+    headlineSm: TypeStyleToken(
+      size: 24,
+      lineHeight: 32,
+      weight: 400,
+      letterSpacing: 0,
+    ),
+    titleLg: TypeStyleToken(
+      size: 22,
+      lineHeight: 28,
+      weight: 600,
+      letterSpacing: 0,
+    ),
+    titleMd: TypeStyleToken(
+      size: 16,
+      lineHeight: 24,
+      weight: 600,
+      letterSpacing: 0.15,
+    ),
+    titleSm: TypeStyleToken(
+      size: 14,
+      lineHeight: 20,
+      weight: 500,
+      letterSpacing: 0.1,
+    ),
+    bodyLg: TypeStyleToken(
+      size: 16,
+      lineHeight: 24,
+      weight: 400,
+      letterSpacing: 0.5,
+    ),
+    bodyMd: TypeStyleToken(
+      size: 14,
+      lineHeight: 20,
+      weight: 400,
+      letterSpacing: 0.25,
+    ),
+    bodySm: TypeStyleToken(
+      size: 12,
+      lineHeight: 16,
+      weight: 400,
+      letterSpacing: 0.4,
+    ),
+    labelLg: TypeStyleToken(
+      size: 14,
+      lineHeight: 20,
+      weight: 600,
+      letterSpacing: 0.1,
+    ),
+    labelMd: TypeStyleToken(
+      size: 12,
+      lineHeight: 16,
+      weight: 500,
+      letterSpacing: 0.5,
+    ),
+    labelSm: TypeStyleToken(
+      size: 11,
+      lineHeight: 16,
+      weight: 500,
+      letterSpacing: 0.5,
+    ),
+  ),
+);
+
+// ignore: unnecessary_nullable_for_final_variable_declarations
+const TokenSet? kitDarkTokens = TokenSet(
+  colors: ColorTokens(
+    primary: Color(0xFF9ECAFF),
+    onPrimary: Color(0xFF003258),
+    secondary: Color(0xFF82D5C8),
+    onSecondary: Color(0xFF003731),
+    error: Color(0xFFFFB4AB),
+    onError: Color(0xFF690005),
+    surface: Color(0xFF111318),
+    onSurface: Color(0xFFE2E2E9),
+    outline: Color(0xFF8D9199),
+    success: Color(0xFF8BD89B),
+    onSuccess: Color(0xFF00391A),
+    warning: Color(0xFFFFB95C),
+    onWarning: Color(0xFF462A00),
+    info: Color(0xFFA8C8FF),
+    onInfo: Color(0xFF002F65),
+  ),
+  spacing: SpacingTokens(xs: 4, sm: 8, md: 16, lg: 24, xl: 32),
+  radius: RadiusTokens(sm: 8, md: 12, lg: 20, full: 999),
+  size: SizeTokens(controlSm: 32, controlMd: 40, controlLg: 48),
+  type: TypeTokens(
+    family: null,
+    displayLg: TypeStyleToken(
+      size: 57,
+      lineHeight: 64,
+      weight: 400,
+      letterSpacing: -0.25,
+    ),
+    displayMd: TypeStyleToken(
+      size: 45,
+      lineHeight: 52,
+      weight: 400,
+      letterSpacing: 0,
+    ),
+    displaySm: TypeStyleToken(
+      size: 36,
+      lineHeight: 44,
+      weight: 400,
+      letterSpacing: 0,
+    ),
+    headlineLg: TypeStyleToken(
+      size: 32,
+      lineHeight: 40,
+      weight: 400,
+      letterSpacing: 0,
+    ),
+    headlineMd: TypeStyleToken(
+      size: 28,
+      lineHeight: 36,
+      weight: 600,
+      letterSpacing: 0,
+    ),
+    headlineSm: TypeStyleToken(
+      size: 24,
+      lineHeight: 32,
+      weight: 400,
+      letterSpacing: 0,
+    ),
+    titleLg: TypeStyleToken(
+      size: 22,
+      lineHeight: 28,
+      weight: 600,
+      letterSpacing: 0,
+    ),
+    titleMd: TypeStyleToken(
+      size: 16,
+      lineHeight: 24,
+      weight: 600,
+      letterSpacing: 0.15,
+    ),
+    titleSm: TypeStyleToken(
+      size: 14,
+      lineHeight: 20,
+      weight: 500,
+      letterSpacing: 0.1,
+    ),
+    bodyLg: TypeStyleToken(
+      size: 16,
+      lineHeight: 24,
+      weight: 400,
+      letterSpacing: 0.5,
+    ),
+    bodyMd: TypeStyleToken(
+      size: 14,
+      lineHeight: 20,
+      weight: 400,
+      letterSpacing: 0.25,
+    ),
+    bodySm: TypeStyleToken(
+      size: 12,
+      lineHeight: 16,
+      weight: 400,
+      letterSpacing: 0.4,
+    ),
+    labelLg: TypeStyleToken(
+      size: 14,
+      lineHeight: 20,
+      weight: 600,
+      letterSpacing: 0.1,
+    ),
+    labelMd: TypeStyleToken(
+      size: 12,
+      lineHeight: 16,
+      weight: 500,
+      letterSpacing: 0.5,
+    ),
+    labelSm: TypeStyleToken(
+      size: 11,
+      lineHeight: 16,
+      weight: 500,
+      letterSpacing: 0.5,
+    ),
+  ),
+);

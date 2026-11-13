@@ -1,10 +1,11 @@
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../core/network/api_models.dart';
-import '../../core/theme/app_tokens.dart';
+
+import 'package:design_system/design_system.dart';
 
 typedef PickImage = Future<Attachment?> Function(ImageSource source);
 
@@ -88,7 +89,7 @@ class _ComposerBarState extends State<ComposerBar> {
   Widget build(BuildContext context) {
     final t = context.tokens;
     return Material(
-      color: t.surfaceColor,
+      color: Theme.of(context).colorScheme.surface,
       child: SafeArea(
         top: false,
         child: Padding(
@@ -100,9 +101,9 @@ class _ComposerBarState extends State<ComposerBar> {
               if (_attachment != null)
                 Padding(
                   padding: EdgeInsets.only(bottom: t.spacing.xs),
-                  child: InputChip(
+                  child: AppChip.input(
                     avatar: const Icon(Icons.image_outlined),
-                    label: const Text('Imagem anexada'),
+                    label: 'Imagem anexada',
                     onDeleted: widget.enabled
                         ? () => setState(() => _attachment = null)
                         : null,
@@ -127,7 +128,7 @@ class _ComposerBarState extends State<ComposerBar> {
                         : null,
                   ),
                   Expanded(
-                    child: TextField(
+                    child: AppTextField(
                       controller: _controller,
                       enabled: widget.enabled,
                       minLines: 1,
@@ -135,9 +136,7 @@ class _ComposerBarState extends State<ComposerBar> {
                       textInputAction: TextInputAction.send,
                       onChanged: (_) => setState(() {}),
                       onSubmitted: (_) => _submit(),
-                      decoration: const InputDecoration(
-                        hintText: 'Escreva uma mensagem',
-                      ),
+                      hint: 'Escreva uma mensagem',
                     ),
                   ),
                   IconButton(

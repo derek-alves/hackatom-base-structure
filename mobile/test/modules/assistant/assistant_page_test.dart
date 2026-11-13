@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:design_system/design_system.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:hackathon_starter/core/config/app_config.dart';
 import 'package:hackathon_starter/core/network/api_client.dart';
@@ -144,5 +145,51 @@ void main() {
     );
     await settle(t);
     expect(find.text('Tentar novamente').hitTestable(), findsOneWidget);
+  });
+
+  testWidgets('shows a card skeleton while working after the user prompt', (
+    t,
+  ) async {
+    final held = Completer<String>();
+    await t.pumpWidget(
+      appWith(
+        scriptedClient([held.future]),
+        const AssistantPage(initialPrompt: 'x'),
+      ),
+    );
+    await settleWorking(t);
+    expect(find.byType(AppShimmer), findsOneWidget);
+    held.complete(sseDone);
+    await settle(t);
+  });
+
+  testWidgets('skeleton disappears when the first agent entry arrives', (
+    t,
+  ) async {
+    final held = Completer<String>();
+    await t.pumpWidget(
+      appWith(
+        scriptedClient([held.future]),
+        const AssistantPage(initialPrompt: 'x'),
+      ),
+    );
+    await settleWorking(t);
+    expect(find.byType(AppShimmer), findsOneWidget);
+    held.complete(sseText + sseDone);
+    await settle(t);
+    expect(find.text('Veja abaixo'), findsOneWidget);
+    expect(find.byType(AppShimmer), findsNothing);
+  });
+
+  testWidgets('no skeleton on failure status', (t) async {
+    await t.pumpWidget(
+      appWith(
+        scriptedClient([const SocketException('refused')]),
+        const AssistantPage(initialPrompt: 'x'),
+      ),
+    );
+    await settle(t);
+    expect(find.text('Tentar novamente'), findsOneWidget);
+    expect(find.byType(AppShimmer), findsNothing);
   });
 }

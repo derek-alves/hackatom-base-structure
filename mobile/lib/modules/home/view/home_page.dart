@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
 import '../../../core/network/api_models.dart';
 import '../../../core/theme/app_brand.dart';
-import '../../../core/theme/app_tokens.dart';
+
+import 'package:design_system/design_system.dart';
+
 import '../../../shared/widgets/composer_bar.dart';
 import '../../assistant/assistant.dart';
 import '../quick_actions.dart';
@@ -36,9 +38,15 @@ class HomePage extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(AppBrand.name, style: t.textTheme.headlineMedium),
+              Text(
+                AppBrand.name,
+                style: Theme.of(context).textTheme.headlineMedium,
+              ),
               SizedBox(height: t.spacing.xs),
-              Text(AppBrand.tagline, style: t.textTheme.bodyMedium),
+              Text(
+                AppBrand.tagline,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
               SizedBox(height: t.spacing.lg),
               Expanded(
                 child: GridView.count(

@@ -25,7 +25,7 @@ Cria um fluxo completo no padrão modular: módulo (backend e mobile), contrato,
    - Teste em `backend/tests/modules/<nome>/test_tools.py`.
    - Se o fluxo precisa de roteamento próprio, adicione um nó de código com `Event(route=...)` em `backend/app/modules/assistant/workflow.py`.
 3. API: CRUD REST em `backend/app/modules/<nome>/router.py` se necessário (o chat já passa pelo stream). Teste em `backend/tests/modules/<nome>/test_router.py`.
-4. Mobile: crie e registre o `ComponentImplementation` (feito no passo 1 via `/add-genui-widget`). Se há ação, o fluxo de volta já funciona: `dispatchAction` envia a ação no próximo POST e o agente a recebe em `a2ui.messages`.
+4. Mobile: crie e registre o `ComponentImplementation` (feito no passo 1 via `/add-genui-widget`). A UI usa o kit de `package:design_system/design_system.dart` (`AppCard`, `AppButton`, ...), nunca widget Material cru; falta um widget: `/add-ds-component`. Se há ação, o fluxo de volta já funciona: `dispatchAction` envia a ação no próximo POST e o agente a recebe em `a2ui.messages`.
 5. Prompt: a fixture entra sozinha no few-shot. Adicione a regra de "quando usar" em `build_instruction()` (`backend/app/modules/assistant/agent.py`), em pt-BR, mencionando a tool e o componente. Ajuste `backend/tests/modules/assistant/test_workflow.py` se ele compara o texto da instrução.
 6. Testes e lint dos dois lados (comando abaixo). Opcional: `QuickAction` na Home em `mobile/lib/modules/home/quick_actions.dart`.
 

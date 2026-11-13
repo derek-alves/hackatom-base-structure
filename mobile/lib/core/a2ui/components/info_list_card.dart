@@ -1,8 +1,8 @@
 import 'package:a2ui_flutter/a2ui_flutter.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:json_schema_builder/json_schema_builder.dart';
 
-import '../../theme/app_tokens.dart';
+import 'package:design_system/design_system.dart';
 
 const Map<String, IconData> _icons = {
   'task': Icons.task_alt,
@@ -51,29 +51,23 @@ class _InfoListCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final tokens = context.tokens;
-    final theme = Theme.of(context);
-    return Card(
-      child: Padding(
-        padding: EdgeInsets.all(tokens.spacing.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: theme.textTheme.titleMedium),
-            for (final i in items)
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: Icon(_icons[i['icon']] ?? Icons.circle_outlined),
-                title: Text('${i['title']}'),
-                subtitle: i['subtitle'] == null
-                    ? null
-                    : Text('${i['subtitle']}'),
-                trailing: i['badge'] == null
-                    ? null
-                    : Chip(label: Text('${i['badge']}')),
-              ),
-          ],
-        ),
+    return AppCard.elevated(
+      title: title,
+      child: Column(
+        children: [
+          for (final i in items)
+            AppListTile.standard(
+              leading: Icon(_icons[i['icon']] ?? Icons.circle_outlined),
+              title: '${i['title']}',
+              subtitle: i['subtitle'] == null ? null : '${i['subtitle']}',
+              trailing: i['badge'] == null
+                  ? null
+                  : AppChip.status(
+                      label: '${i['badge']}',
+                      status: AppStatus.neutral,
+                    ),
+            ),
+        ],
       ),
     );
   }

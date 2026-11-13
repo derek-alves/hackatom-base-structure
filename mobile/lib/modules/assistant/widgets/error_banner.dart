@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
-import '../../../core/theme/app_tokens.dart';
+import 'package:design_system/design_system.dart';
 
 class ErrorBanner extends StatelessWidget {
   const ErrorBanner({super.key, required this.message, required this.onRetry});
@@ -15,20 +15,21 @@ class ErrorBanner extends StatelessWidget {
       margin: EdgeInsets.all(t.spacing.md),
       padding: EdgeInsets.all(t.spacing.md),
       decoration: BoxDecoration(
-        color: t.errorColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(t.borderRadius.md),
+        color: Theme.of(context).colorScheme.error.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(t.radius.md),
       ),
       child: Row(
         children: [
-          Icon(Icons.error_outline, color: t.errorColor),
+          Icon(Icons.error_outline, color: Theme.of(context).colorScheme.error),
           SizedBox(width: t.spacing.sm),
           Expanded(
             child: Text(
               message,
-              style: t.textTheme.bodyMedium?.copyWith(color: t.errorColor),
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(color: Theme.of(context).colorScheme.error),
             ),
           ),
-          TextButton(onPressed: onRetry, child: const Text('Tentar novamente')),
+          AppButton.tertiary(label: 'Tentar novamente', onPressed: onRetry),
         ],
       ),
     );

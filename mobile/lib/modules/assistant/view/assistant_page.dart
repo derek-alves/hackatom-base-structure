@@ -1,6 +1,6 @@
 import 'package:a2ui_flutter/a2ui_flutter.dart';
 import 'package:a2ui_flutter/basic_catalog.dart' show A2uiMarkdown;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_markdown_plus/flutter_markdown_plus.dart';
 import 'package:uuid/uuid.dart';
@@ -8,7 +8,9 @@ import 'package:uuid/uuid.dart';
 import '../../../core/a2ui/genui_manager.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_models.dart';
-import '../../../core/theme/app_tokens.dart';
+
+import 'package:design_system/design_system.dart';
+
 import '../../../shared/widgets/composer_bar.dart';
 import '../cubit/assistant_cubit.dart';
 import '../cubit/assistant_state.dart';
@@ -96,6 +98,12 @@ class _AssistantViewState extends State<_AssistantView> {
                           child: _entry(context, cubit, e),
                         ),
                       ),
+                    if (state.status == AssistantStatus.working &&
+                        state.entries.lastOrNull is UserEntry)
+                      Padding(
+                        padding: EdgeInsets.all(context.tokens.spacing.sm),
+                        child: const AppShimmer(child: AppCard.skeleton()),
+                      ),
                   ],
                 ),
               ),
@@ -136,8 +144,9 @@ class _AssistantViewState extends State<_AssistantView> {
             margin: EdgeInsets.all(t.spacing.sm),
             padding: EdgeInsets.all(t.spacing.sm),
             decoration: BoxDecoration(
-              color: t.primaryColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(t.borderRadius.md),
+              color: Theme.of(context).colorScheme.primary
+                  .withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(t.radius.md),
             ),
             child: Row(
               mainAxisSize: MainAxisSize.min,

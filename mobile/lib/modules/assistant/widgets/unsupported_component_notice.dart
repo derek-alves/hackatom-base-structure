@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 
-import '../../../core/theme/app_tokens.dart';
+import 'package:design_system/design_system.dart';
 
 class UnsupportedComponentNotice extends StatelessWidget {
   const UnsupportedComponentNotice({
@@ -20,17 +20,18 @@ class UnsupportedComponentNotice extends StatelessWidget {
       ),
       padding: EdgeInsets.all(t.spacing.md),
       decoration: BoxDecoration(
-        color: t.warningColor.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(t.borderRadius.md),
+        color: t.status.warning.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(t.radius.md),
       ),
       child: Row(
         children: [
-          Icon(Icons.warning_amber_rounded, color: t.warningColor),
+          Icon(Icons.warning_amber_rounded, color: t.status.warning),
           SizedBox(width: t.spacing.sm),
           Expanded(
             child: Text(
               message,
-              style: t.textTheme.bodyMedium?.copyWith(color: t.warningColor),
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(color: t.status.warning),
             ),
           ),
         ],

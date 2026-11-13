@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
+import 'package:design_system/design_system.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:material_ui/material_ui.dart';
 
-import '../../../core/theme/app_tokens.dart';
 import '../cubit/__name___cubit.dart';
 import '../cubit/__name___state.dart';
 
@@ -21,7 +21,7 @@ class __Name__Page extends StatelessWidget {
               builder: (context, state) => Center(
                 child: Text(
                   state.error ?? '__Name__',
-                  style: t.textTheme.titleMedium,
+                  style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
             ),
