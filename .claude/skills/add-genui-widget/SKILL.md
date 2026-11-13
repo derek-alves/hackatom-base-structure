@@ -32,6 +32,7 @@ Adiciona um componente ao contrato nas 3 fontes: Pydantic + fixture, `contracts/
    - Use `mobile/lib/core/a2ui/components/summary_kpi_card.dart` como base: `final ComponentImplementation <camel>Component = ComponentImplementation(name: '<Name>', schema: Schema.object(properties: {...}, required: [...]), builder: ...)`. O `required` tem de ser igual ao de `contracts/catalog.json` e os nomes de props em camelCase.
    - Leitura das props: escalares com `props.string('x')`, `props.number('x')`; listas e objetos com `props.value('x')` (retorna `Object?`; faça cast para `List`/`Map`, como em `info_list_card.dart`). Listas no schema: `Schema.list(items: Schema.object(...))`.
    - Estilo só via `context.tokens` e `Theme.of(context)` (sem cor, tamanho, `EdgeInsets` ou raio literal).
+   - A UI do componente usa o kit (`AppCard`, `AppButton`, `AppChip`, `AppListTile`, `AppTextField`, de `package:design_system/design_system.dart`). Nunca widget Material cru (o guard `test/architecture/design_system_guard_test.dart` falha). Falta um widget no kit: `/add-ds-component`.
    - Ação: `node.context?.dispatchAction({'event': {'name': '<acao>', 'context': {...}}})`. Veja `approval_confirmation_card.dart`. Evite duplo envio, como ele faz.
 6. Registrar:
    - Genérico: importe o arquivo e inclua `<camel>Component` em `coreComponents` (`mobile/lib/core/a2ui/core_components.dart`).

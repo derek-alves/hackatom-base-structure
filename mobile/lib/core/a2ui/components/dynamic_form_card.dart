@@ -1,8 +1,8 @@
 import 'package:a2ui_flutter/a2ui_flutter.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:json_schema_builder/json_schema_builder.dart';
 
-import '../../theme/app_tokens.dart';
+import 'package:design_system/design_system.dart';
 
 final ComponentImplementation dynamicFormCardComponent =
     ComponentImplementation(
@@ -72,95 +72,101 @@ class _DynamicFormCard extends StatefulWidget {
 
 class _DynamicFormCardState extends State<_DynamicFormCard> {
   final _formKey = GlobalKey<FormState>();
-  final Map<String, String> _values = {};
+  final Map<String, Object?> _values = {};
+
+  // Locks after the first valid submit, like the approval/checklist cards.
+  bool _submitting = false;
 
   static const _requiredMessage = 'Campo obrigatório';
 
-  String? _validate(Map<String, Object?> f, String? v) =>
-      f['required'] == true && (v == null || v.trim().isEmpty)
-      ? _requiredMessage
-      : null;
-
   void _submit() {
+    if (_submitting) return;
     if (!(_formKey.currentState?.validate() ?? false)) return;
+    setState(() => _submitting = true);
     widget.onSubmit({
-      for (final f in widget.fields)
-        '${f['name']}': _convert(f, _values['${f['name']}']),
+      for (final f in widget.fields) '${f['name']}': _values['${f['name']}'],
     });
   }
 
-  Object? _convert(Map<String, Object?> f, String? v) {
-    if (v == null || v.isEmpty) return null;
-    return f['type'] == 'number' ? (num.tryParse(v) ?? v) : v;
-  }
+  static String _isoDate(DateTime d) =>
+      '${d.year.toString().padLeft(4, '0')}-'
+      '${d.month.toString().padLeft(2, '0')}-'
+      '${d.day.toString().padLeft(2, '0')}';
 
   Widget _field(Map<String, Object?> f) {
     final name = '${f['name']}';
-    final label = '${f['label']}${f['required'] == true ? ' *' : ''}';
+    final isRequired = f['required'] == true;
+    final label = '${f['label']}${isRequired ? ' *' : ''}';
     final hint = f['placeholder'] as String?;
-    if (f['type'] == 'select') {
-      final options = [
-        if (f['options'] is List) ...(f['options']! as List).map((o) => '$o'),
-      ];
-      return DropdownButtonFormField<String>(
-        decoration: InputDecoration(labelText: label, hintText: hint),
-        items: [
-          for (final o in options) DropdownMenuItem(value: o, child: Text(o)),
-        ],
-        validator: (v) => _validate(f, v),
-        onChanged: (v) => _values[name] = v ?? '',
-      );
+    String? requiredText(String? v) =>
+        isRequired && (v == null || v.trim().isEmpty) ? _requiredMessage : null;
+    switch (f['type']) {
+      case 'select':
+        final options = [
+          if (f['options'] is List) ...(f['options']! as List).map((o) => '$o'),
+        ];
+        return AppTextField.select(
+          key: ValueKey(name),
+          label: label,
+          hint: hint,
+          options: options,
+          value: _values[name] as String?,
+          validator: requiredText,
+          onChanged: (v) => setState(() => _values[name] = v),
+        );
+      case 'number':
+        return AppTextField.number(
+          key: ValueKey(name),
+          label: label,
+          hint: hint,
+          validator: requiredText,
+          onChanged: (v) => _values[name] = v,
+        );
+      case 'date':
+        final stored = _values[name] as String?;
+        return AppTextField.date(
+          key: ValueKey(name),
+          label: label,
+          hint: hint,
+          value: stored == null ? null : DateTime.parse(stored),
+          validator: (d) => isRequired && d == null ? _requiredMessage : null,
+          onChanged: (d) => setState(() => _values[name] = _isoDate(d)),
+        );
+      default:
+        return AppTextField(
+          key: ValueKey(name),
+          label: label,
+          hint: hint,
+          validator: requiredText,
+          onChanged: (v) => _values[name] = v.isEmpty ? null : v,
+        );
     }
-    final isDate = f['type'] == 'date';
-    return TextFormField(
-      key: ValueKey(name),
-      controller: isDate ? TextEditingController(text: _values[name]) : null,
-      readOnly: isDate,
-      keyboardType: f['type'] == 'number' ? TextInputType.number : null,
-      decoration: InputDecoration(labelText: label, hintText: hint),
-      validator: (v) => _validate(f, v),
-      onChanged: (v) => _values[name] = v,
-      onTap: !isDate
-          ? null
-          : () async {
-              final picked = await showDatePicker(
-                context: context,
-                firstDate: DateTime(1900),
-                lastDate: DateTime(2100),
-                initialDate: DateTime.now(),
-              );
-              if (picked == null) return;
-              setState(
-                () => _values[name] = picked.toIso8601String().split('T').first,
-              );
-            },
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     final tokens = context.tokens;
-    final theme = Theme.of(context);
-    return Card(
-      child: Padding(
-        padding: EdgeInsets.all(tokens.spacing.md),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(widget.title, style: theme.textTheme.titleMedium),
-              if (widget.description != null)
-                Text(widget.description!, style: theme.textTheme.bodyMedium),
-              for (final f in widget.fields)
-                Padding(
-                  padding: EdgeInsets.only(top: tokens.spacing.sm),
-                  child: _field(f),
-                ),
-              SizedBox(height: tokens.spacing.md),
-              FilledButton(onPressed: _submit, child: Text(widget.submitLabel)),
-            ],
-          ),
+    return AppCard.elevated(
+      title: widget.title,
+      subtitle: widget.description,
+      actions: [
+        AppButton.primary(
+          label: widget.submitLabel,
+          // Disabled after submit (no spinner): the card stays locked and
+          // nothing resets it, so a loading state would spin forever.
+          onPressed: _submitting ? null : _submit,
+        ),
+      ],
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            for (final f in widget.fields)
+              Padding(
+                padding: EdgeInsets.only(top: tokens.spacing.sm),
+                child: _field(f),
+              ),
+          ],
         ),
       ),
     );

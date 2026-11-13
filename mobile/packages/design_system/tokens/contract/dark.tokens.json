@@ -1,0 +1,64 @@
+{
+  "color": {
+    "primary": {
+      "$type": "color",
+      "$value": "#9ECAFF"
+    },
+    "on-primary": {
+      "$type": "color",
+      "$value": "#003258"
+    },
+    "secondary": {
+      "$type": "color",
+      "$value": "#82D5C8"
+    },
+    "on-secondary": {
+      "$type": "color",
+      "$value": "#003731"
+    },
+    "error": {
+      "$type": "color",
+      "$value": "#FFB4AB"
+    },
+    "on-error": {
+      "$type": "color",
+      "$value": "#690005"
+    },
+    "surface": {
+      "$type": "color",
+      "$value": "#111318"
+    },
+    "on-surface": {
+      "$type": "color",
+      "$value": "#E2E2E9"
+    },
+    "outline": {
+      "$type": "color",
+      "$value": "#8D9199"
+    },
+    "success": {
+      "$type": "color",
+      "$value": "#8BD89B"
+    },
+    "on-success": {
+      "$type": "color",
+      "$value": "#00391A"
+    },
+    "warning": {
+      "$type": "color",
+      "$value": "#FFB95C"
+    },
+    "on-warning": {
+      "$type": "color",
+      "$value": "#462A00"
+    },
+    "info": {
+      "$type": "color",
+      "$value": "#A8C8FF"
+    },
+    "on-info": {
+      "$type": "color",
+      "$value": "#002F65"
+    }
+  }
+}

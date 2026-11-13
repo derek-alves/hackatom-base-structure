@@ -1,6 +1,8 @@
+// Bridge temporário (a2ui_flutter ainda usa flutter/material.dart); ver ADR 0002.
+// ignore_for_file: deprecated_member_use
 import 'package:a2ui_core/a2ui_core.dart';
 import 'package:a2ui_flutter/a2ui_flutter.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:json_schema_builder/json_schema_builder.dart';
@@ -43,6 +45,8 @@ void main() {
     final surface = processor.model.getSurface('s_smoke')!;
     await t.pumpWidget(
       MaterialApp(
+        builder: (context, child) =>
+            MaterialUiCompatibilityBridge(child: child!),
         home: Scaffold(
           body: A2uiSurface(key: ObjectKey(surface), surface: surface),
         ),

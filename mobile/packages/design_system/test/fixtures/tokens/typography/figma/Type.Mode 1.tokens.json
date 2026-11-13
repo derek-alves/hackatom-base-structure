@@ -1,0 +1,14 @@
+{
+  "text": {
+    "heading": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "Inter",
+        "fontSize": 30,
+        "fontWeight": "bold",
+        "lineHeight": 1.2,
+        "letterSpacing": "-0.5px"
+      }
+    }
+  }
+}

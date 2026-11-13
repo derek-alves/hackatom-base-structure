@@ -1,0 +1,14 @@
+{
+  "space": {
+    "1": { "$type": "number", "$value": 4 },
+    "2": { "$type": "number", "$value": 8 },
+    "3": { "$type": "number", "$value": 12 },
+    "5": { "$type": "number", "$value": 20 },
+    "7": { "$type": "number", "$value": 28 },
+    "12": { "$type": "number", "$value": 48 }
+  },
+  "corner": {
+    "soft": { "$type": "dimension", "$value": "6px" },
+    "round": { "$type": "dimension", "$value": { "value": 16, "unit": "px" } }
+  }
+}

@@ -1,8 +1,8 @@
 import 'package:a2ui_flutter/a2ui_flutter.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:json_schema_builder/json_schema_builder.dart';
 
-import '../../theme/app_tokens.dart';
+import 'package:design_system/design_system.dart';
 
 final ComponentImplementation actionChecklistCardComponent =
     ComponentImplementation(
@@ -72,7 +72,11 @@ class _ActionChecklistCardState extends State<_ActionChecklistCard> {
     for (final i in widget.items) i.id: i.done,
   };
 
+  bool _submitting = false;
+
   void _submit() {
+    if (_submitting) return;
+    setState(() => _submitting = true);
     widget.onSubmit(
       [
         for (final i in widget.items)
@@ -87,26 +91,27 @@ class _ActionChecklistCardState extends State<_ActionChecklistCard> {
 
   @override
   Widget build(BuildContext context) {
-    final tokens = context.tokens;
-    return Card(
-      child: Padding(
-        padding: EdgeInsets.all(tokens.spacing.md),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(widget.title, style: Theme.of(context).textTheme.titleMedium),
-            for (final i in widget.items)
-              CheckboxListTile(
-                contentPadding: EdgeInsets.zero,
-                controlAffinity: ListTileControlAffinity.leading,
-                value: _done[i.id],
-                title: Text(i.label),
-                onChanged: (v) => setState(() => _done[i.id] = v ?? false),
-              ),
-            SizedBox(height: tokens.spacing.sm),
-            FilledButton(onPressed: _submit, child: Text(widget.submitLabel)),
-          ],
+    return AppCard.elevated(
+      title: widget.title,
+      actions: [
+        AppButton.primary(
+          label: widget.submitLabel,
+          // Disabled after submit (no spinner): the card stays locked and
+          // nothing resets it, so a loading state would spin forever.
+          onPressed: _submitting ? null : _submit,
         ),
+      ],
+      child: Column(
+        children: [
+          for (final i in widget.items)
+            AppListTile.checkbox(
+              title: i.label,
+              value: _done[i.id] ?? false,
+              onChanged: _submitting
+                  ? null
+                  : (v) => setState(() => _done[i.id] = v ?? false),
+            ),
+        ],
       ),
     );
   }

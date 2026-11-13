@@ -1,0 +1,4 @@
+# Nome no Figma → nome do kit. Nomes que já seguem o contrato não precisam aparecer.
+map: {}
+# Tokens do contrato sem equivalente no Figma; recebem o valor padrão do kit.
+defaults: []

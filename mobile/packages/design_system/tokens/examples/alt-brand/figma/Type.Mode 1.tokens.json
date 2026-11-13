@@ -1,0 +1,17 @@
+{
+  "font": {
+    "base": { "$type": "fontFamily", "$value": ["Inter", "sans-serif"] }
+  },
+  "text": {
+    "heading": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{font.base}",
+        "fontSize": { "value": 26, "unit": "px" },
+        "fontWeight": "bold",
+        "lineHeight": 1.25,
+        "letterSpacing": { "value": 0, "unit": "px" }
+      }
+    }
+  }
+}

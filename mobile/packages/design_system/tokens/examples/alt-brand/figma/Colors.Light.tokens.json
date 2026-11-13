@@ -1,0 +1,61 @@
+{
+  "palette": {
+    "plum": {
+      "100": { "$type": "color", "$value": "#FFD8EC" },
+      "200": { "$type": "color", "$value": "#FFAFDB" },
+      "700": { "$type": "color", "$value": "#7A1F5C" },
+      "900": { "$type": "color", "$value": "#5B0B42" }
+    },
+    "amber": {
+      "200": { "$type": "color", "$value": "#FFB77C" },
+      "700": { "$type": "color", "$value": "#8C4A00" },
+      "900": { "$type": "color", "$value": "#4A2800" }
+    },
+    "red": {
+      "200": { "$type": "color", "$value": "#FFB4AB" },
+      "600": { "$type": "color", "$value": "#BA1A1A" },
+      "900": { "$type": "color", "$value": "#690005" }
+    },
+    "ink": {
+      "100": { "$type": "color", "$value": "#EFDFE6" },
+      "400": { "$type": "color", "$value": "#9A8D94" },
+      "500": { "$type": "color", "$value": "#80747A" },
+      "900": { "$type": "color", "$value": "#21191D" },
+      "950": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [0.10196, 0.06667, 0.08627],
+          "alpha": 1
+        }
+      }
+    },
+    "blush": {
+      "50": {
+        "$type": "color",
+        "$value": {
+          "colorSpace": "srgb",
+          "components": [1, 0.97255, 0.98431],
+          "alpha": 1,
+          "hex": "#fff8fb"
+        }
+      }
+    },
+    "white": { "$type": "color", "$value": "#FFFFFF" }
+  },
+  "brand": {
+    "main": { "$type": "color", "$value": "{palette.plum.700}" },
+    "on-main": { "$type": "color", "$value": "{palette.white}" },
+    "accent": { "$type": "color", "$value": "{palette.amber.700}" },
+    "on-accent": { "$type": "color", "$value": "{palette.white}" }
+  },
+  "feedback": {
+    "danger": { "$type": "color", "$value": "{palette.red.600}" },
+    "on-danger": { "$type": "color", "$value": "{palette.white}" }
+  },
+  "neutral": {
+    "bg": { "$type": "color", "$value": "{palette.blush.50}" },
+    "on-bg": { "$type": "color", "$value": "{palette.ink.900}" },
+    "line": { "$type": "color", "$value": "{palette.ink.500}" }
+  }
+}

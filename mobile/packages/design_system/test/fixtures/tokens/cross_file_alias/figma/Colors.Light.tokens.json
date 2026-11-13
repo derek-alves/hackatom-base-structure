@@ -1,0 +1,16 @@
+{
+  "color": {
+    "primary": { "$type": "color", "$value": "{palette.plum.700}" },
+    "on-primary": { "$type": "color", "$value": "{palette.white}" },
+    "secondary": { "$type": "color", "$value": "#0F766E" },
+    "on-secondary": { "$type": "color", "$value": "{palette.white}" },
+    "error": { "$type": "color", "$value": "#B3261E" },
+    "on-error": { "$type": "color", "$value": "{palette.white}" },
+    "surface": { "$type": "color", "$value": "#FAFAFC" },
+    "on-surface": { "$type": "color", "$value": "#1A1C1E" },
+    "outline": { "$type": "color", "$value": "#73777F" }
+  },
+  "type": {
+    "family": { "$type": "fontFamily", "$value": "system" }
+  }
+}

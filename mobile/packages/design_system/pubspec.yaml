@@ -1,0 +1,25 @@
+name: design_system
+description: "Design system do app (tokens, tema e componentes sobre material_ui)."
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ^3.13.7
+  flutter: ">=1.17.0"
+
+resolution: workspace
+
+dependencies:
+  cupertino_ui: ^1.1.6
+  dart_style: ^3.1.14
+  flutter:
+    sdk: flutter
+  material_ui: ^1.11.0
+  shimmer: ^4.0.0
+  yaml: ^3.1.4
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  alchemist: ^0.14.1
