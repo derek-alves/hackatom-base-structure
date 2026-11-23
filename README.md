@@ -36,6 +36,23 @@ A resposta gravada é achada pelo turno do usuário: o texto (sem diferenciar ma
 
 `data/` não é versionado e, no Podman, fica no volume `backend-data`. Para guardar ou entregar a gravação (por exemplo, no zip para os jurados), copie o arquivo para fora de `data/` e aponte `DEMO_RECORDINGS_PATH` para ele.
 
+#### MCP: consumir e publicar tools
+
+O backend fala MCP nos dois sentidos (detalhes na ADR `docs/decisions/0005-mcp.md` e na skill `/add-mcp`):
+
+| Variável | Para quê |
+|---|---|
+| `MCP_SERVERS` | Servidores MCP cujas tools o agente pode chamar (lista JSON). HTTP: `{"name": "crm", "url": "https://host/mcp", "headers": {...}}`. stdio: `{"name": "quotes", "command": "python", "args": ["-m", "mcp_servers.quotes"]}`. As tools chegam ao agente como `<name>_<tool>`; `tools` filtra |
+| `MCP_SERVER_ENABLED` | Publica as tools dos módulos em `/mcp` (Streamable HTTP). Padrão `true` |
+| `MCP_SERVER_TOKEN` | Se definido, clientes do `/mcp` mandam `Authorization: Bearer <token>` |
+| `MCP_SERVER_ALLOWED_HOSTS` | Hosts aceitos além de localhost, para colegas na rede. Ex.: `'["192.168.0.10:*"]'` |
+
+Exemplo pronto: `backend/mcp_servers/quotes/` (cotações fictícias). Para ligar no agente:
+
+```bash
+MCP_SERVERS='[{"name": "quotes", "command": "python", "args": ["-m", "mcp_servers.quotes"]}]'
+```
+
 ### 2. Subir o backend
 
 Escolha uma das duas formas. As duas servem em `http://localhost:8000` e leem `backend/.env`.

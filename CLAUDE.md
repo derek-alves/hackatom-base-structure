@@ -6,7 +6,7 @@ Copy da UI em pt-BR; identificadores de código em inglês.
 
 ## Mapa de pastas
 
-- `backend/`: FastAPI, ADK 2.x, SQLModel/SQLite. Gerenciado só com `uv`.
+- `backend/`: FastAPI, ADK 2.x, SQLModel/SQLite. Gerenciado só com `uv`. Servidores MCP próprios em `backend/mcp_servers/` (processos separados).
 - `mobile/`: Flutter 3.47.9 via `fvm` (`.fvmrc` na raiz), Cubit, `a2ui_flutter`.
 - `mobile/packages/design_system/`: design system (tokens, tema, kit de componentes, loading, Widgetbook), sobre `material_ui`. Contrato de tokens para designers: `docs/design-system/token-contract.md`.
 - `contracts/`: contrato A2UI compartilhado (`README.md`, `catalog.json` gerado, `examples/`).
@@ -21,7 +21,7 @@ Fatias verticais, espelhadas nos dois lados.
 
 ```text
 backend/app/
-├── core/          # config, db, health, modules.py (AppModule), a2ui/ (components, catalog, messages)
+├── core/          # config, db, health, modules.py (AppModule), a2ui/ (components, catalog, messages), mcp/ (server, client)
 ├── modules/<nome>/  # models schemas service router tools (+ ui.py); __init__.py expõe `module = AppModule(...)`
 ├── registry.py    # composition root: MODULES, all_tools(), all_ui_components()
 ├── export_catalog.py
@@ -102,6 +102,8 @@ Com chave do AI Studio, o `ui_agent` entrega o `UiResponse` pela tool `set_model
 
 Modelo: `backend/app/core/llm.py` (provider, retry e fallback por `LLM_*`) e modo demo (`DEMO_MODE=record|replay`) em `backend/app/modules/assistant/demo.py`. Decisão: `docs/decisions/0004-llm-provider-fallback-demo.md`.
 
+MCP: as tools dos módulos saem em `/mcp`; servidores em `MCP_SERVERS` viram tools do `ui_agent` (`<name>_<tool>`). Exemplo em `backend/mcp_servers/quotes/`. Decisão: `docs/decisions/0005-mcp.md`; passo a passo: `/add-mcp`.
+
 Rota do stream: `backend/app/modules/assistant/router.py`. Grafo: `backend/app/modules/assistant/workflow.py`. Instrução e few-shots: `backend/app/modules/assistant/agent.py`.
 
 ## Contrato
@@ -120,6 +122,8 @@ Detalhes em `contracts/README.md` (componentes, ações, SSE). As 3 fontes mudam
 - `/add-ds-component <url-do-nó>`: componente novo no kit do design system, no mesmo padrão.
 - `/new-flow`: fluxo de negócio novo de ponta a ponta.
 - `/add-genui-widget`: componente A2UI novo.
+- `/add-mcp`: consumir um servidor MCP, criar um novo ou publicar tools do backend.
+- `/hackathon`: do tema revelado à entrega (ideias pontuadas, arquitetura, plano, pitch, zip); artefatos em `docs/hackathon/`.
 - Usar essas skills para mudanças estruturais.
 - Nunca rodar `-m e2e` sem pedir.
 - Sempre a versão mais recente das ferramentas; registrar divergências em `docs/decisions/`. Decisão vigente do mobile: `docs/decisions/0002-design-system-material-ui.md` (histórico: `docs/decisions/0001-mobile-a2ui-stack.md`).

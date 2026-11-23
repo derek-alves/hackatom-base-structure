@@ -22,11 +22,15 @@ paths: ["backend/**"]
 - Componente novo exige: modelo Pydantic (`ComponentProps` com `COMPONENT_NAME`), fixture em `contracts/examples/`, `uv run python -m app.export_catalog` e testes. Passo a passo em `/add-genui-widget`.
 - Saída estruturada com chave do AI Studio: o ADK reporta `output_schema_and_tools=False` e troca o `output_schema` pela tool `set_model_response`. Ela declara os campos do topo do `UiResponse` em snake_case (`summary_kpi_card`) e as props dos widgets em camelCase. O prompt e os few-shots de `agent.py` usam esses nomes; a validação aceita snake_case e camelCase.
 - Resposta final em prosa (ou JSON entre cercas ```` ``` ````) é normalizada por `coerce_prose_reply` (`after_model_callback`) para `{"message": ...}`, e o usuário recebe o texto em vez de erro.
-- Testes usam os fakes de `tests/fakes.py` e nunca chamam Gemini real, exceto `-m e2e`. Uma fixture `autouse` do `conftest.py` limpa `LLM_*`, `GEMINI_*` e `DEMO_*` do ambiente, porque o `lifespan` exporta `GEMINI_API_KEY`:
+- Testes usam os fakes de `tests/fakes.py` e nunca chamam Gemini real, exceto `-m e2e`. Uma fixture `autouse` do `conftest.py` limpa `LLM_*`, `GEMINI_*`, `DEMO_*` e `MCP_*` do ambiente, porque o `lifespan` exporta `GEMINI_API_KEY`:
   - `FakeLlm`: caminho nativo (`output_schema_and_tools=True`), resposta JSON em texto.
   - `StudioLlm`: caminho do AI Studio (`False`), resposta via `Part.from_function_call(name="set_model_response", args={...})`.
 - Modelo só via `build_assistant_model(settings)` (`app/modules/assistant/demo.py`), que usa `build_model` de `app/core/llm.py`: provider por `LLM_PROVIDER` (`gemini`, `apigee`, `openai`), `retry_options` por modelo e `FallbackModel` com `LLM_FALLBACK_MODELS`. Hoje todos esses providers reportam `output_schema_and_tools=False` e seguem o caminho `set_model_response`.
 - Modo demo: `RecordingLlm` grava as respostas e `ReplayLlm` as devolve. A chave é o turno do usuário, sem histórico nem "Contexto do banco" (`HISTORY_HEADER` e `CONTEXT_PREFIX` de `workflow.py`), mais o índice da chamada no turno. Mudou o formato do `prepare_input`? Ajuste `turn_key`.
+- MCP (ADR 0005, passo a passo em `/add-mcp`):
+  - Servir: toda tool de `AppModule.tools` também sai em `/mcp` (`app/core/mcp/server.py`, `MCPServer` do SDK `mcp` 2.x, que substitui o `FastMCP`). Proteção por `MCP_SERVER_TOKEN` e `MCP_SERVER_ALLOWED_HOSTS`.
+  - Consumir: `MCP_SERVERS` (JSON) vira `McpToolset` no `ui_agent` (`app/core/mcp/client.py`); as tools chegam como `<name>_<tool>`. `build_app` aceita `ToolUnion`.
+  - Servidor MCP próprio fica em `backend/mcp_servers/<nome>/` (processo separado, nunca importa `app`); modelo em `mcp_servers/quotes/`.
 - SSE com `fastapi.sse` (`EventSourceResponse`). Sempre termina em `done`, e o stack nunca vaza para o cliente.
 - Versões: `google-adk>=2.14,<3`, `google-genai<3` (limite do ADK), A2UI `"1.0"`.
 - Lint antes de concluir: `uv run ruff check . && uv run ruff format --check .`.

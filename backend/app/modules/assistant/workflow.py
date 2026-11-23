@@ -6,6 +6,7 @@ from typing import Any, Final
 from uuid import uuid4
 
 from google.adk import Event, Workflow
+from google.adk.agents.llm_agent import ToolUnion
 from google.adk.apps import App
 from google.adk.models import BaseLlm
 from google.genai import types
@@ -161,7 +162,7 @@ def make_render_a2ui(ui_model: type[BaseModel]) -> Callable[..., Event]:
 
 def build_workflow(
     model: str | BaseLlm,
-    tools: list[Callable[..., Any]],
+    tools: list[ToolUnion],
     components: list[type[ComponentProps]],
     context_provider: ContextProvider | None = None,
 ) -> Workflow:
@@ -176,7 +177,7 @@ def build_workflow(
 
 def build_app(
     model: str | BaseLlm,
-    tools: list[Callable[..., Any]],
+    tools: list[ToolUnion],
     components: list[type[ComponentProps]],
     context_provider: ContextProvider | None = None,
 ) -> App:
