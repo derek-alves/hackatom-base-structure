@@ -1,10 +1,11 @@
-# syntax=docker/dockerfile:1
+# Backend FastAPI + ADK em container, construído com Podman. Uso normal pela raiz do repo:
+#   podman compose up --build
+# Rodar sem container continua valendo: cd backend && uv run fastapi dev app/main.py
+#
+# Imagens com nome completo (registro incluído): o Podman pode recusar nome curto
+# quando short-name-mode=enforcing e não há terminal para perguntar o registro.
 
-# Backend FastAPI + ADK em container. Uso normal pela raiz do repo:
-#   docker compose up --build
-# Rodar sem Docker continua valendo: cd backend && uv run fastapi dev app/main.py
-
-FROM python:3.14-slim-trixie AS builder
+FROM docker.io/library/python:3.14-slim-trixie AS builder
 COPY --from=ghcr.io/astral-sh/uv:0.13.7 /uv /uvx /bin/
 ENV UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
@@ -17,11 +18,14 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
     uv sync --locked --no-install-project --no-dev
 
-COPY . /app
+# Cópia explícita: .env, .venv, data/ e tests/ nunca entram na imagem,
+# mesmo que o provider de compose não aplique o .containerignore.
+COPY pyproject.toml uv.lock /app/
+COPY app /app/app
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev
 
-FROM python:3.14-slim-trixie
+FROM docker.io/library/python:3.14-slim-trixie
 RUN useradd --create-home --uid 1000 app
 WORKDIR /app
 COPY --from=builder --chown=app:app /app /app

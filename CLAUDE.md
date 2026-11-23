@@ -55,16 +55,16 @@ uv run ruff check . && uv run ruff format --check .
 uv run python -m app.export_catalog         # regenera contracts/catalog.json
 ```
 
-Backend em Docker (raiz do repo; alternativa a rodar com `uv`, sem precisar de Python nem `uv` na máquina):
+Backend em container com Podman (raiz do repo; alternativa a rodar com `uv`, sem precisar de Python nem `uv` na máquina). Docker não é usado: na empresa só o Podman está liberado.
 
 ```bash
-docker compose up --build                   # http://localhost:8000, lê backend/.env se existir
-docker compose watch                        # idem, reinicia ao salvar em backend/app
-docker compose down                         # para; os dados do SQLite ficam no volume backend-data
-docker compose down -v                      # para e apaga o banco
+podman compose up --build                   # http://localhost:8000, lê backend/.env se existir
+podman compose watch                        # idem, reinicia ao salvar em backend/app (só com docker-compose como provider)
+podman compose down                         # para; os dados do SQLite ficam no volume backend-data
+podman compose down -v                      # para e apaga o banco
 ```
 
-Testes e lint continuam via `uv` (a imagem não leva dependências de dev nem `tests/`). Decisão: `docs/decisions/0003-backend-docker.md`.
+Imagem em `backend/Containerfile` (nomes de imagem completos, `COPY` explícito). Testes e lint continuam via `uv` (a imagem não leva dependências de dev nem `tests/`). Decisão: `docs/decisions/0003-backend-podman.md`.
 
 Mobile (`cd mobile`):
 
@@ -126,8 +126,10 @@ Detalhes em `contracts/README.md` (componentes, ações, SSE). As 3 fontes mudam
 ## Troubleshooting
 
 - Emulador Android acessa o host em `10.0.2.2`: `--dart-define=API_BASE_URL=http://10.0.2.2:8000`.
-- Device físico: backend com `--host 0.0.0.0` (no Docker a porta já fica aberta na rede) e `--dart-define=API_BASE_URL=http://<ip-da-máquina>:8000`.
-- Docker: mudou `pyproject.toml` ou `uv.lock`? Rodar `docker compose up --build` (o `watch` já reconstrói sozinho).
+- Device físico: backend com `--host 0.0.0.0` (no Podman a porta já fica aberta na rede) e `--dart-define=API_BASE_URL=http://<ip-da-máquina>:8000`.
+- Podman: mudou `pyproject.toml` ou `uv.lock`? Rodar `podman compose up --build` (o `watch` já reconstrói sozinho).
+- Podman no macOS/Windows: `Cannot connect to Podman`? Rodar `podman machine init` (uma vez) e `podman machine start`.
+- `podman compose` sem provider: instalar `docker-compose` standalone (o Podman Desktop instala) ou `podman-compose`. O `watch` só existe com o `docker-compose`.
 - Sem `GEMINI_API_KEY` (em `backend/.env`, modelo em `backend/.env.example`), o stream emite `error` e depois `done`.
 - Front web local bloqueado por CORS: o padrão é `CORS_ORIGINS=[]` (o app nativo não precisa). Libere a origem em `backend/.env` com `CORS_ORIGINS='["http://localhost:5173"]'`.
 - Componente não aparece: ver o log de `surface.onError` (`UNKNOWN_COMPONENT_TYPE`). O `a2ui_flutter` 0.1 não tem fallback próprio.

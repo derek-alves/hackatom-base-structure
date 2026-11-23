@@ -8,5 +8,5 @@ data/
 .env
 .env.*
 tests/
-Dockerfile
-.dockerignore
+Containerfile
+.containerignore

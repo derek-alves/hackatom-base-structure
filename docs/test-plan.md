@@ -1,10 +1,10 @@
 # Plano de testes pendentes
 
-O que falta testar no projeto inteiro: bootstrap, design system e Docker. Atualizado em 2026-11-13.
+O que falta testar no projeto inteiro: bootstrap, design system e Podman. Atualizado em 2026-11-23.
 
 Duas partes:
 
-- **Verificações manuais:** precisam de algo que a máquina de desenvolvimento não tinha (chave do Gemini, Docker, Figma). Cada item tem passos e resultado esperado.
+- **Verificações manuais:** precisam de algo que a máquina de desenvolvimento não tinha (chave do Gemini, Podman, Figma). Cada item tem passos e resultado esperado.
 - **Testes automatizados que faltam:** lacunas conhecidas nas suítes. Ajustes de código que não são teste ficam em [`backlog.md`](backlog.md).
 
 Ao concluir um item, apague-o daqui e registre o resultado (data, ambiente, evidência) no documento indicado em "Registrar em". Se não houver documento indicado, registre no [Histórico](#histórico) no fim deste arquivo.
@@ -36,17 +36,15 @@ Os passos chamam o Gemini de verdade e consomem cota.
 
 Risco conhecido: na primeira execução real, a saída do Gemini pode não bater com o schema (camelCase × snake_case).
 
-### 2. Backend em Docker
+### 2. Backend no Podman: app e `podman-compose`
 
-Origem: `docs/decisions/0003-backend-docker.md` e checklist do PR #2. A máquina onde o Docker foi configurado não tinha Docker, então a imagem nunca foi construída.
+Origem: `docs/decisions/0003-backend-podman.md` e checklist do PR #2. Build, health, healthcheck, volume, `watch` e conteúdo da imagem já foram verificados em 2026-11-23 (ver a ADR). Falta o app falar com o backend no container e o caso com `podman-compose` como provider.
 
-Pré-requisito: Docker com Compose v2.
+Pré-requisitos: Podman 5+ (`podman machine start` no macOS/Windows), backend no ar com `podman compose up --build -d`.
 
-1. Na raiz, `docker compose up --build`. Depois, `curl http://localhost:8000/api/health`. Esperado: `200` com `{"status":"ok",...}`.
-2. `docker compose ps`. Esperado: serviço `backend` como `healthy`.
-3. `docker compose watch` e editar um arquivo em `backend/app`. Esperado: o serviço reinicia com a mudança.
-4. Criar um registro (`POST /api/records`), rodar `docker compose down` e `docker compose up` de novo. Esperado: o registro continua lá. Depois de `docker compose down -v`, o banco volta ao seed.
-5. App no emulador Android com o backend no container (`http://10.0.2.2:8000`, o padrão do app). Esperado: o app conversa com o backend.
+1. App no emulador Android (`http://10.0.2.2:8000`, o padrão do app). Esperado: o app conversa com o backend.
+2. App em aparelho físico na mesma rede, com `API_BASE_URL=http://<ip-da-máquina>:8000`. Esperado: o app conversa com o backend (confirma que a porta do Podman fica aberta na rede).
+3. Numa máquina com `podman-compose` como provider (sem `docker-compose`): `podman compose up --build`. Esperado: sobe sem erro por causa do bloco `develop` nem do `env_file` com `required: false`.
 
 Registrar em: seção "Verificação" da ADR 0003 (tirar a linha "Pendente").
 

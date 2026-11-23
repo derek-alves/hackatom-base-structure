@@ -18,20 +18,27 @@ Preencha `GEMINI_API_KEY` em `backend/.env`. Sem a chave, o backend sobe, mas o 
 
 Escolha uma das duas formas. As duas servem em `http://localhost:8000` e leem `backend/.env`.
 
-#### Opção A: Docker
+#### Opção A: Podman
 
-Pré-requisito: Docker com Compose v2 (Docker Desktop, OrbStack ou similar). Não precisa de Python nem de `uv` na máquina.
+Pré-requisitos: [Podman](https://podman.io/) 5 ou mais novo e um provider de compose: `docker-compose` (binário standalone, sem Docker Engine; o Podman Desktop instala) ou `podman-compose`. Não precisa de Python nem de `uv` na máquina.
+
+No macOS e no Windows, o Podman roda numa VM. Crie e ligue uma vez:
+
+```bash
+podman machine init
+podman machine start
+```
 
 Na raiz do repo:
 
 ```bash
-docker compose up --build    # sobe o backend
-docker compose watch         # idem, e reinicia ao salvar arquivos em backend/app
-docker compose down          # para; o SQLite fica no volume backend-data
-docker compose down -v       # para e apaga o banco
+podman compose up --build    # sobe o backend
+podman compose watch         # idem, e reinicia ao salvar arquivos em backend/app (só com docker-compose)
+podman compose down          # para; o SQLite fica no volume backend-data
+podman compose down -v       # para e apaga o banco
 ```
 
-Mudou `backend/pyproject.toml` ou `backend/uv.lock`? Rode `docker compose up --build` de novo. O `watch` reconstrói sozinho.
+Mudou `backend/pyproject.toml` ou `backend/uv.lock`? Rode `podman compose up --build` de novo. O `watch` reconstrói sozinho. Com o `podman-compose` como provider, o `watch` pode não existir: rode `podman compose up --build` após cada mudança.
 
 #### Opção B: local com `uv`
 
@@ -54,7 +61,7 @@ curl http://localhost:8000/api/health
 
 ### 3. Rodar o app Flutter
 
-Pré-requisitos: [`fvm`](https://fvm.app/) (a versão do Flutter está em `.fvmrc`) e um emulador, simulador ou aparelho. O app não roda no Docker.
+Pré-requisitos: [`fvm`](https://fvm.app/) (a versão do Flutter está em `.fvmrc`) e um emulador, simulador ou aparelho. O app não roda no container.
 
 ```bash
 cd mobile
@@ -70,7 +77,7 @@ Depois, conforme o alvo:
 | Simulador iOS | `fvm flutter run` (usa `http://localhost:8000` por padrão) |
 | Aparelho físico | `fvm flutter run --dart-define=API_BASE_URL=http://<ip-da-máquina>:8000` |
 
-No aparelho físico, o backend precisa aceitar conexões da rede. No Docker a porta já fica aberta. Com `uv`, use `--host 0.0.0.0`.
+No aparelho físico, o backend precisa aceitar conexões da rede. No Podman a porta já fica aberta. Com `uv`, use `--host 0.0.0.0`.
 
 ## Testes e lint
 
