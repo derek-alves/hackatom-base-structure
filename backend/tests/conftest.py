@@ -1,5 +1,4 @@
 import json
-import os
 from collections.abc import AsyncIterator, Callable, Iterator
 from pathlib import Path
 from typing import Any
@@ -23,12 +22,32 @@ from app.modules.records.tools import RECORD_TOOLS, get_kpis
 BACKEND_ENV_FILE = Path(__file__).resolve().parent.parent / ".env"
 
 
-def resolve_gemini_key(env_file: Path | None = BACKEND_ENV_FILE) -> str | None:
-    """GEMINI_API_KEY from the environment or `backend/.env`, as the app resolves it."""
-    if key := os.environ.get("GEMINI_API_KEY"):
-        return key
-    secret = Settings(_env_file=env_file).gemini_api_key
-    return (secret.get_secret_value() or None) if secret else None
+def resolve_llm_key(env_file: Path | None = BACKEND_ENV_FILE) -> str | None:
+    """LLM_API_KEY (or GEMINI_API_KEY) from the environment or `backend/.env`, as the app does."""
+    secret = Settings(_env_file=env_file).llm_api_key
+    return secret.get_secret_value() if secret else None
+
+
+LLM_ENV_VARS = (
+    "LLM_PROVIDER",
+    "LLM_API_KEY",
+    "LLM_MODEL",
+    "LLM_BASE_URL",
+    "LLM_FALLBACK_MODELS",
+    "LLM_RETRY_ATTEMPTS",
+    "GEMINI_API_KEY",
+    "GEMINI_MODEL",
+    "DEMO_MODE",
+    "DEMO_RECORDINGS_PATH",
+)
+
+
+@pytest.fixture(autouse=True)
+def _isolate_llm_env(monkeypatch: pytest.MonkeyPatch) -> None:
+    # The app lifespan exports GEMINI_API_KEY to os.environ; without this a key set by one
+    # test (or by the developer's shell) leaks into the next test's Settings and reaches Gemini.
+    for name in LLM_ENV_VARS:
+        monkeypatch.delenv(name, raising=False)
 
 
 @pytest.fixture
@@ -36,7 +55,7 @@ def settings(tmp_path: Path) -> Settings:
     db_path = tmp_path / "data" / "test.db"
     return Settings(
         _env_file=None,
-        gemini_api_key=None,
+        llm_api_key=None,
         database_url=f"sqlite+aiosqlite:///{db_path}",
     )
 
@@ -81,7 +100,7 @@ def make_client(settings: Settings) -> Iterator[Callable[[BaseLlm], TestClient]]
     def factory(fake_llm: BaseLlm) -> TestClient:
         app = create_app(settings)
         # Pretend a key exists so the router's no-key pre-check lets the fake LLM through.
-        app.state.settings = settings.model_copy(update={"gemini_api_key": SecretStr("fake")})
+        app.state.settings = settings.model_copy(update={"llm_api_key": SecretStr("fake")})
         runner = Runner(
             app=build_app(fake_llm, RECORD_TOOLS, CORE_COMPONENTS, get_kpis),
             session_service=InMemorySessionService(),

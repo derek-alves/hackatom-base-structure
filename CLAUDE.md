@@ -100,6 +100,8 @@ Caminho de volta: `dispatchAction → onAction → a2ui.messages no POST`.
 
 Com chave do AI Studio, o `ui_agent` entrega o `UiResponse` pela tool `set_model_response` do ADK; os testes cobrem esse caminho (`StudioLlm`) e o nativo (`FakeLlm`). Detalhes em `.claude/rules/backend-adk2.md`.
 
+Modelo: `backend/app/core/llm.py` (provider, retry e fallback por `LLM_*`) e modo demo (`DEMO_MODE=record|replay`) em `backend/app/modules/assistant/demo.py`. Decisão: `docs/decisions/0004-llm-provider-fallback-demo.md`.
+
 Rota do stream: `backend/app/modules/assistant/router.py`. Grafo: `backend/app/modules/assistant/workflow.py`. Instrução e few-shots: `backend/app/modules/assistant/agent.py`.
 
 ## Contrato
@@ -130,7 +132,8 @@ Detalhes em `contracts/README.md` (componentes, ações, SSE). As 3 fontes mudam
 - Podman: mudou `pyproject.toml` ou `uv.lock`? Rodar `podman compose up --build` (o `watch` já reconstrói sozinho).
 - Podman no macOS/Windows: `Cannot connect to Podman`? Rodar `podman machine init` (uma vez) e `podman machine start`.
 - `podman compose` sem provider: instalar `docker-compose` standalone (o Podman Desktop instala) ou `podman-compose`. O `watch` só existe com o `docker-compose`.
-- Sem `GEMINI_API_KEY` (em `backend/.env`, modelo em `backend/.env.example`), o stream emite `error` e depois `done`.
+- Sem `LLM_API_KEY` (ou o nome antigo `GEMINI_API_KEY`; em `backend/.env`, modelo em `backend/.env.example`), o stream emite `error` e depois `done`. Com `DEMO_MODE=replay` não precisa de chave.
+- Gemini com `429 RESOURCE_EXHAUSTED` ou `503 UNAVAILABLE`: configure `LLM_FALLBACK_MODELS` (ex.: `'["gemini-3.1-flash-lite"]'`). Para a demo, grave com `DEMO_MODE=record` e apresente com `DEMO_MODE=replay`.
 - Front web local bloqueado por CORS: o padrão é `CORS_ORIGINS=[]` (o app nativo não precisa). Libere a origem em `backend/.env` com `CORS_ORIGINS='["http://localhost:5173"]'`.
 - Componente não aparece: ver o log de `surface.onError` (`UNKNOWN_COMPONENT_TYPE`). O `a2ui_flutter` 0.1 não tem fallback próprio.
 - `test_catalog_json_is_up_to_date` falha: rodar `uv run python -m app.export_catalog`.

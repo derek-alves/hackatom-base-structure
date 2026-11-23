@@ -23,6 +23,9 @@ HISTORY_KEY: Final[str] = "history"
 CURRENT_TURN_KEY: Final[str] = "current_turn"
 MAX_HISTORY: Final[int] = 6
 _MAX_ENTRY_CHARS: Final[int] = 400
+# Prefixes of the parts prepare_input adds before the user's own parts.
+HISTORY_HEADER: Final[str] = "Histórico recente (do mais antigo ao mais novo):"
+CONTEXT_PREFIX: Final[str] = "Contexto do banco: "
 
 ContextProvider = Callable[[], Awaitable[dict[str, Any]]]
 HistoryEntry = dict[str, str]
@@ -30,7 +33,9 @@ HistoryEntry = dict[str, str]
 __all__ = [
     "A2UI_MESSAGES_KEY",
     "APP_NAME",
+    "CONTEXT_PREFIX",
     "CURRENT_TURN_KEY",
+    "HISTORY_HEADER",
     "HISTORY_KEY",
     "MAX_HISTORY",
     "UI_RESPONSE_KEY",
@@ -90,7 +95,7 @@ def widget_summary(ui: BaseModel) -> str:
 
 
 def format_history(history: list[HistoryEntry]) -> str:
-    lines = ["Histórico recente (do mais antigo ao mais novo):"]
+    lines = [HISTORY_HEADER]
     for i, entry in enumerate(history, start=1):
         lines.append(f"{i}. Usuário: {entry.get('user', '')}")
         lines.append(f"   Assistente: {entry.get('agent', '')}")
@@ -112,7 +117,7 @@ def make_prepare_input(
         parts = list(node_input.parts or [])
         if context_provider is not None:
             kpis_json = json.dumps(await context_provider(), ensure_ascii=False)
-            parts.insert(0, types.Part.from_text(text=f"Contexto do banco: {kpis_json}"))
+            parts.insert(0, types.Part.from_text(text=f"{CONTEXT_PREFIX}{kpis_json}"))
         if history:
             parts.insert(0, types.Part.from_text(text=format_history(history)))
         # Clear last turn's answer so render_a2ui never re-renders a stale UiResponse.

@@ -59,6 +59,18 @@ Origem: próximos passos do design system. O rebrand só foi provado com o exemp
 
 Registrar em: ADR 0002, ao lado da "Demo de rebrand".
 
+### 5. Provider por proxy, fallback e modo demo com modelo real
+
+Origem: `docs/decisions/0004-llm-provider-fallback-demo.md`. Os testes cobrem a montagem dos modelos e o record/replay com fakes. Falta o caminho real.
+
+Os passos chamam o modelo de verdade e consomem cota.
+
+1. Com o proxy de IA do hackathon: `LLM_PROVIDER=apigee` ou `openai`, `LLM_BASE_URL` e `LLM_API_KEY`. Pedir "Resumo de indicadores" no app. Esperado: widget renderizado, sem `error`. Testar um modelo Claude e um open source pelo proxy (risco: errar o schema do `set_model_response`).
+2. Fallback: `LLM_MODEL` com um modelo sem cota (429) e `LLM_FALLBACK_MODELS` com um que tenha cota. Esperado: log `falling back to the next model` e resposta normal. Modelo inexistente não serve para o teste: devolve 404, que não dispara o fallback.
+3. Demo: `DEMO_MODE=record`, rodar o roteiro do pitch no app, depois `DEMO_MODE=replay` sem chave e sem rede. Esperado: as mesmas respostas e widgets; pergunta fora do roteiro mostra o aviso do modo demo.
+
+Registrar em: seção "Verificação" da ADR 0004.
+
 ## Testes automatizados que faltam
 
 Antes de escrever um teste, confirme que a lacuna ainda vale no código atual.
