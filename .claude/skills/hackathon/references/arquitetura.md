@@ -15,6 +15,8 @@ Use na fase 3. Cada padrão diz o que é, por que pontua e onde entra no repo. A
 | Modo demo sem rede (`DEMO_MODE=record\|replay`) | `backend/app/modules/assistant/demo.py` |
 | Container para Cloud Run / jurado | `backend/Containerfile`, `compose.yaml` |
 | Marca a partir do Figma | `/boot-theme` |
+| MCP: tools dos módulos publicadas em `/mcp`; servidores de `MCP_SERVERS` viram tools do agente (`<name>_<tool>`); servidor de exemplo `quotes` (cotações fictícias) | `backend/app/core/mcp/`, `backend/mcp_servers/`, ADR 0005, `/add-mcp` |
+| Modelos dos artefatos do time | `docs/hackathon/` |
 
 Hoje uma ação do app (ex.: `approval_decided`) volta como mensagem e passa pelo LLM. Para ação com efeito, use o padrão 4.
 
@@ -79,6 +81,12 @@ Em investimentos, o contrato cobre regulação: plano, alocação ou intervenç�
 
 - Use `sub_agents`/`AgentTool` do ADK quando há especialistas com ferramentas e dados diferentes (ex.: agente de mercado com busca, agente de carteira com o motor, agente de compliance). Se dois reagem ao mesmo evento, rode em paralelo.
 - Não chame de multi-agente uma cadeia de prompts com nomes: os jurados Google penalizam.
+
+### 9b. MCP nos dois sentidos
+
+- Consumir: sistema que já fala MCP (da empresa, do Google, de parceiro) entra como item de `MCP_SERVERS`, sem código. Filtre com `tools` para manter respostas enxutas no contexto.
+- Publicar: toda tool de módulo já sai em `/mcp`. No pitch, mostre outro agente (Claude Code, Antigravity) chamando a mesma tool: é o "MCP bidirecional" que os jurados Google destacaram. Na rede do evento, use `MCP_SERVER_TOKEN`.
+- Fonte de dados própria como processo separado (ex.: cotações, catálogo de produtos): copie `backend/mcp_servers/quotes/`.
 
 ### 10. Multimodal quando muda a experiência
 

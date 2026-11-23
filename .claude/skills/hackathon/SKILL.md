@@ -30,11 +30,11 @@ Se o usuário indicar a fase, comece por ela. Senão, descubra pelo que já exis
 | 0. Prontidão | antes das 9h | checklist abaixo, sem arquivo |
 | 1. Briefing | 9h-9h30 | `docs/hackathon/00-briefing.md` |
 | 2. Ideias | sessão de ideação, até 12h30 | `docs/hackathon/01-ideia.md` |
-| 3. Arquitetura | 12h30-13h30 | `docs/hackathon/02-arquitetura.md` |
+| 3. Arquitetura | 12h30-13h30 | `docs/hackathon/02-arquitetura.md`, `06-dados.md` |
 | 4. Plano | junto com a fase 3 | `docs/hackathon/03-plano.md` |
-| 5. Entrega | dia 2, até 12h30 | `04-pitch.md`, `05-demo.md`, gravação, vídeo, zip |
+| 5. Entrega | dia 2, até 12h30 | `04-pitch.md`, `05-demo.md`, `07-entrega.md`, gravação, vídeo, zip |
 
-Modelos de todos os artefatos: `references/entrega.md`.
+Os modelos já existem em `docs/hackathon/` (padrão zera.ai): preencha no lugar, sem apagar seções. Guia de pitch, gravação e zip: `references/entrega.md`.
 
 ### 0. Prontidão
 
@@ -68,9 +68,9 @@ Leia `references/arquitetura.md`. Em `02-arquitetura.md`:
 
 1. Contrato do agente: pode, não pode, quando encaminha.
 2. Padrões obrigatórios: motor determinístico (o LLM nunca calcula), guardrail de números, ação com confirmação executada por código, ML tradicional como tool com uma métrica de avaliação, dados fictícios rotulados.
-3. Padrões opcionais, só se a ideia pedir: roteamento em camadas, proatividade, vários agentes com especialistas reais, multimodal, Cloud Run.
+3. Padrões opcionais, só se a ideia pedir: roteamento em camadas, proatividade, vários agentes com especialistas reais, multimodal, MCP (consumir servidores da empresa ou publicar nossas tools: `/add-mcp`), Cloud Run.
 4. C4 nível 1-2 (modelo Mermaid na referência) e tabela de decisões.
-5. Mapeie cada peça para arquivos do repo e para as skills de construção: `scripts/new_module.sh`, `/new-flow`, `/add-genui-widget`, `/add-ds-component`, `/boot-theme`.
+5. Mapeie cada peça para arquivos do repo e para as skills de construção: `scripts/new_module.sh`, `/new-flow`, `/add-genui-widget`, `/add-ds-component`, `/boot-theme`, `/add-mcp`.
 6. Rode a `banca-simulada` sobre `01-ideia.md` + `02-arquitetura.md` e corrija os riscos baratos.
 
 ### 4. Plano

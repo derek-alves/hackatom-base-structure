@@ -1,55 +1,21 @@
 # Modelos de artefato, pitch, demo e zip
 
-Use nas fases 1, 2, 4 e 5. Os artefatos ficam em `docs/hackathon/` e são versionados.
+Use nas fases 1 a 5. Os artefatos ficam em `docs/hackathon/` e são versionados.
 
-## `00-briefing.md` (fase 1)
+## Modelos
 
-```markdown
-# Briefing do tema
+Os modelos ficam em `docs/hackathon/` e são preenchidos no lugar:
 
-- Tema (texto exato da abertura):
-- Ligação com a estratégia 2030 (o que o organizador disse):
-- Frentes sugeridas pelo organizador:
-- Materiais disponíveis (dores de clientes do time de produto, datasets, APIs):
-- Critérios oficiais e pesos (copiar literal):
-- Critério avaliado pelos jurados Google:
-- Entregáveis exigidos e formato (formulário, zip, vídeo, slides):
-- Restrições (dados, modelos via proxy, stack, IP):
-- Horários: freeze, entrega, ordem das apresentações:
-- Perguntas para o organizador/mentores:
-```
-
-## `01-ideia.md` (fase 2): quadro de produto enxuto
-
-```markdown
-# <nome do produto>: <frase de uma linha>
-
-**Tese:** Ao <o que o agente faz> para <público>, no momento <gatilho>, esperamos <resultado para o cliente> e <resultado para o negócio>.
-
-| Etapa | Definição | Evidência ou pendência |
-|---|---|---|
-| Problema | | dado que comprova |
-| Público e persona | persona com números (medoide do segmento, se houver ML) | |
-| Momento/gatilho | | |
-| Decisão que o agente ajuda | | |
-| IA core | ML tradicional: ... · Generativa: ... · Tirar a IA quebra o quê? | |
-| Motor determinístico | o que o código calcula | |
-| Papel do LLM | entender, perguntar, explicar | |
-| Ação com confirmação | o que o cliente confirma | |
-| Diferencial ("fora da caixa") | o que a concorrência não faz | |
-| Métrica principal | fórmula | baseline |
-| Métricas de apoio | conversão, custo por jornada, encaminhamentos | |
-| Guardrails | números, tom, dados, consentimento | |
-| Escopo do MVP | uma persona, um gatilho, uma jornada | |
-| Fora do MVP | | |
-| Evolução | piloto → visão ampliada | |
-```
-
-Anexe ao fim: as ideias avaliadas, com nota da rubrica, e o parecer da `banca-simulada`.
-
-## `03-plano.md` (fase 4)
-
-Tabela por bloco de horário com uma linha por pessoa: tarefa, artefato que entrega, de quem depende. Marque os checkpoints e o freeze. Modelo de horários na tabela da fase 4 do `SKILL.md`.
+| Arquivo | Conteúdo |
+|---|---|
+| `00-briefing.md` | tema literal, critérios e pesos oficiais, entregáveis, materiais, restrições, horários |
+| `01-ideia.md` | quadro de produto (20 linhas), escopo P0/P1/P2, ideias avaliadas, parecer da banca |
+| `02-arquitetura.md` | resumo, princípios, contrato do agente, C4, componentes no repo, integrações Google, fluxos, decisões, segurança, qualidade, rastreabilidade |
+| `03-plano.md` | blocos × pessoas, dependências, slots com especialistas, riscos |
+| `04-pitch.md` | roteiro de 10 min e perguntas da banca |
+| `05-demo.md` | passos exatos da demo e preparação |
+| `06-dados.md` | fontes, camadas, modelo de ML e avaliação, persona |
+| `07-entrega.md` | README de entrega, runbook, checklist do zip |
 
 ## Pitch de 10 minutos (`04-pitch.md`)
 
