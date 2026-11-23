@@ -1,6 +1,6 @@
 # Hackathon: artefatos do time
 
-Modelos prontos para preencher durante o evento, no padrão do vencedor da Batalha de Agentes (zera.ai): cada fase deixa um documento, e a entrega junta tudo. A skill `/hackathon` guia o preenchimento e a `banca-simulada` avalia.
+Modelos prontos para preencher durante o evento, no padrão do vencedor da Batalha de Agentes (zera.ai): cada fase deixa um documento, e a entrega junta tudo. A skill `/hackathon` guia o preenchimento e a `banca-simulada` avalia. Horários e comandos de cada fase: [`fluxo-do-evento.md`](fluxo-do-evento.md).
 
 Regras:
 - Preencha no lugar; não apague seções. O que não se aplica: escreva "não se aplica" e o porquê em uma linha.
