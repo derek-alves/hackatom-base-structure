@@ -22,6 +22,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # mesmo que o provider de compose não aplique o .containerignore.
 COPY pyproject.toml uv.lock /app/
 COPY app /app/app
+COPY mcp_servers /app/mcp_servers
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev
 

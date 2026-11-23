@@ -3,10 +3,10 @@
 import json
 import logging
 import re
-from collections.abc import Callable
 from typing import Any, Final
 
 from google.adk import Agent, Context
+from google.adk.agents.llm_agent import ToolUnion
 from google.adk.models import BaseLlm, LlmRequest, LlmResponse
 from google.genai import types
 from pydantic.alias_generators import to_snake
@@ -181,7 +181,7 @@ def coerce_prose_reply(callback_context: Context, llm_response: LlmResponse) -> 
 
 def build_ui_agent(
     model: str | BaseLlm,
-    tools: list[Callable[..., Any]],
+    tools: list[ToolUnion],
     components: list[type[ComponentProps]],
 ) -> Agent:
     return Agent(

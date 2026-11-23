@@ -21,7 +21,7 @@ from app.modules.assistant.workflow import UI_TEXT_KEY
 logger = logging.getLogger(__name__)
 router = APIRouter()
 
-NO_KEY_MESSAGE = "LLM não configurado: defina GEMINI_API_KEY em backend/.env"
+NO_KEY_MESSAGE = "LLM não configurado: defina LLM_API_KEY em backend/.env (ou DEMO_MODE=replay)"
 FAILURE_MESSAGE = "Falha ao processar a solicitação."
 
 
@@ -46,7 +46,7 @@ async def genui_stream(
     yield _frame("status", {"label": "Processando..."})
     try:
         settings = request.app.state.settings
-        if settings.gemini_api_key is None:
+        if not settings.llm_configured:
             yield _frame("error", {"message": NO_KEY_MESSAGE})
         else:
             if body.text and body.text.strip():

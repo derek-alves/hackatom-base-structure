@@ -1,14 +1,15 @@
 import pytest
 from pydantic import SecretStr
 
-from tests.conftest import parse_sse, resolve_gemini_key
+from tests.conftest import parse_sse, resolve_llm_key
 
-GEMINI_KEY = resolve_gemini_key()
+GEMINI_KEY = resolve_llm_key()
 
 pytestmark = [
     pytest.mark.e2e,
     pytest.mark.skipif(
-        GEMINI_KEY is None, reason="GEMINI_API_KEY not set (environment or backend/.env)"
+        GEMINI_KEY is None,
+        reason="LLM_API_KEY/GEMINI_API_KEY not set (environment or backend/.env)",
     ),
 ]
 
@@ -19,7 +20,7 @@ def test_real_gemini_returns_a2ui_card(settings):
     from app.main import create_app
 
     assert GEMINI_KEY is not None
-    settings = settings.model_copy(update={"gemini_api_key": SecretStr(GEMINI_KEY)})
+    settings = settings.model_copy(update={"llm_api_key": SecretStr(GEMINI_KEY)})
     with TestClient(create_app(settings)) as client:
         text = client.post(
             "/api/genui/stream",
