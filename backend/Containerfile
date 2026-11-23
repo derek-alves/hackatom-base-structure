@@ -25,10 +25,17 @@ COPY app /app/app
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev
 
+# O backend lê o catálogo A2UI de <raiz do repo>/contracts/catalog.json, que fica fora
+# do contexto do build (./backend). Na imagem, a "raiz" é /, então o caminho vira
+# /contracts/catalog.json. Geramos com o mesmo comando do repo; o teste
+# test_catalog_json_is_up_to_date garante que o arquivo versionado é igual a este.
+RUN /app/.venv/bin/python -m app.export_catalog
+
 FROM docker.io/library/python:3.14-slim-trixie
 RUN useradd --create-home --uid 1000 app
 WORKDIR /app
 COPY --from=builder --chown=app:app /app /app
+COPY --from=builder /contracts /contracts
 # SQLite fica em /app/data (montado como volume pelo compose).
 RUN mkdir -p /app/data && chown app:app /app/data
 ENV PATH="/app/.venv/bin:$PATH" \

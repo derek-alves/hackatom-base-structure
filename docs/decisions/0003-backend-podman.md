@@ -24,6 +24,7 @@ Como ficou:
   - O segundo copia só o `.venv` e o código, roda como usuário sem privilégio (`app`, uid 1000) e sobe com `fastapi run` na porta 8000.
   - Imagens com nome completo (registro incluído). Com `short-name-mode=enforcing`, o Podman recusa nome curto quando não há terminal para perguntar o registro, como num build via compose.
   - Sem a linha `# syntax=docker/dockerfile:1`: o Podman constrói com Buildah, não com BuildKit. O Buildah aceita `RUN --mount=type=cache` e `type=bind` direto.
+  - O catálogo A2UI é gerado no build com `python -m app.export_catalog` e vai para `/contracts/catalog.json`. O backend lê `<raiz do repo>/contracts/catalog.json`, que fica fora do contexto do build (`./backend`); na imagem a raiz é `/`. O teste `test_catalog_json_is_up_to_date` garante que o arquivo gerado é igual ao versionado.
   - O código entra por `COPY` explícito (`pyproject.toml`, `uv.lock`, `app/`), não por `COPY .`. Assim `.env`, `.venv`, `data/` e `tests/` ficam fora da imagem mesmo se o provider não aplicar o `.containerignore`.
 - `compose.yaml` na raiz:
   - `build.dockerfile: Containerfile` explícito, porque o `docker-compose` procura `Dockerfile` por padrão;
@@ -51,6 +52,7 @@ Com Podman, em 2026-11-23 (macOS, Apple Silicon; Podman 6.1.4 com VM `libkrun` c
 - Conteúdo da imagem: só `.venv`, `app`, `data` (vazio), `pyproject.toml` e `uv.lock`, sem `.env` nem `tests/`. Processo roda como `uid=1000(app)`.
 - Volume: registro criado via `POST /api/records` continua depois de `podman compose down` e `up`. Depois de `podman compose down -v`, o banco volta ao seed (6 registros).
 - `podman compose watch`: editar `backend/app/main.py` sincroniza o arquivo no container e reinicia o serviço (`StartedAt` muda). O revert também sincroniza. O build inicial do `watch` leva alguns segundos antes de "Watch enabled".
+- Com `GEMINI_API_KEY` em `backend/.env` e `podman compose up -d --force-recreate`, `/api/health` mostra `"llmConfigured":true`. O stream (`POST /api/genui/stream`, "Resumo das tarefas") devolveu frames `a2ui` com `SummaryKpiCard` e `InfoListCard` e terminou em `done`, sem `error`. O catálogo dentro da imagem é idêntico a `contracts/catalog.json`.
 
 Pendente: app no emulador e no aparelho com o backend no container, e o caso com `podman-compose` como provider (`docs/test-plan.md`, item 2).
 
