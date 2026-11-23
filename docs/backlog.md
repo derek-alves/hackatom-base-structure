@@ -8,7 +8,6 @@ Lacunas de teste e verificações manuais pendentes ficam em [`test-plan.md`](te
 
 - `pyproject.toml` com `description`/`authors` padrão e `backend/README.md` vazio.
 - `app = create_app()` roda no import, então um `.env` inválido quebra a coleta dos testes.
-- `ui_components` tipado como `list[type]`; apertar para `list[type[ComponentProps]]`.
 - `seed_if_enabled` lê o `get_settings()` global, não o settings do app (armadilha para `create_app(seed_demo_data=False)`).
 - Engine no nível do módulo: um app por processo.
 - `catalog._inline` só colapsa um único ramo não nulo de `anyOf` (`X | Y | None` não é suportado).

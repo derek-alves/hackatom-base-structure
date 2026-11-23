@@ -11,28 +11,18 @@ Ao concluir um item, apague-o daqui e registre o resultado (data, ambiente, evid
 
 ## Verificações manuais
 
-### 1. Fluxo completo com o Gemini real
+### 1. Fluxo do app mobile com Gemini real
 
-Origem: critério de aceite 3 do bootstrap (`docs/superpowers/plans/2026-11-09-hackathon-starter-bootstrap.md`, Task 17) e item 2 de "Depois deste projeto" da spec do design system. Hoje o caminho do agente só foi provado com `FakeLlm`. O teste e2e foi pulado por falta de chave.
+Origem: critério de aceite 3 do bootstrap (`docs/superpowers/plans/2026-11-09-hackathon-starter-bootstrap.md`, Task 17) e item 2 de "Depois deste projeto" da spec do design system. O backend já foi validado de ponta a ponta com Gemini real e stream SSE em 2026-11-23 (ver [Histórico](#histórico)). Resta a validação da interface no app Flutter.
 
-Pré-requisitos: `GEMINI_API_KEY` em `backend/.env`, simulador iOS e emulador Android.
+Pré-requisitos: `GEMINI_API_KEY` em `backend/.env`, backend no ar, simulador iOS e emulador Android.
 
 Os passos chamam o Gemini de verdade e consomem cota.
 
-1. `cd backend && uv run pytest -m e2e -v`. Esperado: PASS.
-2. Smoke do stream, com o backend no ar:
-
-   ```bash
-   curl -N -X POST localhost:8000/api/genui/stream \
-     -H 'content-type: application/json' \
-     -d '{"sessionId":"t","text":"Resumo das tarefas"}'
-   ```
-
-   Esperado: frames `a2ui`, sem `error`.
-3. No app (simulador iOS e emulador Android), tocar "Resumo de indicadores". Esperado: `SummaryKpiCard` nativo.
-4. Tocar "Minhas pendências", marcar itens e tocar "Confirmar". Esperado: o agente responde, e `GET /api/records?status=done` reflete a mudança.
-5. Pedir algo que gere resposta em texto. Esperado: o markdown aparece com cor e tamanho do tema. Ainda não houve verificação em device do markdown (ADR 0002).
-6. Tirar screenshots da Home e do assistente nas duas plataformas. A screenshot da Home no Android nunca foi capturada.
+1. No app (simulador iOS e emulador Android), tocar "Resumo de indicadores". Esperado: `SummaryKpiCard` nativo.
+2. Tocar "Minhas pendências", marcar itens e tocar "Confirmar". Esperado: o agente responde, e `GET /api/records?status=done` reflete a mudança.
+3. Pedir algo que gere resposta em texto. Esperado: o markdown aparece com cor e tamanho do tema. Ainda não houve verificação em device do markdown (ADR 0002).
+4. Tirar screenshots da Home e do assistente nas duas plataformas. A screenshot da Home no Android nunca foi capturada.
 
 Risco conhecido: na primeira execução real, a saída do Gemini pode não bater com o schema (camelCase × snake_case).
 
@@ -129,4 +119,4 @@ Caminhos relativos ao pacote, salvo indicação.
 
 ## Histórico
 
-Nenhuma verificação registrada ainda.
+- **2026-11-23:** Teste de ponta a ponta com Gemini real e ADK executado com sucesso no Windows (`cd backend && uv run pytest -m e2e -v` -> 1 passed). O smoke test de streaming SSE (`POST /api/genui/stream`) com prompt real gerou com sucesso o texto formatado e os componentes A2UI v1.0 (`SummaryKpiCard` e `InfoListCard`) populados com dados reais do banco SQLite.
