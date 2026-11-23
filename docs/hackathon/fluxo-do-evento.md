@@ -14,6 +14,7 @@ A skill `/hackathon` conduz o time do tema revelado até a entrega. Cada fase pr
 | 8h30 | `/hackathon prontidão` | Testes passando, backend no ar, `backend/.env` com o proxy (`LLM_PROVIDER`, `LLM_BASE_URL`, `LLM_API_KEY`) e `LLM_FALLBACK_MODELS` |
 | 9h | `/hackathon briefing` + colar o texto do tema e dos critérios | `00-briefing.md`, com os pesos oficiais no lugar dos provisórios |
 | 9h30-12h30 (sessão do Google) | `/hackathon ideias` | 8 ou mais ideias, filtros, notas e avaliação da `banca-simulada` → `01-ideia.md` |
+| a qualquer hora | `/hackathon validar` + a ideia do time | Ideia reescrita no formato, lacunas, filtros, nota, banca, 2 variações e veredito (seguir, ajustar ou trocar) → `01-ideia.md` |
 | 12h30 | `/hackathon arquitetura` | Contrato do agente, C4, decisões e mapa no repo → `02-arquitetura.md` e `06-dados.md`; a banca revisa |
 | 12h30 | `/hackathon plano` | Tarefas por pessoa e horário → `03-plano.md` |
 | 13h30-17h30 | `scripts/new_module.sh`, `/new-flow`, `/add-genui-widget`, `/add-mcp`, `/boot-theme`, `/add-ds-component` | Construção |

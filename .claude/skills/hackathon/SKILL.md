@@ -1,7 +1,7 @@
 ---
 name: hackathon
 description: Use quando o tema do hackathon for revelado ou o time precisar escolher a ideia, encaixá-la neste repo, dividir o trabalho por papel e horário, preparar o pitch de 10 minutos, gravar a demo ou montar o zip de entrega para os jurados.
-argument-hint: "[fase: briefing | ideias | arquitetura | plano | entrega] [texto do tema ou contexto]"
+argument-hint: "[fase: briefing | ideias | validar | arquitetura | plano | entrega] [texto do tema, da ideia ou contexto]"
 ---
 
 # /hackathon
@@ -23,13 +23,14 @@ Guia o time do tema revelado até a entrega, com o que a pesquisa sobre hackatho
 
 ## Fases
 
-Se o usuário indicar a fase, comece por ela. Senão, descubra pelo que já existe em `docs/hackathon/` e continue da primeira fase sem artefato.
+Se o usuário indicar a fase, comece por ela. Se ele trouxer uma ideia pronta para revisar, use a fase 2b, não a 2. Senão, descubra pelo que já existe em `docs/hackathon/` e continue da primeira fase sem artefato.
 
 | Fase | Quando | Artefato |
 |---|---|---|
 | 0. Prontidão | antes das 9h | checklist abaixo, sem arquivo |
 | 1. Briefing | 9h-9h30 | `docs/hackathon/00-briefing.md` |
 | 2. Ideias | sessão de ideação, até 12h30 | `docs/hackathon/01-ideia.md` |
+| 2b. Validar uma ideia pronta | quando o time chega com uma ideia | `docs/hackathon/01-ideia.md` |
 | 3. Arquitetura | 12h30-13h30 | `docs/hackathon/02-arquitetura.md`, `06-dados.md` |
 | 4. Plano | junto com a fase 3 | `docs/hackathon/03-plano.md` |
 | 5. Entrega | dia 2, até 12h30 | `04-pitch.md`, `05-demo.md`, `07-entrega.md`, gravação, vídeo, zip |
@@ -61,6 +62,23 @@ Preencha `00-briefing.md` com o texto literal do tema, critérios, pesos e entre
 6. Escolha com o time e preencha `01-ideia.md` (quadro de produto enxuto), com as ideias avaliadas e o parecer da banca no fim.
 
 Saída da fase: uma persona, um gatilho, uma jornada, uma métrica principal.
+
+### 2b. Validar uma ideia pronta
+
+Para quando o time já tem uma ideia e quer revisá-la. Não gere 8 ideias: trabalhe sobre a do time.
+
+Pesos: os oficiais do `00-briefing.md` se existirem; senão os provisórios da rubrica.
+
+1. **Reescreva no formato** da fase 2: `[persona com números] + [momento/gatilho] + [decisão que o agente ajuda] + [ML tradicional faz X] + [LLM faz Y] + [ação que o cliente confirma]`. Cada parte que a ideia não responde vira uma lacuna.
+   - Pergunte ao time só as lacunas que mudam a nota (no máximo 3). Time sem responder: assuma a resposta mais provável e marque "(suposição)".
+   - As outras lacunas, preencha como proposta marcada "(sugestão)".
+   - Quantifique a dor com dado, como no passo 2 da fase 2 (dataset do evento ou dado público citado).
+2. **Filtre** pelos eliminatórios de `references/rubrica.md` e cheque se é commodity (`references/vencedores.md`, seção 5). Reprovou: diga qual filtro e a menor mudança que a faz passar.
+3. **Pontue** pela rubrica, em tabela.
+4. **Banca independente:** despache a `banca-simulada` só com o texto reescrito (suposições e sugestões marcadas como tal) e o caminho da rubrica, sem a sua nota.
+5. **Duas variações** que mantêm a essência e atacam os 2 maiores riscos apontados (nota e banca). Pontue as duas com a rubrica. Se a melhor variação passar a original em mais de 0,5 ponto, mande-a também à banca.
+6. **Veredito**, em uma tabela `| | Original | Variação A | Variação B |` com nota final, critério Google e o maior risco de cada. Depois uma linha: **seguir**, **seguir com ajustes** (quais; pode combinar partes das variações) ou **trocar** (por quê).
+7. **Pare e peça a escolha ao time.** Só depois da escolha preencha `01-ideia.md` como na fase 2, com as suposições confirmadas ou corrigidas e o parecer da banca no fim.
 
 ### 3. Arquitetura
 
