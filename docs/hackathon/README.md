@@ -9,11 +9,13 @@ Regras:
 
 | Arquivo | Fase da skill | Quem puxa | Status |
 |---|---|---|---|
-| [`00-briefing.md`](00-briefing.md) | 1. Briefing | Produto | [ ] |
-| [`01-ideia.md`](01-ideia.md) | 2. Ideias | Produto + time | [ ] |
-| [`02-arquitetura.md`](02-arquitetura.md) | 3. Arquitetura | Engenharia + IA | [ ] |
-| [`03-plano.md`](03-plano.md) | 4. Plano | Produto | [ ] |
-| [`04-pitch.md`](04-pitch.md) | 5. Entrega | Produto + Design | [ ] |
-| [`05-demo.md`](05-demo.md) | 5. Entrega | Engenharia | [ ] |
-| [`06-dados.md`](06-dados.md) | 3. Arquitetura | Dados | [ ] |
-| [`07-entrega.md`](07-entrega.md) | 5. Entrega | Engenharia | [ ] |
+| [`00-briefing.md`](00-briefing.md) | 1. Briefing | Produto | [x] |
+| [`01-ideia.md`](01-ideia.md) | 2. Ideias | Produto + time | [x] Agente Familiar Avenue |
+| [`02-arquitetura.md`](02-arquitetura.md) | 3. Arquitetura | Engenharia + IA | [x] |
+| [`03-plano.md`](03-plano.md) | 4. Plano | Produto | [x] |
+| [`04-pitch.md`](04-pitch.md) | 5. Entrega | Produto + Design | [ ] rascunho |
+| [`05-demo.md`](05-demo.md) | 5. Entrega | Engenharia | [ ] rascunho |
+| [`06-dados.md`](06-dados.md) | 3. Arquitetura | Dados | [x] |
+| [`07-entrega.md`](07-entrega.md) | 5. Entrega | Engenharia | [ ] rascunho |
+
+Contexto fora desta pasta: ideia final em `docs/direcionamento/ideia-final/` (HTML da ideia e PDF da abertura); infra de IA da Avenue em [`../infra-ia/README.md`](../infra-ia/README.md).

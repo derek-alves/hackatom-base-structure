@@ -1,0 +1,981 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Contexto do Agente Familiar</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Carlito:ital,wght@0,400;0,700;1,400&display=swap">
+<style>
+/* Layout: coluna única de leitura com faixas Dólar nas aberturas de seção; diagramas sempre em painel claro */
+:root{
+  --bg:#FAF6F2;--fg:#002820;--muted:#3F5A53;--card:#FFFDF9;--tan:#E9D6BF;--gold:#D1B592;--palm:#36C665;
+  --line:#E2D6C3;--band:#002820;--on-band:#FFFFFF;--band-muted:#D1B592;--diagram:#FAF6F2;--chip-new:#E9D6BF;--warn:#F6E7CF;
+  --display:'Calibri Light','Calibri','Carlito',Arial,sans-serif;--body:'Calibri','Carlito',Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#011511;--fg:#F1ECE4;--muted:#B5C4BD;--card:#062A22;--tan:#22382F;--gold:#D1B592;--palm:#36C665;
+  --line:#1D3B33;--band:#002820;--on-band:#FFFFFF;--band-muted:#D1B592;--diagram:#FAF6F2;--chip-new:#2E4A3F;--warn:#3A3424;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#011511;--fg:#F1ECE4;--muted:#B5C4BD;--card:#062A22;--tan:#22382F;--gold:#D1B592;--palm:#36C665;
+  --line:#1D3B33;--band:#002820;--on-band:#FFFFFF;--band-muted:#D1B592;--diagram:#FAF6F2;--chip-new:#2E4A3F;--warn:#3A3424;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:17px;line-height:1.55;margin:0}
+.wrap{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.hero{background:var(--band);color:var(--on-band);margin-top:calc(-1 * env(safe-area-inset-top,0px));padding-top:calc(env(safe-area-inset-top,0px) + 3rem);padding-bottom:2.5rem}
+.hero .eyebrow{color:var(--palm)}
+.hero h1{font-family:var(--display);font-weight:300;font-size:clamp(2rem,5vw,3.4rem);line-height:1.05;margin:.4rem 0 .6rem;text-wrap:balance}
+.hero p{color:#E9D6BF;max-width:62ch;margin:0}
+.actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:1.4rem;align-items:center}
+button{font:inherit;font-weight:700;border-radius:999px;padding:.55rem 1.2rem;cursor:pointer}
+.btn-p{background:var(--palm);color:#002820;border:2px solid var(--palm)}
+.btn-s{background:transparent;color:var(--on-band);border:2px solid var(--gold)}
+button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.copied{color:var(--palm);font-weight:700}
+nav.toc{display:flex;gap:8px;flex-wrap:wrap;margin-top:1.4rem}
+nav.toc a{color:var(--on-band);text-decoration:none;border:1px solid rgba(209,181,146,.5);border-radius:999px;padding:.2rem .8rem;font-size:.9rem}
+.eyebrow{font-size:.8rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+section.sec{padding-block:2.6rem;border-bottom:1px solid var(--line)}
+section.sec > .wrap > h2{font-family:var(--display);font-weight:300;font-size:clamp(1.6rem,3.4vw,2.3rem);line-height:1.15;margin:.3rem 0 .8rem;text-wrap:balance}
+.lede{max-width:68ch;color:var(--muted);margin:0 0 1.4rem}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.g4{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;min-width:0}
+.card h3{font-family:var(--display);font-weight:400;font-size:1.3rem;margin:0 0 .4rem}
+.card p{margin:0}
+.card.dark{background:var(--band);color:var(--on-band);border-color:var(--band)}
+.card.dark p{color:#E9D6BF}
+.big{font-family:var(--display);font-weight:300;font-size:2.6rem;line-height:1;font-variant-numeric:tabular-nums}
+.src{display:inline-block;margin-top:.5rem;font-size:.72rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;background:var(--tan);border-radius:4px;padding:1px 6px}
+.src.warn{background:var(--warn);border:1px dashed var(--gold)}
+.quote{font-family:var(--display);font-size:1.25rem;line-height:1.3}
+.tag{font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:.6rem}
+.flowline{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:1rem 0}
+.flowline span.b{border:1px solid var(--gold);border-radius:999px;padding:.4rem 1rem}
+.flowline span.b.on{background:var(--palm);border-color:var(--palm);color:#002820;font-weight:700}
+.flowline .arr{color:var(--gold)}
+.bars{display:flex;flex-direction:column;gap:8px}
+.bar{display:grid;grid-template-columns:minmax(110px,190px) 1fr 3.2rem;gap:10px;align-items:center;font-size:.95rem}
+.track{height:14px;background:var(--tan);border-radius:7px;overflow:hidden}
+.fill{height:100%;background:var(--fg);border-radius:7px}
+.fill.hl{background:var(--palm)}
+.bar .v{font-variant-numeric:tabular-nums;font-weight:700;text-align:right}
+.diagram{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;overflow-x:auto;margin:1rem 0}
+.diagram pre.mermaid{margin:0;background:transparent;color:var(--fg);text-align:center}
+.tbl{overflow-x:auto;margin:1rem 0;border:1px solid var(--line);border-radius:12px}
+table{border-collapse:collapse;width:100%;font-size:.95rem;min-width:620px}
+th{background:var(--band);color:var(--on-band);text-align:left;padding:.55rem .7rem;font-weight:700}
+td{padding:.55rem .7rem;border-top:1px solid var(--line);vertical-align:top}
+.chip{display:inline-block;font-size:.75rem;font-weight:700;border-radius:999px;padding:.1rem .6rem;white-space:nowrap}
+.c-ok{background:var(--palm);color:#002820}
+.c-new{background:var(--chip-new);color:var(--fg)}
+.c-chk{border:1.5px dashed var(--gold);color:var(--fg)}
+.c-yes{background:var(--palm);color:#002820}
+.c-no{background:transparent;border:1px solid var(--line);color:var(--muted)}
+.c-part{background:var(--chip-new);color:var(--fg)}
+.voice{display:flex;flex-direction:column;gap:10px}
+.say{background:var(--bg);border:1px solid var(--gold);border-radius:14px 14px 4px 14px;padding:.6rem .8rem;align-self:flex-end;max-width:95%}
+.reply{background:var(--band);color:var(--on-band);border-radius:14px 14px 14px 4px;padding:.6rem .8rem;max-width:95%}
+.reply b{display:block;font-size:.7rem;letter-spacing:.12em;text-transform:uppercase;color:var(--palm)}
+.who{font-size:.85rem;color:var(--muted)}
+.ok{font-size:.85rem;font-weight:700}
+.sw{display:flex;gap:12px;flex-wrap:wrap}
+.swatch{width:150px;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card)}
+.swatch i{display:block;height:58px}
+.swatch div{padding:.5rem .6rem;font-size:.85rem}
+.swatch code{font-size:.8rem}
+.dd{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.do,.dont{border-radius:16px;padding:16px 18px;border:1px solid var(--line);background:var(--card)}
+.do h3,.dont h3{margin:0 0 .4rem;font-size:1rem;letter-spacing:.1em;text-transform:uppercase}
+.do h3{color:var(--fg)}
+.do ul,.dont ul{margin:0;padding-left:1.1rem}
+.screens{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}
+.screen{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:14px;min-width:0}
+.screen .n{font-size:.75rem;font-weight:700;letter-spacing:.12em;color:var(--muted)}
+.screen h3{font-size:1.05rem;margin:.2rem 0}
+.screen p{margin:0;font-size:.9rem;color:var(--muted)}
+.decision{background:var(--card);border:1px solid var(--gold);border-radius:16px;overflow:hidden}
+.decision header{background:var(--warn);padding:.6rem 1rem;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;font-weight:700}
+.decision .sides{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:var(--line)}
+.decision .sides div{background:var(--card);padding:.8rem 1rem}
+.decision .sides b{display:block;font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.decision .rec{padding:.8rem 1rem;border-top:1px solid var(--line)}
+.decision .rec b{color:var(--fg)}
+.resolved{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.res{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.res .t{font-weight:700}
+.res .from{font-size:.9rem;color:var(--muted);margin:.3rem 0}
+.res .to{font-size:.95rem}
+ul.plain{margin:0;padding-left:1.2rem}
+footer{padding-block:2rem;color:var(--muted);font-size:.9rem}
+@media (prefers-reduced-motion:no-preference){.card,.res,.decision{transition:transform .15s ease}}
+</style>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">AI Hackathon 2026 · Contexto para o protótipo</p>
+    <h1>Agente Familiar Avenue</h1>
+    <p>Fonte única para gerar o protótipo do app. Junta o deck Legado Avenue, o pitch HTML do Agente Familiar, as anotações do time e os dados do Movimento Global. Valores, nomes e conversas são ilustrativos, exceto os números com fonte.</p>
+    <div class="actions">
+      <button class="btn-p" id="copy-md" type="button">Copiar o MD para o gerador de protótipo</button>
+      <span id="copy-status" class="copied" aria-live="polite"></span>
+    </div>
+    <nav class="toc" aria-label="Seções">
+      <a href="#tese">Tese</a><a href="#problema">Problema</a><a href="#familia">Família</a><a href="#papeis">Papéis</a><a href="#funcionalidades">Funcionalidades</a><a href="#voz">Voz</a><a href="#ia">IA e regra</a><a href="#arquitetura">Arquitetura</a><a href="#marca">Marca e tom</a><a href="#telas">Telas</a><a href="#divergencias">Divergências</a>
+    </nav>
+  </div>
+</header>
+
+<section class="sec" id="tese"><div class="wrap">
+  <p class="eyebrow">1 · A tese</p>
+  <h2>Cuidando da sua família, seu maior patrimônio</h2>
+  <p class="lede">Uma dupla cuida da vida financeira global da família: o Agente Familiar, de IA, por voz ou texto, e o Agente Especialista, humano, que entra na mesma conversa quando o assunto pede. O protagonista é o cliente: ele decide.</p>
+  <div class="grid g4">
+    <div class="card"><h3>A família é o maior patrimônio</h3><p>A unidade de cuidado deixa de ser a conta e passa a ser a família.</p></div>
+    <div class="card"><h3>A maior herança é o conhecimento</h3><p>O filho herda o conhecimento de cuidar de uma vida financeira global e encontra tudo encaminhado e atual.</p></div>
+    <div class="card dark"><h3>Os bancos guardam o dinheiro</h3><p>A Avenue guarda a história da família que vem com ele.</p></div>
+    <div class="card"><h3>O cliente é o protagonista</h3><p>A dupla prepara, explica e sugere. Quem decide é sempre o cliente.</p></div>
+  </div>
+  <div class="flowline" aria-label="Posicionamento em três passos">
+    <span class="b">“Onde eu guardo meus dólares”</span><span class="arr">→</span>
+    <span class="b">“Quem cuida do meu patrimônio comigo”</span><span class="arr">→</span>
+    <span class="b on">“Quem cuida da minha família, hoje e depois de mim”</span>
+  </div>
+</div></section>
+
+<section class="sec" id="problema"><div class="wrap">
+  <p class="eyebrow">2 · Problema e oportunidade</p>
+  <h2>A riqueza vai mudar de geração, e a família ainda não está na tela</h2>
+  <div class="grid g4">
+    <div class="card"><div class="big">70%</div><p>dos herdeiros trocam de instituição financeira logo após a herança</p><span class="src">JP Morgan</span></div>
+    <div class="card"><div class="big">14,7 mil</div><p>clientes acima de US$ 50 mil sem usar Banking</p><span class="src">Databricks</span></div>
+    <div class="card"><div class="big">36%</div><p>do AUC está com clientes que têm o banking ocioso</p><span class="src">Databricks</span></div>
+    <div class="card"><div class="big">23%</div><p>da base chegou por indicação da própria família</p><span class="src">Pesquisa Avenue</span></div>
+  </div>
+  <div class="grid g2" style="margin-top:16px">
+    <div class="card">
+      <h3>Por que o cliente investe fora</h3>
+      <p class="who" style="margin-bottom:.8rem">% das respostas, múltipla escolha</p>
+      <div class="bars">
+        <div class="bar"><span>Proteção do real</span><div class="track"><div class="fill" style="width:89%"></div></div><span class="v">89%</span></div>
+        <div class="bar"><span>Potencial de ganho</span><div class="track"><div class="fill" style="width:36%"></div></div><span class="v">36%</span></div>
+        <div class="bar"><span>Legado familiar</span><div class="track"><div class="fill hl" style="width:18%"></div></div><span class="v">18%</span></div>
+        <div class="bar"><span>Morar fora</span><div class="track"><div class="fill" style="width:7%"></div></div><span class="v">7%</span></div>
+        <div class="bar"><span>Outros</span><div class="track"><div class="fill" style="width:2%"></div></div><span class="v">2%</span></div>
+        <div class="bar"><span>Imóveis fora</span><div class="track"><div class="fill" style="width:1%"></div></div><span class="v">1%</span></div>
+      </div>
+      <span class="src">O Movimento Global</span>
+    </div>
+    <div class="card">
+      <h3>O ponto forte da Avenue</h3>
+      <p class="who" style="margin-bottom:.8rem">% das respostas, múltipla escolha</p>
+      <div class="bars">
+        <div class="bar"><span>Invest + conta + cartão</span><div class="track"><div class="fill hl" style="width:46%"></div></div><span class="v">46%</span></div>
+        <div class="bar"><span>Diversificação</span><div class="track"><div class="fill" style="width:42%"></div></div><span class="v">42%</span></div>
+        <div class="bar"><span>Outros</span><div class="track"><div class="fill" style="width:21%"></div></div><span class="v">21%</span></div>
+        <div class="bar"><span>Conteúdo</span><div class="track"><div class="fill" style="width:20%"></div></div><span class="v">20%</span></div>
+        <div class="bar"><span>Atendimento</span><div class="track"><div class="fill" style="width:20%"></div></div><span class="v">20%</span></div>
+      </div>
+      <span class="src">O Movimento Global</span>
+    </div>
+  </div>
+  <p class="lede" style="margin-top:1.2rem">Leitura: o ponto forte já é ter investimento e conta juntos, e o legado é a oportunidade que cresce. O Espaço Família é a ponte entre banking, investimento e família, e nasce da assessoria.</p>
+  <div class="grid g4">
+    <div class="card"><p class="quote">“O dinheiro da família está em cinco telas e numa planilha.”</p><p class="tag">Centralização</p></div>
+    <div class="card"><p class="quote">“Se algo acontecer comigo, o que acontece com meus dólares?”</p><p class="tag">Sucessão</p></div>
+    <div class="card"><p class="quote">“Todo ano eu refaço o imposto de todo mundo.”</p><p class="tag">Falta de tempo</p></div>
+    <div class="card"><p class="quote">“Meu pai não consegue mexer no app.”</p><p class="tag">Acessibilidade</p></div>
+  </div>
+</div></section>
+
+<section class="sec" id="familia"><div class="wrap">
+  <p class="eyebrow">3 · A família de exemplo</p>
+  <h2>Família Almeida: owners definidos, membros convidados</h2>
+  <p class="lede">Fictícia, para todas as telas do protótipo. Os owners podem ser uma ou mais pessoas; os demais entram por convite com papel e permissões.</p>
+  <div class="diagram"><pre class="mermaid">
+flowchart TB
+  subgraph OW["Owners, definidos pela família"]
+    M["Marcos, 52 · titular"]
+    H["Helena, 49 · cônjuge"]
+  end
+  OW --> EF(("Espaço Família"))
+  EF --> P["Pedro, 24 · membro adulto, Boston"]
+  EF --> A["Ana, 16 · cartão de dependente"]
+  EF --> L["Dona Lúcia, 78 · usa a voz"]
+  AG["Agente Familiar"] -. "conversa com todos" .-> EF
+  AS["Rafael · Agente Especialista"] -. "entra na mesma conversa" .-> EF
+  style EF fill:#002820,color:#FFFFFF,stroke:#002820
+  style AG fill:#36C665,color:#002820,stroke:#002820
+  </pre></div>
+  <div class="tbl"><table>
+    <tr><th>Pessoa</th><th>Papel</th><th>Como usa</th><th>O que quer</th></tr>
+    <tr><td>Marcos, 52</td><td>Owner (titular)</td><td>App e voz no carro</td><td>Visão do todo, IR sem retrabalho, sucessão organizada</td></tr>
+    <tr><td>Helena, 49</td><td>Owner (cônjuge)</td><td>App</td><td>Despesas do casal claras, cada um com sua conta</td></tr>
+    <tr><td>Pedro, 24</td><td>Membro adulto convidado</td><td>App, às vezes em inglês</td><td>Entender o que vai herdar e construir o próprio patrimônio</td></tr>
+    <tr><td>Ana, 16</td><td>Dependente</td><td>App simplificado</td><td>Mesada, cofrinho do intercâmbio, aprender</td></tr>
+    <tr><td>Dona Lúcia, 78</td><td>Membro por voz</td><td>Só voz</td><td>Mandar presente de aniversário, saber se está tudo bem</td></tr>
+    <tr><td>Rafael</td><td>Agente Especialista (humano)</td><td>Extranet e Salesforce</td><td>Entrar na conversa já sabendo a história da família</td></tr>
+  </table></div>
+</div></section>
+
+<section class="sec" id="papeis"><div class="wrap">
+  <p class="eyebrow">4 · Papéis e permissões</p>
+  <h2>O cliente decide: o owner aprova, o membro sugere</h2>
+  <div class="tbl"><table>
+    <tr><th>Ação</th><th>Owner</th><th>Membro adulto</th><th>Dependente</th><th>Membro por voz</th><th>Agente Especialista</th></tr>
+    <tr><td>Ver patrimônio da família</td><td><span class="chip c-yes">Sim</span></td><td><span class="chip c-part">Só o liberado</span></td><td><span class="chip c-no">Não</span></td><td><span class="chip c-part">Só o próprio</span></td><td><span class="chip c-part">Com consentimento</span></td></tr>
+    <tr><td>Convidar e definir papel</td><td><span class="chip c-yes">Sim</span></td><td><span class="chip c-no">Não</span></td><td><span class="chip c-no">Não</span></td><td><span class="chip c-no">Não</span></td><td><span class="chip c-no">Não</span></td></tr>
+    <tr><td>Aprovar dinheiro, limite ou permissão</td><td><span class="chip c-yes">Sim</span></td><td><span class="chip c-part">Na própria conta</span></td><td><span class="chip c-no">Não</span></td><td><span class="chip c-part">No app de quem cuida</span></td><td><span class="chip c-no">Não</span></td></tr>
+    <tr><td>Sugerir ação ao owner</td><td><span class="chip c-yes">Sim</span></td><td><span class="chip c-yes">Sim</span></td><td><span class="chip c-yes">Sim</span></td><td><span class="chip c-yes">Sim</span></td><td><span class="chip c-yes">Sim</span></td></tr>
+    <tr><td>Recomendar investimento</td><td><span class="chip c-no">Não</span></td><td><span class="chip c-no">Não</span></td><td><span class="chip c-no">Não</span></td><td><span class="chip c-no">Não</span></td><td><span class="chip c-yes">Se certificado e o cliente pedir</span></td></tr>
+    <tr><td>Decidir</td><td><span class="chip c-yes">Sim</span></td><td><span class="chip c-part">Na própria conta</span></td><td><span class="chip c-no">Não</span></td><td><span class="chip c-part">Com quem cuida dele</span></td><td><span class="chip c-no">Nunca pelo cliente</span></td></tr>
+    <tr><td>Mudar beneficiário ou titularidade</td><td><span class="chip c-part">Dupla aprovação</span></td><td><span class="chip c-no">Não</span></td><td><span class="chip c-no">Não</span></td><td><span class="chip c-no">Não</span></td><td><span class="chip c-no">Não</span></td></tr>
+  </table></div>
+</div></section>
+
+<section class="sec" id="funcionalidades"><div class="wrap">
+  <p class="eyebrow">5 · Funcionalidades</p>
+  <h2>O que o protótipo mostra</h2>
+  <p class="lede"><span class="chip c-ok">Já existe</span> produto ou API da Avenue hoje · <span class="chip c-new">Novo</span> construir · <span class="chip c-chk">Confirmar</span> checar com o produto</p>
+  <div class="tbl"><table>
+    <tr><th>#</th><th>Funcionalidade</th><th>O que faz</th><th>Status</th><th>Dor</th></tr>
+    <tr><td>F1</td><td>Espaço Família</td><td>Patrimônio por membro, decisões pendentes, vencimentos</td><td><span class="chip c-new">Novo</span></td><td>Centralização</td></tr>
+    <tr><td>F2</td><td>Convite para membros</td><td>Owner convida e define papel e o que cada um vê</td><td><span class="chip c-new">Novo</span></td><td>Centralização</td></tr>
+    <tr><td>F3</td><td>Evolução patrimonial</td><td>Linha do tempo da família e de cada membro</td><td><span class="chip c-new">Novo</span></td><td>Centralização</td></tr>
+    <tr><td>F4</td><td>Retrospectiva do ano</td><td>Preparada pela dupla e revisada com a família; linguagem por membro</td><td><span class="chip c-new">Novo</span></td><td>Comunicação</td></tr>
+    <tr><td>F5</td><td>Despesas do casal</td><td>Contas separadas, despesas comuns divididas</td><td><span class="chip c-new">Novo</span></td><td>Tempo</td></tr>
+    <tr><td>F6</td><td>Rendimento para o filho</td><td>O rendimento de uma aplicação vai para o cofrinho do filho</td><td><span class="chip c-new">Novo</span></td><td>Next gen</td></tr>
+    <tr><td>F7</td><td>Mesada e cartão de dependente</td><td>Mesada em dólar com regra em linguagem natural</td><td><span class="chip c-ok">Cartão</span> <span class="chip c-new">Mesada</span></td><td>Tempo</td></tr>
+    <tr><td>F8</td><td>Carteira recomendada</td><td>Explicada pela dupla, decidida pelo cliente</td><td><span class="chip c-ok">Já existe</span></td><td>Autonomia</td></tr>
+    <tr><td>F9</td><td>Avenue Legacy</td><td>Mapa de sucessão e preparação dos herdeiros</td><td><span class="chip c-new">Novo</span></td><td>Sucessão</td></tr>
+    <tr><td>F10</td><td>Agente por voz e texto</td><td>Conversa com qualquer membro com o dado real</td><td><span class="chip c-ok">Agentes</span> <span class="chip c-chk">Voz cliente</span></td><td>Acessibilidade</td></tr>
+    <tr><td>F11</td><td>Memória e coerência com os planos</td><td>Avisa quando o comportamento diverge do plano</td><td><span class="chip c-new">Novo</span></td><td>Comunicação</td></tr>
+    <tr><td>F12</td><td>Dupla de agentes</td><td>O especialista entra na mesma conversa, com a história da família</td><td><span class="chip c-ok">Briefing</span> <span class="chip c-new">Conversa</span></td><td>Segurança</td></tr>
+    <tr><td>F13</td><td>IR da família</td><td>Rascunho por membro com MyProfit e Agente de IR</td><td><span class="chip c-ok">Agente de IR</span> <span class="chip c-new">Família</span></td><td>Tempo</td></tr>
+    <tr><td>F14</td><td>Cofrinhos e P2P entre membros</td><td>Objetivos e transferências dentro da família</td><td><span class="chip c-chk">Confirmar</span></td><td>Centralização</td></tr>
+    <tr><td>F15</td><td>POD</td><td>Indicação de beneficiários, ligada ao mapa de sucessão</td><td><span class="chip c-ok">Já existe</span></td><td>Sucessão</td></tr>
+    <tr><td>F16</td><td>Seguros</td><td>Proteção da família em moeda forte; o agente aponta lacunas</td><td><span class="chip c-new">Novo · fase 3</span></td><td>Sucessão</td></tr>
+  </table></div>
+  <h3 style="font-family:var(--display);font-weight:400;font-size:1.4rem;margin:1.6rem 0 .6rem">Avenue Legacy: os quatro cards</h3>
+  <div class="grid g4">
+    <div class="card dark"><h3>Sucessão patrimonial</h3><p>Mapa por ativo e titular: exposição ao estate tax, beneficiários e o que levar ao especialista</p></div>
+    <div class="card dark"><h3>Preparação da próxima geração</h3><p>Herdeiros conhecem a Avenue antes do evento, com acesso definido pelo owner</p></div>
+    <div class="card dark"><h3>Inteligência financeira</h3><p>Trilhas por idade a partir dos eventos reais: primeiro dividendo, câmbio, viagem</p></div>
+    <div class="card dark"><h3>Vida financeira global</h3><p>Estudar, morar ou se aposentar fora: conta, cartão, câmbio, W-8BEN, W-9, crédito</p></div>
+  </div>
+  <p class="who" style="margin-top:.6rem">O agente organiza, explica e prepara a conversa. Decisão jurídica e fiscal fica com o especialista Avenue / Itaú.</p>
+  <h3 style="font-family:var(--display);font-weight:400;font-size:1.4rem;margin:1.6rem 0 .6rem">Evolução patrimonial e Retrospectiva: a mesma base, dois usos</h3>
+  <div class="tbl"><table>
+    <tr><th></th><th>Evolução patrimonial</th><th>Retrospectiva</th></tr>
+    <tr><td>Quando</td><td>Sempre disponível</td><td>Uma vez por ano e a pedido</td></tr>
+    <tr><td>Quem faz</td><td>O Agente Familiar</td><td>A dupla prepara e revisa com a família</td></tr>
+    <tr><td>Pedro, 24</td><td>Gráfico do próprio patrimônio e do plano</td><td>Resumo curto e compartilhável: “seu ano em dólar”</td></tr>
+    <tr><td>Marcos, 52</td><td>Patrimônio da família por membro</td><td>Relatório do ano com evolução, IR e próximos passos de legado</td></tr>
+    <tr><td>Dona Lúcia, 78</td><td>“Está tudo certo, seu saldo subiu”, por voz</td><td>Conversa por voz com o resumo em três frases</td></tr>
+  </table></div>
+</div></section>
+
+<section class="sec" id="voz"><div class="wrap">
+  <p class="eyebrow">6 · Comandos de voz</p>
+  <h2>Cada comando responde a uma dor</h2>
+  <div class="grid g3">
+    <div class="card voice"><p class="tag" style="margin:0">Acessibilidade</p><p class="who">Dona Lúcia, por voz</p><p class="say">“Quanto tem no cofrinho do meu neto? Quero mandar 200 dólares de aniversário.”</p><p class="reply"><b>Agente Familiar</b>O cofrinho do Pedro tem US$ 1.840. Mandei a confirmação para o celular do Marcos.</p><p class="ok">Aprovação no app do owner</p></div>
+    <div class="card voice"><p class="tag" style="margin:0">Falta de tempo</p><p class="who">Marcos, no carro</p><p class="say">“Como está o imposto da família este ano?”</p><p class="reply"><b>Agente Familiar</b>Faltam dois informes: o da Helena e o do Pedro. Quer que eu peça a eles?</p><p class="ok">Só consulta</p></div>
+    <div class="card voice"><p class="tag" style="margin:0">Centralização</p><p class="who">Helena</p><p class="say">“Quanto a gente gastou de despesa da casa este mês, e de quem?”</p><p class="reply"><b>Agente Familiar</b>Resumo das despesas comuns, dividido por pessoa, com o detalhe no app.</p><p class="ok">Só consulta</p></div>
+    <div class="card voice"><p class="tag" style="margin:0">Comunicação</p><p class="who">Marcos</p><p class="say">“Aumenta a mesada da Ana na proporção dos gastos da escola e explica para ela por quê.”</p><p class="reply"><b>Agente Familiar</b>Proposta com valores e uma mensagem pronta para a Ana. Você aprova e eu aviso.</p><p class="ok">Aprovação no app</p></div>
+    <div class="card voice"><p class="tag" style="margin:0">Sucessão</p><p class="who">Marcos</p><p class="say">“Se algo acontecer comigo, o que acontece com meus dólares?”</p><p class="reply"><b>Agente Familiar</b>Montei o mapa da família e chamei o Rafael, nosso especialista, para esta conversa.</p><p class="ok">Especialista entra na mesma conversa</p></div>
+    <div class="card voice"><p class="tag" style="margin:0">Next gen</p><p class="who">Pedro</p><p class="say">“O que eu preciso saber sobre o patrimônio da família?”</p><p class="reply"><b>Agente Familiar</b>Explicação no seu nível, só do que seus pais liberaram para você.</p><p class="ok">Só consulta</p></div>
+  </div>
+</div></section>
+
+<section class="sec" id="ia"><div class="wrap">
+  <p class="eyebrow">7 · Diferencial de IA</p>
+  <h2>Uma dupla, uma conversa, você decide</h2>
+  <p class="lede">O cliente não troca de canal nem repete a história: o Agente Especialista entra na mesma conversa do Agente Familiar quando o assunto pede.</p>
+  <div class="grid g3">
+    <div class="card dark"><h3>Agente Familiar · IA</h3><ul class="plain"><li>Sempre disponível, por voz ou texto</li><li>Ouve a família e lê documentos</li><li>Descobre a intenção</li><li>Explica no nível de cada membro</li><li>Memória e coerência com os planos</li></ul></div>
+    <div class="card"><h3>Agente Especialista · humano</h3><ul class="plain"><li>Entra na conversa quando o assunto pede</li><li>Sucessão e planejamento</li><li>Recomenda quando o cliente pede</li><li>Especialistas Avenue / Itaú</li><li>Revisa a Retrospectiva com a família</li></ul></div>
+    <div class="card"><h3>Regras auditáveis · por trás</h3><ul class="plain"><li>Patrimônio consolidado</li><li>Cálculo de IR e DARF</li><li>Limites do cartão e da mesada</li><li>Risco sucessório por ativo</li><li>Avisos por evento</li></ul></div>
+  </div>
+  <div class="diagram"><pre class="mermaid">
+flowchart LR
+  E["Entrada: voz, chat, documento"] --> IA["IA: entende, lê, pergunta o que falta"]
+  IA --> G["Grafo da família"]
+  G --> R["Motor de regras, sem LLM"]
+  R --> A["Proposta com valor em US$"]
+  A --> OK{"Cliente decide"}
+  OK -- "sim" --> X["Executa e registra"]
+  OK -- "não" --> N["Nada acontece"]
+  AS["Agente Especialista"] -. "entra na conversa quando o assunto pede" .-> IA
+  style IA fill:#002820,color:#FFFFFF,stroke:#002820
+  style G stroke:#36C665,stroke-width:3px
+  </pre></div>
+  <h3 style="font-family:var(--display);font-weight:400;font-size:1.4rem;margin:1.6rem 0 .6rem">Fluxo de aprovação</h3>
+  <div class="diagram"><pre class="mermaid">
+sequenceDiagram
+  autonumber
+  actor L as Dona Lúcia (voz)
+  participant AG as Agente Familiar
+  participant R as Regras e APIs
+  actor M as Marcos (owner)
+  L->>AG: Manda 200 dólares para o Pedro
+  AG->>R: saldo, cofrinho, limite
+  R-->>AG: dados
+  AG-->>L: Mandei a confirmação para o Marcos
+  AG->>M: proposta no app com valor e impacto
+  M->>M: biometria
+  M-->>AG: aprovado
+  AG->>R: executa
+  AG-->>L: Pronto, o Pedro recebeu
+  </pre></div>
+</div></section>
+
+<section class="sec" id="arquitetura"><div class="wrap">
+  <p class="eyebrow">8 · Arquitetura</p>
+  <h2>Quase tudo já existe; o novo é pequeno</h2>
+  <div class="tbl"><table>
+    <tr><th></th><th>Já temos</th><th>Vamos criar</th></tr>
+    <tr><td><b>Produto</b></td><td><span class="chip c-ok">Cartão de dependente</span> <span class="chip c-ok">Carteira recomendada</span> <span class="chip c-ok">IR com MyProfit</span> <span class="chip c-ok">POD</span></td><td><span class="chip c-new">Espaço Família</span> <span class="chip c-new">Seguros</span> <span class="chip c-new">Evolução e Retrospectiva</span> <span class="chip c-new">Avenue Legacy</span></td></tr>
+    <tr><td><b>Tecnologia</b></td><td><span class="chip c-ok">CX Agent AI</span> <span class="chip c-ok">Acesso seguro com o OK do cliente</span> <span class="chip c-ok">Memória do relacionamento</span> <span class="chip c-ok">Diagnóstico de carteira</span></td><td><span class="chip c-new">Agente Familiar de voz</span> <span class="chip c-new">Evolução do Patrimônio da Família</span> <span class="chip c-new">Permissões por membro</span> <span class="chip c-new">Conversa compartilhada</span></td></tr>
+  </table></div>
+  <div class="diagram"><pre class="mermaid">
+flowchart TB
+  subgraph Canais
+    APP["App: Espaço Família"]
+    VOZ["Voz"]
+    ASS["Agente Especialista"]
+  end
+  APP --> AG["Agente Familiar"]
+  VOZ --> AG
+  AG --> PIT["pit-mcp: consentimento por membro"]
+  PIT --> S1["accounts"]
+  PIT --> S2["banking"]
+  PIT --> S3["insights e memória"]
+  PIT --> S4["wallet-diagnostic"]
+  PIT --> S5["MyProfit"]
+  AG <-->|mesma conversa| ASS
+  style AG fill:#002820,color:#FFFFFF,stroke:#002820
+  style PIT stroke:#36C665,stroke-width:3px
+  </pre></div>
+  <div class="tbl"><table>
+    <tr><th>Peça</th><th>O que já existe</th><th>Onde</th><th>Falta construir</th></tr>
+    <tr><td>Voz e chat</td><td>CX Agent AI (CX Agent Studio)</td><td>Contact Center</td><td>Roteiro familiar; confirmar voz para cliente</td></tr>
+    <tr><td>Patrimônio</td><td>GetPortfolio, TotalAuC, BankingBalance</td><td>accounts</td><td>Consolidação por família</td></tr>
+    <tr><td>Evolução</td><td>TotalNetTimeSeries, histórico de performance</td><td>insights, digital</td><td>Visão por membro</td></tr>
+    <tr><td>Risco sucessório</td><td>GetWalletDiagnostic, com nota e texto</td><td>wallet-diagnostic</td><td>Ler o grafo da família</td></tr>
+    <tr><td>Memória</td><td>GetAccountMemory e AccountBriefing</td><td>insights</td><td>Intenções, planos, eventos de vida</td></tr>
+    <tr><td>Cartão de dependente</td><td>GetCards, CardholderService</td><td>banking</td><td>Mesada com regra</td></tr>
+    <tr><td>IR</td><td>IncomeTaxAnnualReport e pendências</td><td>accounts, MyProfit</td><td>Visão da família</td></tr>
+    <tr><td>Carteira recomendada</td><td>recommendation, Agente de Carteira</td><td>assessoria-core</td><td>Contexto da família</td></tr>
+    <tr><td>Consentimento</td><td>Grant por conta no pit-mcp</td><td>iam</td><td>Escopo por membro</td></tr>
+    <tr><td>Agente Especialista</td><td>Briefing e case no Salesforce</td><td>insights, Salesforce</td><td>Entrar na mesma conversa do Agente Familiar</td></tr>
+  </table></div>
+  <h3 style="font-family:var(--display);font-weight:400;font-size:1.4rem;margin:1.6rem 0 .6rem">Guardrails</h3>
+  <ol>
+    <li>A voz nunca aprova sozinha: a movimentação é confirmada no app do owner.</li>
+    <li>Dupla aprovação para mudar beneficiário ou titularidade.</li>
+    <li>Limites por valor e frequência definidos pelo owner.</li>
+    <li>O Agente Familiar explica e sugere; recomendação só do especialista certificado, quando o cliente pede. Quem decide é o cliente.</li>
+    <li>Consentimento por membro (LGPD), revogável.</li>
+    <li>Dado sensível só com consentimento explícito.</li>
+    <li>Texto sobre estate tax e herança nos EUA passa pelo Jurídico.</li>
+    <li>Trilha de auditoria por membro.</li>
+  </ol>
+</div></section>
+
+<section class="sec" id="marca"><div class="wrap">
+  <p class="eyebrow">9 · Identidade e tom</p>
+  <h2>Nova Marca Avenue 2024</h2>
+  <div class="sw">
+    <div class="swatch"><i style="background:#002820"></i><div>Dólar<br><code>#002820</code></div></div>
+    <div class="swatch"><i style="background:#011511"></i><div>Investment<br><code>#011511</code></div></div>
+    <div class="swatch"><i style="background:#FAF6F2"></i><div>Off White<br><code>#FAF6F2</code></div></div>
+    <div class="swatch"><i style="background:#E9D6BF"></i><div>Wealth Tan<br><code>#E9D6BF</code></div></div>
+    <div class="swatch"><i style="background:#D1B592"></i><div>Gold Reserve<br><code>#D1B592</code></div></div>
+    <div class="swatch"><i style="background:#36C665"></i><div>Palm Tree<br><code>#36C665</code></div></div>
+  </div>
+  <p class="who" style="margin-top:.8rem">Avenue Pro Display nos títulos e Avenue Pro Text no corpo; alternativa Calibri Light e Calibri. Palm Tree para ação e aprovação. Nunca branco puro de fundo.</p>
+  <div class="dd" style="margin-top:1rem">
+    <div class="do"><h3>Fazer</h3><ul><li>“O Pedro vai herdar o conhecimento e encontrar tudo encaminhado”</li><li>Frases curtas, com o valor em US$</li><li>Deixar claro que quem decide é o cliente: “você decide”</li><li>“Preparei para você revisar”</li><li>“Chamei o Rafael para esta conversa”</li></ul></div>
+    <div class="dont"><h3>Não fazer</h3><ul><li>“Seus filhos não sabem nada de dinheiro”</li><li>Jargão sem explicação</li><li>Prometer resultado de investimento</li><li>“Fiz por você” quando envolve dinheiro</li><li>Dizer que o especialista ou o agente decide pelo cliente</li><li>Separar robô e humano em canais diferentes</li></ul></div>
+  </div>
+</div></section>
+
+<section class="sec" id="telas"><div class="wrap">
+  <p class="eyebrow">10 · Telas do protótipo</p>
+  <h2>Treze telas, cinco pessoas</h2>
+  <div class="screens">
+    <div class="screen"><p class="n">T1 · MARCOS</p><h3>Espaço Família</h3><p>Patrimônio da família, cards por membro, 2 decisões pendentes, botão de voz</p></div>
+    <div class="screen"><p class="n">T2 · MARCOS</p><h3>Convidar membro</h3><p>Pessoa, papel, o que ela vê, prévia do convite</p></div>
+    <div class="screen"><p class="n">T3 · PEDRO</p><h3>Convite recebido</h3><p>Mensagem do pai, o que ele vai ver, aceitar</p></div>
+    <div class="screen"><p class="n">T4 · MARCOS</p><h3>Evolução patrimonial</h3><p>Patrimônio da família no tempo, por membro</p></div>
+    <div class="screen"><p class="n">T5 · PEDRO E MARCOS</p><h3>Retrospectiva do ano</h3><p>Mesmo conteúdo em duas linguagens</p></div>
+    <div class="screen"><p class="n">T6 · HELENA</p><h3>Despesas do casal</h3><p>Contas separadas, despesas comuns, divisão</p></div>
+    <div class="screen"><p class="n">T7 · MARCOS E ANA</p><h3>Rendimento para o filho</h3><p>O rendimento do CDB vai para o cofrinho do intercâmbio</p></div>
+    <div class="screen"><p class="n">T8 · MARCOS</p><h3>Mesada da Ana</h3><p>Proposta do agente e aprovação</p></div>
+    <div class="screen"><p class="n">T9 · MARCOS</p><h3>Avenue Legacy</h3><p>Os quatro cards, mapa de sucessão, POD, card de Seguros “em breve”</p></div>
+    <div class="screen"><p class="n">T10 · DONA LÚCIA</p><h3>Conversa por voz</h3><p>Comando, resposta, aviso de confirmação no app do Marcos</p></div>
+    <div class="screen"><p class="n">T11 · MARCOS</p><h3>Aprovação</h3><p>Ação, valor, impacto por membro, biometria</p></div>
+    <div class="screen"><p class="n">T12 · MARCOS</p><h3>Coerência com o plano</h3><p>“A reserva da faculdade está 100% em ações. Quer que o Rafael entre na conversa?”</p></div>
+    <div class="screen"><p class="n">T13 · MARCOS E RAFAEL</p><h3>Especialista entra na conversa</h3><p>Mesma conversa, Rafael já com a história da família; Marcos decide</p></div>
+  </div>
+  <p class="who" style="margin-top:1rem">Fora do protótipo: dinheiro de verdade, cálculo real de imposto, texto jurídico final e conta nova para menores. Seguros aparecem só como card “em breve”.</p>
+</div></section>
+
+<section class="sec" id="divergencias"><div class="wrap">
+  <p class="eyebrow">11 · Divergências entre as fontes</p>
+  <h2>Oito resolvidas, sete para o time decidir</h2>
+  <h3 style="font-family:var(--display);font-weight:400;font-size:1.4rem;margin:1rem 0 .6rem">Resolvidas</h3>
+  <div class="resolved">
+    <div class="res"><p class="t">Quem é dono da conversa</p><p class="from">Deck Legado: “titular ou família?” · Slack: owners que podem ser definidos</p><p class="to"><span class="chip c-ok">Decisão</span> Owners configuráveis, um ou mais; os demais são membros convidados</p></div>
+    <div class="res"><p class="t">Nome do produto</p><p class="from">Deck: “Legado Avenue” · Pitch HTML e Slack: “Agente Familiar”</p><p class="to"><span class="chip c-ok">Decisão</span> Agente Familiar Avenue; Avenue Legacy é um pilar</p></div>
+    <div class="res"><p class="t">Dossiê</p><p class="from">Deck: “Dossiê da família” · Caneta: “Retrospectiva”</p><p class="to"><span class="chip c-ok">Decisão</span> Evolução patrimonial contínua + Retrospectiva anual preparada pela dupla</p></div>
+    <div class="res"><p class="t">Discurso sobre os filhos</p><p class="from">Pitch HTML: “não sabem nada de dinheiro” · Slack: não queremos</p><p class="to"><span class="chip c-ok">Decisão</span> “O filho herda o conhecimento e encontra tudo encaminhado e atual”</p></div>
+    <div class="res"><p class="t">Quem decide</p><p class="from">Versões anteriores: “o assessor decide” · Time: o protagonismo é do cliente</p><p class="to"><span class="chip c-ok">Decisão</span> O cliente decide; a dupla prepara, explica e sugere</p></div>
+    <div class="res"><p class="t">IA e humano</p><p class="from">Pitch HTML: “entrega o caso ao banker” · Time: dupla forte, sem quebra marcada</p><p class="to"><span class="chip c-ok">Decisão</span> Agente Familiar e Agente Especialista na mesma conversa</p></div>
+    <div class="res"><p class="t">Já temos e vamos criar</p><p class="from">Lista única com nomes técnicos · Time: separar produto e tecnologia</p><p class="to"><span class="chip c-ok">Decisão</span> Tabela por produto e tecnologia, com nomes de negócio</p></div>
+    <div class="res"><p class="t">Dores</p><p class="from">Deck Legado sem dores · Caneta: “colocar dores”</p><p class="to"><span class="chip c-ok">Decisão</span> Cinco dores, cada uma ligada a um comando de voz</p></div>
+  </div>
+  <h3 style="font-family:var(--display);font-weight:400;font-size:1.4rem;margin:1.6rem 0 .6rem">Pendentes, para decidir</h3>
+  <div class="grid g2">
+    <div class="decision"><header><span>D1 · Produto para menores</span><span class="chip c-chk">Pendente</span></header><div class="sides"><div><b>Lado A</b>Cartão de dependente, que já existe</div><div><b>Lado B</b>Conta nova Avenue Next Gen para menores de 18 (pitch HTML)</div></div><p class="rec"><b>Recomendação:</b> protótipo usa o cartão de dependente; conta nova vai para o roadmap.</p></div>
+    <div class="decision"><header><span>D2 · Regra do cartão de dependente</span><span class="chip c-chk">Pendente</span></header><div class="sides"><div><b>Base CS</b>13 a 17 anos, até 4 cartões</div><div><b>Base SupOps</b>12 a 18 anos, 1 cartão</div></div><p class="rec"><b>Recomendação:</b> validar com o produto; a Ana de 16 cabe nas duas.</p></div>
+    <div class="decision"><header><span>D3 · Despesas do casal: “separar contas”</span><span class="chip c-chk">Pendente</span></header><div class="sides"><div><b>Leitura A</b>Cada um com sua conta e um orçamento comum</div><div><b>Leitura B</b>Conta conjunta nova</div></div><p class="rec"><b>Recomendação:</b> contas separadas com orçamento comum; a conta corrente é individual hoje.</p></div>
+    <div class="decision"><header><span>D4 · Números sem fonte</span><span class="chip c-chk">Pendente</span></header><div class="sides"><div><b>Pitch HTML</b>49,5% de paridade Invest-Banking e −40% de contatos</div><div><b>Situação</b>Sem fonte marcada</div></div><p class="rec"><b>Recomendação:</b> fora do pitch até ter a fonte. Já tirei do deck novo.</p></div>
+    <div class="decision"><header><span>D5 · Data da demo</span><span class="chip c-chk">Pendente</span></header><div class="sides"><div><b>Pitch HTML</b>“demo 10/12”</div><div><b>Origem</b>10/12 é a demo do pit-mcp (RFC do iam), não do hackathon</div></div><p class="rec"><b>Recomendação:</b> roadmap sem data até confirmar. Já tirei do deck novo.</p></div>
+    <div class="decision"><header><span>D6 · Cofrinhos e P2P</span><span class="chip c-chk">Pendente</span></header><div class="sides"><div><b>Pitch HTML</b>“Já existem”</div><div><b>Levantamento técnico</b>Não confirmado; o P2P encontrado é do Connect</div></div><p class="rec"><b>Recomendação:</b> confirmar com o produto antes de chamar de “já existe”.</p></div>
+    <div class="decision"><header><span>D7 · Número da UBS</span><span class="chip c-chk">Pendente</span></header><div class="sides"><div><b>Movimento Global</b>“Brasil em 2º lugar, US$ 9 trilhões”</div><div><b>Dúvida</b>Não está claro o que o número mede</div></div><p class="rec"><b>Recomendação:</b> confirmar a base. Ficou fora do deck novo.</p></div>
+  </div>
+</div></section>
+
+<footer><div class="wrap">
+  <p>Fontes: deck Legado Avenue; pitch HTML do Agente Familiar; anotações do time (caneta e Slack); “O Movimento Global”, Tribo Investimentos 2026; Confluence Avenue (agentes, RFC de MCP clients, cartão para dependente, segmentação B2C); repositórios assessoria, banking e external-transfers; guia Nova Marca Avenue 2024.</p>
+</div></footer>
+
+<script type="text/markdown" id="md-source"># Agente Familiar Avenue: contexto para o protótipo do app
+
+Hackathon de IA Avenue 2026 · versão 1 · 24/11/2026
+
+Este documento é a fonte única para gerar o protótipo do app. Ele junta o deck Legado Avenue, o pitch HTML do Agente Familiar, as anotações do time (caneta vermelha e Slack) e os dados do "Movimento Global". Onde as fontes divergiam, a decisão tomada está na seção 15; o que ainda depende do time está marcado como **Decisão pendente**.
+
+Regras para quem gera o protótipo:
+
+- Todo valor, nome e conversa deste documento é **ilustrativo**, exceto os números marcados com fonte na seção 2.
+- Use a identidade visual da seção 12. Não invente cores nem fontes.
+- Toda ação que mexe em dinheiro, limite, dado ou permissão termina numa tela de aprovação (seção 9).
+
+---
+
+## 1. A tese
+
+**Cuidando da sua família, seu maior patrimônio.**
+
+Uma dupla cuida da vida financeira global da família: o **Agente Familiar**, de IA, por voz ou texto, e o **Agente Especialista**, humano, que entra na mesma conversa quando o assunto pede. O protagonista é o cliente: ele decide, e nada acontece sem o OK de quem é dono.
+
+Quatro ideias guiam o produto:
+
+1. **A família é o maior patrimônio.** A unidade de cuidado deixa de ser a conta e passa a ser a família.
+2. **A maior herança é o conhecimento de cuidar de uma vida financeira global.** O filho herda o conhecimento e encontra tudo encaminhado e atualizado.
+3. **Os bancos guardam o dinheiro. A Avenue guarda a história da família que vem com ele.**
+4. **O cliente é o protagonista.** A dupla de agentes prepara, explica e sugere; quem decide é sempre o cliente.
+
+Posicionamento em três passos:
+
+```mermaid
+flowchart LR
+  A["Onde eu guardo meus dólares"] --> B["Quem cuida do meu patrimônio comigo"] --> C["Quem cuida da minha família, hoje e depois de mim"]
+  style C fill:#36C665,stroke:#002820,color:#002820
+```
+
+---
+
+## 2. Problema e oportunidade
+
+### 2.1 O mercado
+
+| Dado | Fonte |
+| --- | --- |
+| 70% dos herdeiros mudam de instituição financeira no dia seguinte à herança | JP Morgan, citado em "O Movimento Global" |
+| O Brasil ocupa o segundo lugar, com cerca de US$ 9 trilhões, na transferência de patrimônio entre gerações | UBS, citado em "O Movimento Global" (confirmar a base do número antes de usar em público) |
+| A transferência vai de Baby Boomers (2020) para Millennials e Geração X (2045) | "O Movimento Global" |
+| Nomad oferece apoio jurídico em tributação, família e sucessão para alta renda (17/11/2025) | "O Movimento Global" |
+| BTG lançou o Minhas Finanças, que agrega contas via Open Finance | "O Movimento Global" |
+| Decade, fintech de gestão patrimonial com IA, captou US$ 85 milhões em ago/2026 | Business Wire |
+
+### 2.2 A base da Avenue
+
+| Dado | Fonte |
+| --- | --- |
+| 14,7 mil clientes com mais de US$ 50 mil sem uso de Banking | Databricks |
+| 36% do AUC está com clientes que têm banking ocioso | Databricks |
+| 49,5% de paridade Invest-Banking | Pitch HTML, **sem fonte marcada** |
+| 23% da base chegou por recomendação da própria família | "O Movimento Global" |
+| Grande parte da base tem entre 40 e 55 anos | "O Movimento Global" |
+
+Por que o cliente investe fora (múltipla escolha, por isso a soma passa de 100%):
+
+```mermaid
+xychart-beta
+  title "O que motivou investir fora (% das respostas)"
+  x-axis ["Proteção do real", "Potencial de ganho", "Legado familiar", "Morar fora", "Outros", "Imóveis fora"]
+  y-axis "%" 0 --> 100
+  bar [89, 36, 18, 7, 2, 1]
+```
+
+O que o cliente vê como ponto forte da Avenue:
+
+```mermaid
+xychart-beta
+  title "Ponto forte da Avenue (% das respostas)"
+  x-axis ["Invest + conta + cartão", "Diversificação", "Outros", "Conteúdo", "Atendimento"]
+  y-axis "%" 0 --> 60
+  bar [46, 42, 21, 20, 20]
+```
+
+Leitura: o ponto forte já é ter investimento e conta juntos, e o legado aparece como oportunidade crescente (18%). O Espaço Família é a ponte entre banking, investimento e família, e nasce da assessoria.
+
+### 2.3 As dores (usar no protótipo como gatilhos)
+
+| Dor | Frase do cliente | Quem sente |
+| --- | --- | --- |
+| Falta de centralização | "O dinheiro da família está em cinco telas e numa planilha." | Titular |
+| Sucessão | "Se algo acontecer comigo, o que acontece com meus dólares?" | Titular 50+ |
+| Falta de tempo | "Todo ano eu refaço o imposto de todo mundo." | Titular, cônjuge |
+| Dificuldade de uso | "Meu pai não consegue mexer no app." | Membro 70+ e quem cuida dele |
+| Comunicação | "Ninguém me avisa quando algo muda com meus filhos." | Titular |
+
+Não usar: "os filhos não sabem nada de dinheiro". Usar: "o filho vai herdar o conhecimento e encontrar tudo mais encaminhado e atual".
+
+---
+
+## 3. Personas da família de exemplo
+
+Família Almeida, fictícia, para todas as telas do protótipo.
+
+| Pessoa | Idade | Papel no Espaço Família | Como usa | O que quer |
+| --- | --- | --- | --- | --- |
+| Marcos | 52 | Owner (titular) | App e voz no carro | Visão do todo, IR sem retrabalho, sucessão organizada |
+| Helena | 49 | Owner (cônjuge) | App | Despesas do casal claras, cada um com sua conta |
+| Pedro | 24 | Membro adulto convidado, mora em Boston | App, em inglês às vezes | Entender o que vai herdar, construir o próprio patrimônio |
+| Ana | 16 | Dependente (cartão de dependente) | App simplificado | Mesada, cofrinho do intercâmbio, aprender |
+| Dona Lúcia | 78 | Membro (mãe do Marcos) | Só voz | Mandar dinheiro de aniversário, saber se está tudo bem |
+| Rafael | — | Agente Especialista (humano) da família | Extranet, Salesforce | Entrar na conversa já sabendo a história da família |
+
+```mermaid
+flowchart TB
+  subgraph OW["Owners (definidos pela família)"]
+    M["Marcos · titular"]
+    H["Helena · cônjuge"]
+  end
+  OW --> EF(("Espaço Família"))
+  EF --> P["Pedro, 24 · membro adulto"]
+  EF --> A["Ana, 16 · dependente"]
+  EF --> L["Dona Lúcia, 78 · membro por voz"]
+  AG["Agente Familiar"] -. "conversa com todos" .-> EF
+  AS["Rafael · Agente Especialista"] -. "entra na mesma conversa" .-> EF
+```
+
+---
+
+## 4. Glossário
+
+| Termo | Significado |
+| --- | --- |
+| **Agente Familiar** | O agente de IA, por voz e texto, que atende a família inteira. Nome do produto no pitch. |
+| **Agente Especialista** | A pessoa da Avenue (assessor ou banker) que entra na mesma conversa quando o assunto pede: sucessão, carteira, IR complexo. Recomenda quando o cliente pede; não decide pelo cliente. |
+| **Dupla** | Agente Familiar e Agente Especialista trabalhando juntos, na mesma conversa, sem fila e sem o cliente repetir a história. |
+| **Espaço Família** | O hub no app que reúne membros, produtos, objetivos e decisões da família. A casa do agente. |
+| **Owner** | Quem é dono do Espaço Família e aprova decisões. Pode haver mais de um (exemplo: o casal). É configurável. |
+| **Membro** | Pessoa convidada pelo owner, com papel e permissões. Adulto, dependente ou membro por voz. |
+| **Convite** | Fluxo pelo qual o owner traz um membro para o Espaço Família, escolhendo o papel e o que ele vê. |
+| **Evolução patrimonial** | Visão contínua do patrimônio da família e de cada membro ao longo do tempo. |
+| **Retrospectiva** | Momento anual em que a dupla prepara o resumo do ano da família e revisa com ela. A linguagem se adapta a cada membro. |
+| **Plano** | Objetivo declarado pela família, como faculdade da Ana em 2028 ou reserva de 12 meses. |
+| **Memória** | Registro do que a família disse ao agente: intenções, planos, eventos de vida. Base da coerência. |
+| **Coerência com os planos** | O agente compara o que a família faz com o que planejou e avisa quando diverge, sem recomendar ativo. |
+| **Avenue Legacy** | Pilar de sucessão e preparação dos herdeiros. |
+| **POD** | Payable on Death: indicação de beneficiários que recebem em caso de falecimento. Produto que já existe. |
+| **Aprovação** | Tela em que o owner confirma uma ação com biometria ou 2FA. Sem aprovação, nada acontece. |
+
+---
+
+## 5. Papéis e permissões
+
+| Ação | Owner | Membro adulto | Dependente | Membro por voz | Agente Especialista |
+| --- | --- | --- | --- | --- | --- |
+| Ver patrimônio consolidado da família | Sim | Só o liberado | Não | Só o próprio | Sim, com consentimento |
+| Convidar membro e definir papel | Sim | Não | Não | Não | Não |
+| Aprovar movimentação, limite ou permissão | Sim | Só na própria conta | Não | Confirma no app de quem cuida dele | Não |
+| Sugerir ação ao owner | Sim | Sim | Sim | Sim | Sim |
+| Falar com o agente por voz | Sim | Sim | Sim | Sim | Não |
+| Recomendar investimento | Não | Não | Não | Não | Sim, se certificado e quando o cliente pede |
+| Decidir | Sim | Na própria conta | Não | Com quem cuida dele | Nunca pelo cliente |
+| Mudar beneficiário ou titularidade | Dupla aprovação dos owners | Não | Não | Não | Não |
+
+Regra geral: o cliente decide. O owner aprova, o membro sugere, o menor de 18 vê só o que o responsável liberou e a voz nunca aprova sozinha.
+
+---
+
+## 6. Funcionalidades para o protótipo
+
+Legenda: **Já existe** = produto ou API da Avenue hoje. **Novo** = construir. **Confirmar** = precisa checar com o produto.
+
+| # | Funcionalidade | O que faz | Status | Dor que resolve |
+| --- | --- | --- | --- | --- |
+| F1 | Espaço Família (home) | Patrimônio consolidado por membro, decisões pendentes, próximos vencimentos | Novo | Centralização |
+| F2 | Convite para membros | Owner convida cônjuge, filhos, pais; escolhe papel e o que cada um vê | Novo | Centralização |
+| F3 | Evolução patrimonial | Linha do tempo do patrimônio da família e de cada membro | Novo, sobre APIs existentes | Centralização |
+| F4 | Retrospectiva do ano | Resumo anual preparado pela dupla e revisado com a família; linguagem por membro | Novo | Comunicação, tempo |
+| F5 | Despesas do casal | Cada um mantém sua conta; despesas comuns aparecem num orçamento compartilhado e divididas | Novo | Tempo, comunicação |
+| F6 | Rendimento como incentivo ao filho | O owner direciona o rendimento de uma aplicação para o cofrinho do filho, com regra simples | Novo | Next gen |
+| F7 | Mesada e cartão de dependente | Mesada em dólar com regra em linguagem natural; vira limite do cartão de dependente | Cartão: já existe · Mesada: novo | Tempo |
+| F8 | Carteira recomendada | A dupla explica a carteira recomendada; o cliente decide | Já existe (Agente de Carteira em teste) | Autonomia |
+| F9 | Avenue Legacy | Mapa de sucessão e preparação dos herdeiros (estrutura de cards na seção 6.1) | Novo | Sucessão |
+| F10 | Agente Familiar por voz e texto | Conversa com qualquer membro, com o dado real da família | Agentes atuais: já existem · Voz para cliente: confirmar | Dificuldade de uso |
+| F11 | Memória e coerência com os planos | Lembra intenções e avisa quando o comportamento diverge do plano | Novo, sobre GetAccountMemory | Comunicação |
+| F12 | Dupla de agentes | O Agente Especialista entra na mesma conversa do Agente Familiar, com a história da família | Briefing: já existe · Conversa compartilhada: novo | Segurança |
+| F13 | IR da família | Rascunho por membro com MyProfit e o Agente de IR | Agente de IR: já existe · Família: novo | Tempo |
+| F14 | Cofrinhos e P2P entre membros | Objetivos e transferências dentro da família | Confirmar se já existem para cliente final | Centralização |
+| F15 | POD | Indicação de beneficiários, ligada ao mapa de sucessão | Já existe | Sucessão |
+| F16 | Seguros | Proteção da família em moeda forte; o agente aponta lacunas | Novo (fase 3) | Sucessão |
+
+### 6.1 Avenue Legacy: a estrutura de cards
+
+| Card | Conteúdo |
+| --- | --- |
+| Sucessão patrimonial | Mapa por ativo e titular: o que fica exposto ao estate tax, quem são os beneficiários, o que levar ao especialista |
+| Preparação da próxima geração | Herdeiros conhecem a Avenue antes do evento, com acesso e papéis definidos pelo owner |
+| Inteligência financeira | Trilhas por idade a partir dos eventos reais da conta: primeiro dividendo, primeiro câmbio, primeira viagem |
+| Vida financeira global | Estudar, morar ou se aposentar fora: conta, cartão, câmbio e documentos (W-8BEN, W-9, crédito) |
+
+Rodapé obrigatório do Legacy: "O agente organiza, explica e prepara a conversa. Decisão jurídica e fiscal fica com o especialista Avenue / Itaú."
+
+### 6.2 Evolução patrimonial e Retrospectiva
+
+São a mesma base de dados com dois usos:
+
+| | Evolução patrimonial | Retrospectiva |
+| --- | --- | --- |
+| Quando | Sempre disponível | Uma vez por ano (dezembro) e a pedido |
+| Quem faz | O Agente Familiar | A dupla prepara e revisa com a família |
+| Para o Pedro (24) | Gráfico do próprio patrimônio e do plano | Resumo curto e compartilhável: "seu ano em dólar" |
+| Para o Marcos (52) | Patrimônio da família por membro | Relatório do ano com evolução, IR e próximos passos de legado |
+| Para a Dona Lúcia (78) | "Está tudo certo, seu saldo subiu" por voz | Conversa por voz com o resumo em três frases |
+
+---
+
+## 7. Comandos de voz de exemplo
+
+Cada comando responde a uma dor. A voz consulta e pede; o app confirma.
+
+| Dor | Quem fala | Comando | Resposta do agente | Precisa de aprovação? |
+| --- | --- | --- | --- | --- |
+| Dificuldade de uso | Dona Lúcia | "Quanto tem no cofrinho do meu neto? Quero mandar 200 dólares de aniversário." | "O cofrinho do Pedro tem US$ 1.840. Mandei a confirmação para o celular do Marcos." | Sim, no app do owner |
+| Falta de tempo | Marcos, no carro | "Como está o imposto da família este ano?" | "Faltam dois informes: o da Helena e o do Pedro. Quer que eu peça a eles?" | Não, só consulta |
+| Falta de centralização | Helena | "Quanto a gente gastou de despesa da casa este mês, e quanto foi de cada um?" | Resumo das despesas comuns, dividido por pessoa | Não |
+| Comunicação inteligente | Marcos | "Aumenta a mesada da Ana na proporção dos gastos da escola e explica para ela por quê." | Proposta com valores e uma mensagem pronta para a Ana | Sim |
+| Sucessão | Marcos | "Se algo acontecer comigo, o que acontece com meus dólares?" | "Montei o mapa da família e chamei o Rafael, nosso especialista, para esta conversa." | Não; decisões depois, com o OK do owner |
+| Next gen | Pedro | "O que eu preciso saber sobre o patrimônio da família?" | Explicação no nível dele, só do que o owner liberou | Não |
+
+---
+
+## 8. Diferencial de IA: a dupla de agentes
+
+Uma experiência só. O cliente não troca de canal nem repete a história: o Agente Especialista entra na mesma conversa do Agente Familiar quando o assunto pede. Os números vêm de regras auditáveis. Quem decide é o cliente.
+
+| Agente Familiar (IA) | Agente Especialista (humano) | Regras auditáveis (por trás) |
+| --- | --- | --- |
+| Sempre disponível, por voz ou texto | Entra na conversa quando o assunto pede | Patrimônio consolidado |
+| Ouve a família, inclusive várias pessoas | Sucessão e planejamento | Cálculo de IR e DARF |
+| Lê documento de outra instituição | Recomenda quando o cliente pede | Limites do cartão e da mesada |
+| Descobre a intenção e explica no nível de cada membro | Parecer com especialistas Avenue / Itaú | Risco sucessório por ativo |
+| Memória e coerência com os planos | Revisa a Retrospectiva com a família | Avisos por evento |
+
+```mermaid
+flowchart LR
+  E["Entrada: voz, chat, documento"] --> IA["IA: entende, lê, pergunta o que falta"]
+  IA --> G["Grafo da família: pessoas, bens, planos, intenções"]
+  G --> R["Motor de regras: cálculos auditáveis, sem LLM"]
+  R --> A["Proposta com valor em US$"]
+  A --> OK{"Cliente decide"}
+  OK -- "sim" --> X["Executa e registra"]
+  OK -- "não" --> N["Nada acontece"]
+  AS["Agente Especialista"] -. "entra na conversa quando o assunto pede" .-> IA
+```
+
+---
+
+## 9. Fluxo de aprovação
+
+```mermaid
+sequenceDiagram
+  autonumber
+  actor L as Dona Lúcia (voz)
+  participant AG as Agente Familiar
+  participant R as Regras e APIs
+  actor M as Marcos (owner)
+  L->>AG: "Manda 200 dólares para o Pedro"
+  AG->>R: saldo, cofrinho, limite
+  R-->>AG: dados
+  AG-->>L: "Mandei a confirmação para o Marcos"
+  AG->>M: proposta no app com valor e impacto
+  M->>M: biometria
+  M-->>AG: aprovado
+  AG->>R: executa
+  AG-->>L: "Pronto, o Pedro recebeu"
+```
+
+Etapas que toda tela de ação segue: **Entende → Propõe → Owner aprova → Executa e registra**. Sem resposta do owner, nada acontece.
+
+---
+
+## 10. Arquitetura e o que já existe
+
+### 10.1 Já temos e vamos criar, por produto e por tecnologia
+
+| | Já temos | Vamos criar |
+| --- | --- | --- |
+| **Produto** | Cartão de dependente · Carteira recomendada · IR com MyProfit · POD (indicação de beneficiários) | Espaço Família · Seguros · Evolução patrimonial e Retrospectiva · Avenue Legacy |
+| **Tecnologia** | CX Agent AI · Acesso seguro com o OK do cliente (pit-mcp) · Memória do relacionamento · Diagnóstico de carteira com risco sucessório | Agente Familiar de voz · Evolução do Patrimônio da Família · Permissões por membro · Conversa compartilhada entre os dois agentes |
+
+### 10.2 Detalhe técnico
+
+| Peça | O que já existe | Onde | Falta construir |
+| --- | --- | --- | --- |
+| Voz e chat | CX Agent AI (agentes no CX Agent Studio) | Contact Center | Agente Familiar de voz; confirmar voz para cliente final |
+| Patrimônio | GetPortfolio, TotalAuC, BankingBalance | accounts | Consolidação por família |
+| Evolução | TotalNetTimeSeries, histórico de performance | insights, digital | Visão por membro |
+| Risco sucessório | GetWalletDiagnostic, com nota e texto | wallet-diagnostic | Ler o grafo da família |
+| Memória | GetAccountMemory e AccountBriefing (Gemini) | insights | Intenções, planos, eventos de vida |
+| Cartão de dependente | GetCards, CardholderService | banking | Mesada com regra |
+| IR | IncomeTaxAnnualReport e pendências | accounts, MyProfit | Visão da família |
+| Carteira recomendada | recommendation, Agente de Carteira | assessoria-core | Contexto da família |
+| Consentimento | Grant por conta no pit-mcp, OAuth 2.1 | iam | Escopo por membro da família |
+| Agente Especialista | Briefing e case no Salesforce | insights, Salesforce | Entrar na mesma conversa do Agente Familiar |
+
+```mermaid
+flowchart TB
+  subgraph Canais
+    APP["App: Espaço Família"]
+    VOZ["Voz"]
+    ASS["Agente Especialista"]
+  end
+  APP --> AG["Agente Familiar"]
+  VOZ --> AG
+  AG --> PIT["pit-mcp: consentimento por membro"]
+  PIT --> S1["accounts"]
+  PIT --> S2["banking"]
+  PIT --> S3["insights e memória"]
+  PIT --> S4["wallet-diagnostic"]
+  PIT --> S5["MyProfit"]
+  AG <-->|mesma conversa| ASS
+```
+
+---
+
+## 11. Guardrails
+
+1. A voz nunca aprova sozinha. Toda movimentação pedida por voz é confirmada no app do owner.
+2. Dupla aprovação para mudar beneficiário ou titularidade.
+3. Limites por valor e frequência definidos pelo owner, com alerta fora do padrão.
+4. O Agente Familiar explica e sugere; recomendação de investimento só do Agente Especialista certificado, quando o cliente pede. Quem decide é o cliente.
+5. Consentimento por membro (LGPD): cada adulto autoriza o próprio dado e pode revogar.
+6. Dado sensível (saúde, conflito familiar) só com consentimento explícito.
+7. Todo texto sobre estate tax e herança nos EUA passa pelo Jurídico antes de ir ao cliente.
+8. Trilha de auditoria por membro.
+
+---
+
+## 12. Identidade visual e tom
+
+### Cores (Nova Marca Avenue 2024)
+
+| Nome | HEX | Uso |
+| --- | --- | --- |
+| Dólar | `#002820` | Fundo escuro principal e texto em fundo claro |
+| Investment | `#011511` | Fundo muito escuro pontual |
+| Off White | `#FAF6F2` | Fundo claro predominante (nunca branco puro) |
+| Wealth Tan | `#E9D6BF` | Fundos claros pontuais e cards |
+| Gold Reserve | `#D1B592` | Divisores, bordas, destaques |
+| Palm Tree | `#36C665` | Ação, CTA, aprovação, acentos |
+
+Tipografia: Avenue Pro Display nos títulos e Avenue Pro Text no corpo; alternativa Calibri Light e Calibri. Ênfase com peso médio, sem negrito em texto corrido.
+
+### Tom
+
+| Fazer | Não fazer |
+| --- | --- |
+| "O Pedro vai herdar o conhecimento e encontrar tudo encaminhado" | "Seus filhos não sabem nada de dinheiro" |
+| Frases curtas, com o valor em US$ | Jargão sem explicação |
+| Deixar claro que quem decide é o cliente: "você decide" | Prometer resultado de investimento |
+| "Preparei para você revisar" | "Fiz por você" quando envolve dinheiro |
+| Mostrar a dupla na mesma conversa: "chamei o Rafael para esta conversa" | Dizer que o especialista ou o agente decide pelo cliente |
+| Passar do agente para o especialista sem troca de canal | Separar "falar com robô" e "falar com humano" como mundos diferentes |
+
+---
+
+## 13. Telas do protótipo
+
+| # | Tela | Persona | Conteúdo principal |
+| --- | --- | --- | --- |
+| T1 | Espaço Família | Marcos | Patrimônio da família, cards por membro, 2 decisões pendentes, botão de voz |
+| T2 | Convidar membro | Marcos | Escolher pessoa, papel, o que ela vê; prévia do convite |
+| T3 | Convite recebido | Pedro | Mensagem do pai, o que ele vai ver, aceitar |
+| T4 | Evolução patrimonial | Marcos | Gráfico do patrimônio da família no tempo, por membro |
+| T5 | Retrospectiva do ano | Pedro e Marcos | Mesmo conteúdo em duas linguagens, preparado pela dupla |
+| T6 | Despesas do casal | Helena | Contas separadas, despesas comuns, divisão |
+| T7 | Rendimento para o filho | Marcos e Ana | Regra "o rendimento do CDB vai para o cofrinho do intercâmbio" |
+| T8 | Mesada da Ana | Marcos | Proposta do agente, aprovação |
+| T9 | Avenue Legacy | Marcos | Os quatro cards, mapa de sucessão, POD, card de Seguros "em breve" |
+| T10 | Conversa por voz | Dona Lúcia | Comando, resposta, aviso de confirmação no app do Marcos |
+| T11 | Aprovação | Marcos | Ação, valor, impacto por membro, biometria |
+| T12 | Coerência com o plano | Marcos | "A reserva da faculdade está 100% em ações. Quer que o Rafael entre na conversa?" |
+| T13 | Especialista entra na conversa | Marcos e Rafael | Mesma conversa, Rafael já com a história da família; Marcos decide |
+
+---
+
+## 14. Fora de escopo do protótipo
+
+- Ação com dinheiro de verdade; o protótipo só simula.
+- Cálculo real de imposto.
+- Texto jurídico final de sucessão.
+- Seguros: produto a criar na fase 3; no protótipo, só um card "em breve" no Avenue Legacy.
+- Conta para menores de 18 como produto novo (Avenue Next Gen): ver Decisão pendente D1.
+
+---
+
+## 15. Divergências entre as fontes
+
+### Resolvidas
+
+| Tema | Fonte A | Fonte B | Decisão |
+| --- | --- | --- | --- |
+| Quem é dono da conversa | Deck Legado: "titular ou família?" | Slack: gestão centralizada nos owners, que podem ser definidos | Owners configuráveis, um ou mais; demais são membros convidados |
+| Nome do produto | Deck Legado: "Legado Avenue" | Pitch HTML e Slack: "Agente Familiar" | Agente Familiar Avenue; Avenue Legacy é um pilar dele |
+| Dossiê | Deck Legado: "Dossiê da família" | Caneta vermelha: "Retrospectiva" | Evolução patrimonial (contínua) + Retrospectiva (anual, preparada pela dupla) |
+| Discurso sobre os filhos | Pitch HTML: "não sabem nada de dinheiro" | Slack: não queremos isso | "O filho herda o conhecimento e encontra tudo encaminhado e atual" |
+| Quem decide | Versões anteriores: "o assessor decide" | Orientação do time: o protagonismo é do cliente | O cliente decide; a dupla prepara, explica e sugere |
+| IA e humano | Pitch HTML: "entrega o caso ao banker", como troca de canal | Orientação do time: dupla forte, sem quebra marcada | Agente Familiar (IA) + Agente Especialista (humano) na mesma conversa |
+| Já temos e vamos criar | Lista única com nomes técnicos | Orientação do time: separar produto e tecnologia | Tabela 10.1, com nomes de negócio |
+| Dores | Deck Legado sem dores explícitas | Caneta: "colocar dores" | Cinco dores na seção 2.3, ligadas aos comandos de voz |
+
+### Decisões pendentes
+
+| # | Tema | Lado A | Lado B | Recomendação |
+| --- | --- | --- | --- | --- |
+| D1 | Produto para menores | Cartão de dependente que já existe | Pitch HTML: conta nova Avenue Next Gen para menores de 18 | Protótipo usa o cartão de dependente; conta nova fica para o roadmap |
+| D2 | Regra do cartão de dependente | Base CS: 13 a 17 anos, até 4 cartões | Base SupOps: 12 a 18 anos, 1 cartão | Validar com o produto; o protótipo usa a Ana de 16, que cabe nas duas |
+| D3 | Despesas do casal: "separar contas" | Cada um com sua conta e um orçamento comum | Conta conjunta nova | Recomendo contas separadas com orçamento comum; a conta corrente é individual hoje |
+| D4 | Números sem fonte | Pitch HTML: 49,5% de paridade e -40% de contatos | Sem fonte marcada | Tirar do pitch até ter a fonte |
+| D5 | Data da demo | Pitch HTML: "demo 10/12" | 10/12 é a data da demo do pit-mcp (RFC do iam), não do hackathon | Tirar a data do roadmap ou confirmar |
+| D6 | Cofrinhos e P2P para cliente final | Pitch HTML: "já existem" | Não confirmado no levantamento técnico (o P2P encontrado é do Connect) | Confirmar com o produto antes de chamar de "já existe" |
+| D7 | Número da UBS | "Brasil em 2º lugar, US$ 9 trilhões" | Não está claro o que o número mede | Confirmar a base antes de usar no pitch |
+
+---
+
+## 16. Fontes
+
+- Deck Legado Avenue: Next Gen e Sucessão (Claude, 24/11/2026)
+- Pitch HTML: Agente Familiar Avenue (time do hackathon)
+- Anotações em caneta vermelha sobre o deck Legado e anotações do Slack sobre o pitch HTML
+- "O Movimento Global", Thyago Rebelato, apresentação Tribo investimentos → 2026
+- Confluence Avenue: iniciativas dos agentes (atendimento, IR, Carteira, Middle), RFC de autorização de MCP clients, Cartão para dependente, Segmentação B2C
+- Repositórios assessoria, banking e external-transfers (APIs citadas na seção 10)
+- Guia de marca Nova Marca Avenue 2024
+</script>
+<script>
+(function(){
+  var button=document.getElementById('copy-md');
+  var status=document.getElementById('copy-status');
+  button.addEventListener('click',function(){
+    var text=document.getElementById('md-source').textContent;
+    var done=function(){status.textContent='Copiado';setTimeout(function(){status.textContent='';},2500);};
+    if(navigator.clipboard&&navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(done).catch(function(){fallback(text);});
+    }else{fallback(text);}
+    function fallback(t){
+      var area=document.createElement('textarea');area.value=t;area.setAttribute('readonly','');area.style.position='absolute';area.style.left='-9999px';
+      document.body.appendChild(area);area.select();
+      try{document.execCommand('copy');done();}catch(e){status.textContent='Selecione e copie o texto manualmente';}
+      document.body.removeChild(area);
+    }
+  });
+})();
+</script>
+
+<!--claude-mermaid-runtime-begin:3477-->
+<style>.mermaid-diagram{margin-block:4px}.mermaid-diagram svg{display:block;margin:0 auto;max-width:100%;height:auto}</style>
+<script src="/_runtime/mermaid-11.16.1.min.js"></script>
+<script>(function(){
+var CFG={"palettes":{"light":{"surface":"#f4efe4","text":"#42392e","line":"#8a7f6d","border":"#7a6c52","bg":"#fffdf8"},"dark":{"surface":"#262b34","text":"#f2f3f5","line":"#a8adb8","border":"#9aa4b8","bg":"#1f232b"}}};
+if(typeof mermaid==='undefined')return;
+var pres=Array.prototype.slice.call(document.querySelectorAll('pre.mermaid')).filter(function(p){if(p.hasAttribute('data-claude-mermaid-claimed'))return false;p.setAttribute('data-claude-mermaid-claimed','1');return true;});
+if(!pres.length)return;
+var mq=window.matchMedia?window.matchMedia('(prefers-color-scheme: dark)'):null;
+var root=document.documentElement;
+var items=pres.map(function(pre){
+var mount=document.createElement('div');mount.className='mermaid-diagram';
+return {pre:pre,mount:mount,src:pre.textContent||''};
+});
+var seq=0;
+var renderGen=0;
+var lastKey='';
+function pageBg(fallback){
+var els=[document.body,document.documentElement];
+for(var i=0;i<els.length;i++){
+var c=els[i]&&getComputedStyle(els[i]).backgroundColor;
+if(c&&c!=='transparent'&&c!=='rgba(0, 0, 0, 0)')return c;
+}
+return fallback;
+}
+function render(){
+var theme=root.getAttribute('data-theme');
+var dark=theme==='dark'||(!!(mq&&mq.matches)&&theme!=='light');
+var pal=dark?CFG.palettes.dark:CFG.palettes.light;
+var bg=pageBg(pal.bg);
+var key=(dark?'d':'l')+'|'+bg;
+if(key===lastKey)return;
+lastKey=key;
+var gen=++renderGen;
+var font=getComputedStyle(document.body).fontFamily||'sans-serif';
+var nat={useMaxWidth:false};
+mermaid.initialize({
+startOnLoad:false,securityLevel:'strict',theme:'base',
+flowchart:nat,sequence:nat,er:nat,state:nat,class:nat,pie:nat,
+gantt:nat,journey:nat,timeline:nat,gitGraph:nat,mindmap:nat,xyChart:nat,
+quadrantChart:nat,sankey:nat,c4:nat,requirement:nat,block:nat,
+packet:nat,kanban:nat,architecture:nat,radar:nat,
+themeVariables:{background:bg,mainBkg:pal.surface,primaryColor:pal.surface,
+primaryTextColor:pal.text,lineColor:pal.line,primaryBorderColor:pal.border,
+nodeBorder:pal.border,clusterBorder:pal.border,edgeLabelBackground:bg,
+clusterBkg:'rgba(127,127,127,0.07)',titleColor:pal.text,
+darkMode:dark,rowOdd:bg,rowEven:'rgba(127,127,127,0.07)',
+attributeBackgroundColorOdd:bg,attributeBackgroundColorEven:'rgba(127,127,127,0.07)',
+fontSize:'16px',fontFamily:font},
+themeCSS:'.node rect, .node circle, .node polygon, .node path, .cluster rect { stroke-width: 2px; }'
+});
+items.forEach(function(it){
+var id='claude-mermaid-'+seq++;
+mermaid.render(id,it.src).then(function(r){
+if(gen!==renderGen)return;
+var prev=it.pre.previousElementSibling;
+if(prev&&prev.className==='mermaid-diagram'&&prev!==it.mount)return;
+it.mount.innerHTML=r.svg;
+if(!it.mount.parentNode)it.pre.parentNode.insertBefore(it.mount,it.pre);
+it.pre.style.display='none';
+},function(){
+var scratch=document.getElementById(id);
+if(scratch)scratch.parentNode.removeChild(scratch);
+scratch=document.getElementById('d'+id);
+if(scratch)scratch.parentNode.removeChild(scratch);
+if(gen!==renderGen)return;
+if(it.mount.parentNode)it.mount.parentNode.removeChild(it.mount);
+it.pre.style.display='';
+});
+});
+}
+render();
+if(mq&&mq.addEventListener)mq.addEventListener('change',render);
+if(typeof MutationObserver!=='undefined')new MutationObserver(render).observe(root,{attributes:true,attributeFilter:['data-theme']});
+})();</script>
+<!--claude-mermaid-runtime-end-->
+
+</body></html>
