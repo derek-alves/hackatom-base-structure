@@ -13,6 +13,8 @@ Copy da UI em pt-BR; identificadores de código em inglês.
 - `scripts/`: `new_module.sh` (gerador de módulos) e `test_new_module.sh` (self-test).
 - `templates/`: esqueletos usados pelo gerador.
 - `docs/decisions/`: ADRs e divergências de versão.
+- `docs/infra-ia/`: plataforma de IA da Avenue (Dev Portal, AI Proxy, Proxy SDK `ai-proxy-sdk`): chave, instalação, uso no ADK, cota e encaixe no `app/core/llm.py`.
+- `docs/hackathon/` e `docs/direcionamento/ideia-final/`: artefatos do evento e a ideia final do time (Agente Familiar Avenue).
 - `.claude/`: regras por caminho (`rules/`) e skills (`skills/`).
 
 ## Arquitetura modular
@@ -48,6 +50,7 @@ Backend (`cd backend`):
 
 ```bash
 uv sync
+uv sync --extra avenue                      # + ai-proxy-sdk para LLM_PROVIDER=avenue (repo privado: gh auth setup-git)
 uv run fastapi dev app/main.py              # rede local: adicionar --host 0.0.0.0
 uv run pytest -m "not e2e"
 uv run pytest -m e2e                        # chama Gemini real: só com pedido explícito
@@ -100,7 +103,7 @@ Caminho de volta: `dispatchAction → onAction → a2ui.messages no POST`.
 
 Com chave do AI Studio, o `ui_agent` entrega o `UiResponse` pela tool `set_model_response` do ADK; os testes cobrem esse caminho (`StudioLlm`) e o nativo (`FakeLlm`). Detalhes em `.claude/rules/backend-adk2.md`.
 
-Modelo: `backend/app/core/llm.py` (provider, retry e fallback por `LLM_*`) e modo demo (`DEMO_MODE=record|replay`) em `backend/app/modules/assistant/demo.py`. Decisão: `docs/decisions/0004-llm-provider-fallback-demo.md`.
+Modelo: `backend/app/core/llm.py` (provider, retry e fallback por `LLM_*`; na Avenue, `LLM_PROVIDER=avenue` usa o Proxy SDK em `app/core/avenue_llm.py`: `docs/infra-ia/README.md`) e modo demo (`DEMO_MODE=record|replay`) em `backend/app/modules/assistant/demo.py`. Decisões: `docs/decisions/0004-llm-provider-fallback-demo.md` e `docs/decisions/0006-avenue-ai-proxy.md`.
 
 MCP: as tools dos módulos saem em `/mcp`; servidores em `MCP_SERVERS` viram tools do `ui_agent` (`<name>_<tool>`). Exemplo em `backend/mcp_servers/quotes/`. Decisão: `docs/decisions/0005-mcp.md`; passo a passo: `/add-mcp`.
 

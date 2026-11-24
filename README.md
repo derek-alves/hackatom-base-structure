@@ -6,21 +6,33 @@ Starter para hackathons AI-native. Um backend FastAPI + Google ADK 2.x responde 
 
 O projeto tem duas partes: o backend (`backend/`) e o app Flutter (`mobile/`). Suba o backend primeiro e depois aponte o app para ele.
 
-### 1. Configurar o modelo
+### 1. Configurar o modelo (AI Proxy da Avenue)
 
-```bash
-cp backend/.env.example backend/.env
-```
+Os LLMs passam pelo AI Proxy da Avenue, com o SDK privado `ai-proxy-sdk`. Pré-requisitos: acesso à org `avenuesec` no GitHub e VPN ou rede corporativa.
 
-Preencha `LLM_API_KEY` em `backend/.env`. Os nomes antigos `GEMINI_API_KEY` e `GEMINI_MODEL` continuam valendo. Sem a chave, o backend sobe, mas o stream do assistente emite `error` e depois `done` (exceto no modo demo `replay`).
+1. Gere a chave do seu app no Dev Portal. O passo a passo está em `docs/infra-ia/README.md`, seção "Pegar a chave".
+2. Crie o `backend/.env` e preencha `AI_PROXY_API_KEY`:
+
+   ```bash
+   cp backend/.env.example backend/.env
+   ```
+
+   O `.env.example` já vem com `LLM_PROVIDER=avenue`, `LLM_MODEL=gemini-4-neon` e `LLM_FALLBACK_MODELS='["gemini-3.5-flash"]'`. Os dois modelos precisam estar aprovados para o app no Dev Portal.
+3. Uma vez por máquina, deixe o git usar o token do `gh`, porque o `uv` baixa o SDK pelo git:
+
+   ```bash
+   gh auth login && gh auth setup-git
+   ```
+
+Sem a chave, o backend sobe, mas o stream do assistente emite `error` e depois `done` (exceto no modo demo `replay`).
 
 O modelo muda só por variável, sem mexer em código:
 
 | Variável | Para quê |
 |---|---|
-| `LLM_PROVIDER` | `gemini` (AI Studio, padrão), `apigee` (proxy de IA do Google) ou `openai` (qualquer endpoint compatível com OpenAI, como LiteLLM proxy e gateways; serve para Claude e modelos open source) |
-| `LLM_API_KEY` | Chave do provider |
-| `LLM_MODEL` | Modelo principal. Padrão: `gemini-3.5-flash`. No `apigee`, sem o prefixo `apigee/` |
+| `LLM_PROVIDER` | `gemini` (AI Studio, padrão), `apigee` (proxy de IA do Google), `openai` (qualquer endpoint compatível com OpenAI, como LiteLLM proxy e gateways; serve para Claude e modelos open source) ou `avenue` (AI Proxy da Avenue pelo `ai-proxy-sdk`; exige `uv sync --extra avenue`, ver `docs/infra-ia/README.md`) |
+| `LLM_API_KEY` | Chave do provider. No `avenue`, também vale `AI_PROXY_API_KEY` (chave do app no Dev Portal) |
+| `LLM_MODEL` | Modelo principal. Padrão: `gemini-3.5-flash`. No `apigee`, sem o prefixo `apigee/`. No `avenue`, um modelo do enum `ai_proxy.Model` (`gemini-3.5-flash` ou `GEMINI_3_5_FLASH`) |
 | `LLM_BASE_URL` | URL do proxy (`apigee` e `openai`) |
 | `LLM_FALLBACK_MODELS` | Modelos tentados em ordem quando o principal responde 429 ou 5xx, no mesmo provider. Ex.: `'["gemini-3.1-flash-lite"]'` |
 | `LLM_RETRY_ATTEMPTS` | Tentativas por modelo antes de passar ao próximo. Padrão 3; `1` desliga o retry |
@@ -57,6 +69,8 @@ MCP_SERVERS='[{"name": "quotes", "command": "python", "args": ["-m", "mcp_server
 
 Escolha uma das duas formas. As duas servem em `http://localhost:8000` e leem `backend/.env`.
 
+Com o AI Proxy (`LLM_PROVIDER=avenue`), use a opção B. A imagem do Podman não instala o SDK privado e só serve para `DEMO_MODE=replay` ou para os outros providers.
+
 #### Opção A: Podman
 
 Pré-requisitos: [Podman](https://podman.io/) 5 ou mais novo e um provider de compose: `docker-compose` (binário standalone, sem Docker Engine; o Podman Desktop instala) ou `podman-compose`. Não precisa de Python nem de `uv` na máquina.
@@ -81,21 +95,21 @@ Mudou `backend/pyproject.toml` ou `backend/uv.lock`? Rode `podman compose up --b
 
 #### Opção B: local com `uv`
 
-Pré-requisitos: Python 3.14 e [`uv`](https://docs.astral.sh/uv/).
+Pré-requisitos: Python 3.14, [`uv`](https://docs.astral.sh/uv/) e VPN ligada.
 
 ```bash
 cd backend
-uv sync
+uv sync --extra avenue                          # inclui o ai-proxy-sdk
 uv run fastapi dev app/main.py                  # só nesta máquina
 uv run fastapi dev app/main.py --host 0.0.0.0   # aceita conexões da rede local (device físico)
 ```
 
-É a forma de quem desenvolve o backend: testes e lint rodam só assim.
+É a forma de quem desenvolve o backend: testes e lint rodam só assim. Um `uv sync` sem `--extra avenue` remove o SDK do `.venv`.
 
 Para conferir se o backend está no ar:
 
 ```bash
-curl http://localhost:8000/api/health
+curl http://localhost:8000/api/health    # esperado: "llmProvider":"avenue" e "llmConfigured":true
 ```
 
 ### 3. Rodar o app Flutter
@@ -125,7 +139,7 @@ Backend (`cd backend`):
 ```bash
 uv run pytest -m "not e2e"
 uv run ruff check . && uv run ruff format --check .
-uv run pytest -m e2e    # chama o Gemini de verdade; precisa da chave em LLM_API_KEY (ou GEMINI_API_KEY)
+uv run pytest -m e2e    # chama o modelo de verdade, com o provider e a chave de backend/.env
 ```
 
 Mobile (`cd mobile`):

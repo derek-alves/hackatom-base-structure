@@ -6,7 +6,14 @@ from pydantic import SecretStr, ValidationError
 from app.core.config import Settings
 from tests.conftest import resolve_llm_key
 
-LLM_ENV = ("LLM_API_KEY", "GEMINI_API_KEY", "LLM_MODEL", "GEMINI_MODEL", "LLM_PROVIDER")
+LLM_ENV = (
+    "LLM_API_KEY",
+    "GEMINI_API_KEY",
+    "AI_PROXY_API_KEY",
+    "LLM_MODEL",
+    "GEMINI_MODEL",
+    "LLM_PROVIDER",
+)
 
 
 @pytest.fixture
@@ -48,6 +55,21 @@ def test_default_model_when_nothing_is_set(env_file: Path):
 def test_llm_names_win_over_legacy_names(env_file: Path):
     env_file.write_text("GEMINI_API_KEY=legacy\nLLM_API_KEY=new\n")
     assert resolve_llm_key(env_file) == "new"
+
+
+def test_avenue_takes_the_ai_proxy_key(env_file: Path):
+    env_file.write_text("LLM_PROVIDER=avenue\nGEMINI_API_KEY=studio\nAI_PROXY_API_KEY=proxy\n")
+    assert resolve_llm_key(env_file) == "proxy"
+
+
+def test_ai_proxy_key_is_ignored_by_other_providers(env_file: Path):
+    env_file.write_text("AI_PROXY_API_KEY=proxy\n")
+    assert resolve_llm_key(env_file) is None
+
+
+def test_llm_api_key_wins_over_ai_proxy_key(env_file: Path):
+    env_file.write_text("LLM_PROVIDER=avenue\nAI_PROXY_API_KEY=proxy\nLLM_API_KEY=generic\n")
+    assert resolve_llm_key(env_file) == "generic"
 
 
 @pytest.mark.parametrize("content", ["", "LLM_API_KEY=\n", "GEMINI_API_KEY=\n"])

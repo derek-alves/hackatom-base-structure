@@ -13,7 +13,7 @@ from pydantic import (
 )
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-LlmProvider = Literal["gemini", "apigee", "openai"]
+LlmProvider = Literal["gemini", "apigee", "openai", "avenue"]
 DemoMode = Literal["off", "record", "replay"]
 DEFAULT_LLM_MODEL = "gemini-3.5-flash"
 # Prefixes the server's tools (`<name>_<tool>`), so it must be valid in a function name.
@@ -48,6 +48,7 @@ class Settings(BaseSettings):
     app_name: str = "Hackathon Starter API"
     # gemini: AI Studio (or Vertex via GOOGLE_GENAI_USE_VERTEXAI). apigee: Google AI proxy.
     # openai: any OpenAI-compatible endpoint (LiteLLM proxy, gateways, Vertex OpenAI API).
+    # avenue: Avenue's AI Proxy via `ai-proxy-sdk` (extra `avenue`; docs/infra-ia/README.md).
     llm_provider: LlmProvider = "gemini"
     llm_api_key: SecretStr | None = None
     llm_model: str = ""  # blank: GEMINI_MODEL, then DEFAULT_LLM_MODEL
@@ -74,9 +75,16 @@ class Settings(BaseSettings):
     # Names before LLM_*: read only as a fallback, so old backend/.env files keep working.
     gemini_api_key: SecretStr | None = Field(default=None, exclude=True, repr=False)
     gemini_model: str = Field(default="", exclude=True)
+    # The AI Proxy SDK's own name for the key: LLM_API_KEY's fallback when LLM_PROVIDER=avenue.
+    ai_proxy_api_key: SecretStr | None = Field(default=None, exclude=True, repr=False)
 
     @field_validator(
-        "llm_api_key", "gemini_api_key", "llm_base_url", "mcp_server_token", mode="before"
+        "llm_api_key",
+        "gemini_api_key",
+        "ai_proxy_api_key",
+        "llm_base_url",
+        "mcp_server_token",
+        mode="before",
     )
     @classmethod
     def _blank_is_missing(cls, value: object) -> object:
@@ -85,9 +93,13 @@ class Settings(BaseSettings):
         return None if isinstance(raw, str) and not raw.strip() else value
 
     @model_validator(mode="after")
-    def _fall_back_to_gemini_names(self) -> Self:
-        # Blank LLM_* (as copied from .env.example) must not hide a filled GEMINI_*.
-        self.llm_api_key = self.llm_api_key or self.gemini_api_key
+    def _fall_back_to_provider_names(self) -> Self:
+        # Blank LLM_* (as copied from .env.example) must not hide a filled GEMINI_*/AI_PROXY_*.
+        # Each provider only takes its own key: an AI Studio key never goes to the proxy.
+        provider_key = (
+            self.ai_proxy_api_key if self.llm_provider == "avenue" else self.gemini_api_key
+        )
+        self.llm_api_key = self.llm_api_key or provider_key
         self.llm_model = self.llm_model.strip() or self.gemini_model.strip() or DEFAULT_LLM_MODEL
         return self
 

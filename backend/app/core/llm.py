@@ -48,6 +48,18 @@ def _single_model(settings: Settings, name: str) -> BaseLlm:
                 max_retries=settings.llm_retry_attempts - 1,
             )
             return OpenAILlm(model=name, client=client)
+        case "avenue":
+            # Lazy: the private `ai-proxy-sdk` is an optional extra.
+            try:
+                from app.core.avenue_llm import avenue_model
+            except ModuleNotFoundError as exc:
+                if not (exc.name or "").startswith("ai_proxy"):
+                    raise
+                raise RuntimeError(
+                    "LLM_PROVIDER=avenue exige o ai-proxy-sdk: `uv sync --extra avenue` "
+                    "(docs/infra-ia/README.md)"
+                ) from exc
+            return avenue_model(name, _api_key(settings) or "missing", _retry_options(settings))
 
 
 def export_provider_env(settings: Settings) -> None:

@@ -37,6 +37,13 @@ LLM_ENV_VARS = (
     "LLM_RETRY_ATTEMPTS",
     "GEMINI_API_KEY",
     "GEMINI_MODEL",
+    "AI_PROXY_API_KEY",
+    "AI_PROXY_TEAM",
+    "AI_PROXY_DEBUG",
+    "AI_PROXY_SSL_VERIFY",
+    "AGENT_ENVIRONMENT",
+    "GOOGLE_CLOUD_PROJECT",
+    "GOOGLE_CLOUD_LOCATION",
     "DEMO_MODE",
     "DEMO_RECORDINGS_PATH",
     "MCP_SERVERS",
@@ -52,6 +59,9 @@ def _isolate_llm_env(monkeypatch: pytest.MonkeyPatch) -> None:
     # test (or by the developer's shell) leaks into the next test's Settings and reaches Gemini.
     for name in LLM_ENV_VARS:
         monkeypatch.delenv(name, raising=False)
+    # litellm (pulled in by ai-proxy-sdk) runs `load_dotenv()` on import in its default DEV
+    # mode, copying backend/.env, real proxy key included, into os.environ mid-test.
+    monkeypatch.setenv("LITELLM_MODE", "PRODUCTION")
 
 
 @pytest.fixture
